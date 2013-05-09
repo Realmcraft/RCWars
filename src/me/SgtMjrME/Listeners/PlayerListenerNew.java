@@ -7,15 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
-import java.util.logging.Logger;
 
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.ClassUpdate.WarClass;
@@ -32,9 +27,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.SkullType;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -42,10 +35,7 @@ import org.bukkit.block.Skull;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -71,9 +61,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
 
 public class PlayerListenerNew implements Listener {
@@ -478,8 +466,7 @@ public class PlayerListenerNew implements Listener {
 		if (state.getLine(0) == null)
 			return;
 		if (times.containsKey(p.getName())) {
-			long l = ((Long) times.get(p.getName())).longValue();
-
+			long l = times.get(p.getName());
 			if (l + 5L > System.currentTimeMillis() / 1000L) {
 				return;
 			}
@@ -510,169 +497,160 @@ public class PlayerListenerNew implements Listener {
 			times.put(p.getName(),
 					Long.valueOf(System.currentTimeMillis() / 1000L));
 		}
-			try {
-				if (state.getLine(1).equalsIgnoreCase("Enchantment")) {
-					ItemStack item = p.getItemInHand().clone();
-					int cost = Integer.parseInt(state.getLine(3));
-					item = addEnchant(item, state.getLine(2));
-					if (item == null) {
-						p.sendMessage(ChatColor.RED
-								+ "Enchantment will not work");
-						return;
-					}
-					if (!RCWars.spendWarPoints(p, cost).booleanValue())
-						return;
-					final Player hold = p;
-					final ItemStack holdi = item;
-					Bukkit.getScheduler().runTask(pl, new Runnable() {
-						public void run() {
-							hold.setItemInHand(holdi);
-						}
-					});
+		try {
+			if (state.getLine(1).equalsIgnoreCase("Enchantment")) {
+				ItemStack item = p.getItemInHand().clone();
+				int cost = Integer.parseInt(state.getLine(3));
+				item = addEnchant(item, state.getLine(2));
+				if (item == null) {
+					p.sendMessage(ChatColor.RED
+							+ "Enchantment will not work");
 					return;
 				}
-			} catch (Exception e3) {
-				p.sendMessage("ERROR");
-				RCWars.sendLogs("Sign at "
-						+ state.getBlock().getLocation().toString()
-						+ " error enchanting");
-
-				if (!p.hasPermission("rcwars.admin")) {
-					event.setCancelled(true);
-				}
-				if ((state.getLine(1) == null) || (state.getLine(3) == null)) {
+				if (!RCWars.spendWarPoints(p, cost).booleanValue())
 					return;
-				}
-				if (state.getLine(1).equals("repair")) {
-					if (state.getLine(2) == null) {
-						p.sendMessage("Error with 3rd line of sign, should be base name");
-						return;
+				final Player hold = p;
+				final ItemStack holdi = item;
+				Bukkit.getScheduler().runTask(pl, new Runnable() {
+					public void run() {
+						hold.setItemInHand(holdi);
 					}
-					Base b = Base.getBase(state.getLine(2));
-					if (b == null) {
-						p.sendMessage("Error with 3rd line of sign, should be base name");
-						return;
-					}
-					Siege s = Siege.getSiege(b);
-					if (s == null) {
-						p.sendMessage("Error with 3rd line of sign, could not find siege");
-						return;
-					}
-					String[] str = state.getLine(3).split(":");
-					if (str.length != 2) {
-						p.sendMessage("Error with 4th line, should be \"#:#\"");
-						return;
-					}
-					if (RCWars.spendWarPoints(p, Integer.parseInt(str[1]))
-							.booleanValue())
-						s.repair(Integer.parseInt(str[0]));
-					return;
-				}
-
-				try {
-					if (state.getLine(1).equalsIgnoreCase("kit")) {
-						Kit k = Kit.getKit(state.getLine(2));
-						if (k == null) {
-							p.sendMessage("Kit not found");
-							return;
-						}
-						if (!RCWars.spendWarPoints(p,
-								Integer.parseInt(state.getLine(3)))
-								.booleanValue()) {
-							return;
-						}
-						k.addKit(p);
-						p.updateInventory();
-						return;
-					}
-				} catch (Exception e11) {
-					return;
-				}
-
-				int num = 1;
-				int cost = 0;
-
-				Material mat = Material.AIR;
-				int DMG = 0;
-				try {
-					String s = state.getLine(3);
-					if (s == null)
-						return;
-					String[] split = s.split(":");
-
-					if (split.length == 2) {
-						num = Integer.parseInt(split[0]);
-						cost = Integer.parseInt(split[1]);
-					} else if (split.length == 1) {
-						num = 1;
-						cost = Integer.parseInt(split[0]);
-					} else {
-						p.sendMessage("Incorrect sign setup");
-						RCWars.sendLogs("Sign at "
-								+ state.getBlock().getLocation().toString()
-								+ " has incorrect cost/num");
-					}
-					if ((RCWars.getWarPoints(p) == null)
-							|| (RCWars.getWarPoints(p).intValue() < cost)) {
-						p.sendMessage(ChatColor.RED
-								+ "You don't have enough WarPoints");
-						return;
-					}
-
-					mat = Material.getMaterial(state.getLine(1));
-					if (mat == null) {
-						mat = Material.getMaterial(Integer.parseInt(state
-								.getLine(1)));
-						if (mat == null) {
-							p.sendMessage("Error with sign(mat)");
-							return;
-						}
-
-						if (mat.name().length() < 16) {
-							state.setLine(1, mat.name());
-							state.update(true);
-						}
-					}
-					ItemStack item;
-					if ((state.getLine(2) != null)
-							&& (!state.getLine(2).equals(""))) {
-						if (state.getLine(1).equals("POTION")) {
-							DMG = Integer.parseInt(state.getLine(2));
-							item = new ItemStack(mat, num, (short) DMG);
-						} else if ((isArmor(mat)) || (isBow(mat))
-								|| (isSword(mat)) || (isTool(mat))) {
-							item = new ItemStack(mat, num);
-							item = addEnchant(item, state.getLine(2));
-						} else {
-							item = new ItemStack(mat, num,
-									(short) Integer.parseInt(state.getLine(2)));
-						}
-					} else {
-						item = new ItemStack(mat, num);
-					}
-
-					RCWars.spendWarPoints(p, cost);
-					ItemStack leftover = addItemSGT(p.getInventory(), item);
-					if (leftover != null) {
-						p.getLocation().getWorld()
-								.dropItem(p.getLocation(), leftover);
-						p.sendMessage("Inv full, dropping at your feet");
-					}
-					p.updateInventory();
-				} catch (Exception e) {
-					p.sendMessage(ChatColor.RED + "ERROR");
-					e.printStackTrace();
-					RCWars.returnPlugin()
-							.getLogger()
-							.severe("[RCWARS] SEVERE! Sign at "
-									+ event.getClickedBlock().getLocation()
-											.toString() + " has an error");
-					return;
-				}
+				});
+				return;
+			}
+		} catch (Exception e3) {
+			p.sendMessage("ERROR");
+			RCWars.sendLogs("Sign at "
+					+ state.getBlock().getLocation().toString()
+					+ " error enchanting");
+			return;
+		}
+		if (!p.hasPermission("rcwars.admin")) {
+			event.setCancelled(true);
+		}
+		if ((state.getLine(1) == null) || (state.getLine(3) == null)) {
+			return;
+		}
+		if (state.getLine(1).equals("repair")) {
+			if (state.getLine(2) == null) {
+				p.sendMessage("Error with 3rd line of sign, should be base name");
+				return;
+			}
+			Base b = Base.getBase(state.getLine(2));
+			if (b == null) {
+				p.sendMessage("Error with 3rd line of sign, should be base name");
+				return;
+			}
+			Siege s = Siege.getSiege(b);
+			if (s == null) {
+				p.sendMessage("Error with 3rd line of sign, could not find siege");
+				return;
+			}
+			String[] str = state.getLine(3).split(":");
+			if (str.length != 2) {
+				p.sendMessage("Error with 4th line, should be \"#:#\"");
+				return;
+			}
+			if (RCWars.spendWarPoints(p, Integer.parseInt(str[1]))){
+				s.repair(Integer.parseInt(str[0]));
+				return;
 			}
 		}
-		ItemStack item;
-	}//TODO
+		try {
+		if (state.getLine(1).equalsIgnoreCase("kit")) {
+			Kit k = Kit.getKit(state.getLine(2));
+			if (k == null) {
+				p.sendMessage("Kit not found");
+				return;
+			}
+			if (!RCWars.spendWarPoints(p,
+					Integer.parseInt(state.getLine(3)))) {
+				return;
+			}
+			k.addKit(p);
+			p.updateInventory();
+			return;
+		}
+		} catch (Exception e) {
+			return;
+		}
+		int num = 1;
+		int cost = 0;
+		Material mat = Material.AIR;
+		int DMG = 0;
+		try {
+			String s = state.getLine(3);
+			if (s == null)
+				return;
+			String[] split = s.split(":");
+			if (split.length == 2) {
+				num = Integer.parseInt(split[0]);
+				cost = Integer.parseInt(split[1]);
+			} else if (split.length == 1) {
+				num = 1;
+				cost = Integer.parseInt(split[0]);
+			} else {
+				p.sendMessage("Incorrect sign setup");
+				RCWars.sendLogs("Sign at "
+						+ state.getBlock().getLocation().toString()
+						+ " has incorrect cost/num");
+				return;
+			}
+			if ((RCWars.getWarPoints(p) == null)
+					|| (RCWars.getWarPoints(p) < cost)) {
+				p.sendMessage(ChatColor.RED
+						+ "You don't have enough WarPoints");
+				return;
+			}
+			mat = Material.getMaterial(state.getLine(1));
+			if (mat == null) {
+				mat = Material.getMaterial(Integer.parseInt(state
+						.getLine(1)));
+				if (mat == null) {
+					p.sendMessage("Error with sign(mat)");
+					return;
+				}
+				if (mat.name().length() < 16) {
+					state.setLine(1, mat.name());
+					state.update(true);
+				}
+			}
+			ItemStack item;
+			if ((state.getLine(2) != null)
+					&& (!state.getLine(2).equals(""))) {
+				if (state.getLine(1).equals("POTION")) {
+					DMG = Integer.parseInt(state.getLine(2));
+					item = new ItemStack(mat, num, (short) DMG);
+				} else if ((isArmor(mat)) || (isBow(mat))
+						|| (isSword(mat)) || (isTool(mat))) {
+					item = new ItemStack(mat, num);
+					item = addEnchant(item, state.getLine(2));
+				} else {
+					item = new ItemStack(mat, num,
+							(short) Integer.parseInt(state.getLine(2)));
+				}
+			} else {
+				item = new ItemStack(mat, num);
+			}
+				RCWars.spendWarPoints(p, cost);
+			ItemStack leftover = addItemSGT(p.getInventory(), item);
+			if (leftover != null) {
+				p.getLocation().getWorld()
+						.dropItem(p.getLocation(), leftover);
+				p.sendMessage("Inv full, dropping at your feet");
+			}
+			p.updateInventory();
+		} catch (Exception e) {
+			p.sendMessage(ChatColor.RED + "ERROR");
+			e.printStackTrace();
+			RCWars.returnPlugin()
+					.getLogger()
+					.severe("[RCWARS] SEVERE! Sign at "
+							+ event.getClickedBlock().getLocation()
+									.toString() + " has an error");
+			return;
+		}
+	}
 
 	private ItemStack addEnchant(ItemStack item, String s) {
 		String[] split = s.split(":");
