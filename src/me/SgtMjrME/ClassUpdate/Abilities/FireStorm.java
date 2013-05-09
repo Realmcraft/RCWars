@@ -1,0 +1,83 @@
+package me.SgtMjrME.ClassUpdate.Abilities;
+
+import com.google.common.collect.Sets;
+import java.util.HashSet;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
+
+public class FireStorm extends BaseAbility {
+	static HashSet<Byte> airwater = Sets.newHashSet(new Byte[] { (byte) 0,
+			(byte) 8, (byte) 9, (byte) 10, (byte) 11 });
+	public final String disp;
+	public final long delay;
+	public final int cost;
+	public final String desc;
+
+	public FireStorm(long long1, String string, int i, String string2) {
+		delay = long1;
+		disp = string;
+		cost = i;
+		desc = string2;
+	}
+
+	public boolean onDefend(Player p, EntityDamageByEntityEvent e) {
+		if ((e.getEntity() instanceof Fireball)) {
+			e.setCancelled(true);
+		}
+		return false;
+	}
+
+	public boolean OverrideDef(Player p) {
+		return true;
+	}
+
+	public boolean onInteract(Player p, PlayerInteractEvent e) {
+		Location l = p.getTargetBlock(airwater, 100).getLocation();
+
+		Location temp = l.clone();
+		temp.setY(temp.getY() + 25.0D);
+		Vector dir = l.toVector().subtract(temp.toVector());
+		for (int x = 0; x < 2; x++) {
+			temp = l.clone();
+			temp.setX(l.getX() + x * 4 - 2.0D);
+			temp.setY(l.getY() + 25.0D + x);
+			Fireball b = (Fireball) p.getWorld().spawnEntity(temp,
+					EntityType.FIREBALL);
+			b.setShooter(p);
+			b.setDirection(dir);
+			b.setYield(4.0F);
+		}
+		for (int z = 0; z < 2; z++) {
+			temp = l.clone();
+			temp.setZ(l.getZ() + z * 4 - 2.0D);
+			temp.setY(l.getY() + 25.0D + 2.0D + z);
+			Fireball b = (Fireball) p.getWorld().spawnEntity(temp,
+					EntityType.FIREBALL);
+			b.setShooter(p);
+			b.setDirection(dir);
+			b.setYield(4.0F);
+		}
+		return true;
+	}
+
+	public String getDisplay() {
+		return disp;
+	}
+
+	public long getDelay() {
+		return delay;
+	}
+
+	public int getCost() {
+		return cost;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+}

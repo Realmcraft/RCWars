@@ -1,0 +1,143 @@
+name: RCWars
+main: me.SgtMjrME.RCWars
+version: 2.0.5
+description: IT'S FRICKIN WARS V.2.0!!! 
+softdepend: [Essentials]
+depends: [TagAPI, Vault]
+
+commands:
+    startwar:
+        description: start the war (ignores player check)
+    endwar:
+        description: ends the war immediately
+    testWarCommand:
+        description: console only, please don't use
+    resetWarStats:
+        description: console only, resets the database (clears entries)
+    warthanks:
+    wsetworld:
+        description: set the world
+    wsetlobby:
+        description: Sets the location of the lobby
+    race:
+        description: Set your race |
+                'NOTE adds wool helmet and spawns to the spawnlocation'
+    leavewar:
+        description: Removes you from War
+    setracespawn:
+        description: Set a race's spawn
+    setracespawnzone:
+        description: sets a races spawn zone, which others can't enter.
+    warptobase:
+        description: Warps to a selected base|
+                if not owned by their race, denies.
+    waddBase:
+        description: Make a base at your location (Possibly not used?)
+        usage: /waddBase [internal name]
+    wremoveBase:
+        description: Remove the base closest to your location (Possibly not used?)
+        usage: /wremoveBase
+    wsetBase:
+        description: Modify a base
+        usage: /wsetBase [base#/closest] <owner/zone/spawn/disp/health/flags/gates/money/walls>
+    wlistbase:
+        description: List all loaded bases
+    wlist:
+        description: lisit all players
+    wremovePlayer:
+        description: Removes a player from war/world.
+    wp:
+        description: see your war points.
+    reloadwar:
+    warStats:
+        description: see your war stats!
+    repairwalls:
+    newcannon:
+        description: create new cannon
+        usage: /newcannon <name>
+    setcannon:
+        description: set up the cannons
+        usage: /setcannon <cannon name> <launch/platform>
+    warchest:
+        description: See players warchest
+    warinv:
+        description: see players war inventory
+    specialwaraction:
+        description: depends on what is needed
+        usage: /warremoveenchant
+    rally:
+        description: Rally your team! Use this command (costs wp) to have other players given the option to teleport to you
+    listkits:
+    class:
+    sap:
+    firearrow:
+    strike:
+    healme:
+    feedme:
+    cloak:
+    volley:
+    fireball:
+    firenova:
+    firestorm:
+    healplayer:
+    healgroup:
+    drainlife:
+    boost:
+    removeability:
+    setheads:
+permissions:
+    rcwars.*:
+        children:
+            rcwars.admin:
+                description: Admins War
+                default: op
+                children:
+                    rcwars.bypassfly:
+                        default: op
+            rcwars.mod:
+                description: Gives permission for wlist, endwar, wlistbase
+                children:
+                    rcwars.remove:
+                        description: Allows user to remove someone else from wars
+                        default: op
+                    rcwars.list:
+                        description: See all players in wars
+                        default: op
+                    rcwars.seebase:
+                        description: allows user to view base details
+                        default: op
+                    rcwars.stats:
+                        description: allows you to see your war stats
+                        default: op
+                    rcwars.refereefly:
+                        description: allows ref to fly
+                        default: op
+            rcwars.setrace:
+                description: allows you to set your race
+                default: op
+            rcwars.leave:
+                description: allows user to leave war
+                default: op
+            rcwars.warp:
+                description: allows user to warp to a base
+                default: op
+            rcwars.specialaction:
+                default: op
+            rcwars.rally:
+                default: op
+            rcwars.referee:
+                default: op
+            rcwars.class:
+                default: op
+    rcwars.rank1:
+        default: false
+    rcwars.rank2:
+        default: false
+    rcwars.rank3:
+        default: false
+    rcwars.rank4:
+        default: false
+    rcwars.rank5:
+        default: false
+    rcwars.rank6:
+        default: false
