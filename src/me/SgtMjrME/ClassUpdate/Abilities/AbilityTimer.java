@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import me.SgtMjrME.RCWars;
-import me.SgtMjrME.ClassUpdate.WarRank;
+import me.SgtMjrME.Tasks.AbilityCooldown;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,6 +19,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class AbilityTimer {
 	private static HashMap<String, HashSet<cooldown>> times = new HashMap<String, HashSet<cooldown>>();
@@ -26,90 +28,37 @@ public class AbilityTimer {
 	public static final HashMap<String, BaseAbility> str2abil = new HashMap<String, BaseAbility>();
 
 	public AbilityTimer(Configuration cs) {
-		str2abil.put(
-				cs.getString("boost.display"),
-				new Boost(cs.getLong("boost.delay"), cs
-						.getString("boost.display"), cs.getInt("boost.cost"),
-						cs.getString("boost.description")));
-		str2abil.put(
-				cs.getString("cloak.display"),
-				new Cloak(cs.getLong("cloak.delay"), cs
-						.getString("cloak.display"), cs.getInt("cloak.cost"),
-						cs.getString("cloak.description")));
-		str2abil.put(
-				cs.getString("drainlife.display"),
-				new DrainLife(cs.getLong("drainlife.delay"), cs
-						.getString("drainlife.display"), cs
-						.getInt("drainlife.cost"), cs
-						.getString("drainlife.description")));
-		str2abil.put(
-				cs.getString("feedme.display"),
-				new Feedme(cs.getLong("feedme.delay"), cs
-						.getString("feedme.display"), cs.getInt("feedme.cost"),
-						cs.getString("feedme.description")));
-		str2abil.put(
-				cs.getString("firearrow.display"),
-				new FireArrow(cs.getLong("firearrow.delay"), cs
-						.getString("firearrow.display"), cs
-						.getInt("firearrow.cost"), cs
-						.getString("firearrow.description")));
-		str2abil.put(
-				cs.getString("fireball.display"),
-				new Fireball(cs.getLong("fireball.delay"), cs
-						.getString("fireball.display"), cs
-						.getInt("fireball.cost"), cs
-						.getString("fireball.description")));
-		str2abil.put(
-				cs.getString("firenova.display"),
-				new Firenova(cs.getLong("firenova.delay"), cs
-						.getString("firenova.display"), cs
-						.getInt("firenova.cost"), cs
-						.getString("firenova.description")));
-		str2abil.put(
-				cs.getString("firestorm.display"),
-				new FireStorm(cs.getLong("firestorm.delay"), cs
-						.getString("firestorm.display"), cs
-						.getInt("firestorm.cost"), cs
-						.getString("firestorm.description")));
-		str2abil.put(
-				cs.getString("healgroup.display"),
-				new HealGroup(cs.getLong("healgroup.delay"), cs
-						.getInt("healgroup.pow"), cs
-						.getString("healgroup.display"), cs
-						.getString("healgroup.description"), cs
-						.getInt("healgroup.cost"), cs
-						.getInt("healgroup.exp", 2)));
-		str2abil.put(
-				cs.getString("healme.display"),
-				new Healme(cs.getLong("healme.delay"), cs
-						.getString("healme.display"), cs.getInt("healme.cost"),
-						cs.getString("healme.description")));
-		str2abil.put(
-				cs.getString("healplayer.display"),
-				new HealPlayer(cs.getLong("healplayer.delay"), cs
-						.getString("healplayer.display"), cs
-						.getInt("healplayer.cost"), cs
-						.getString("healplayer.description"), cs.getInt(
-						"healplayer.exp", 5)));
+		str2abil.put(cs.getString("boost.display"),
+				new Boost(cs.getConfigurationSection("boost")));
+		str2abil.put(cs.getString("cloak.display"),
+				new Cloak(cs.getConfigurationSection("cloak")));
+		str2abil.put(cs.getString("drainlife.display"),
+				new DrainLife(cs.getConfigurationSection("drainlife")));
+		str2abil.put(cs.getString("feedme.display"),
+				new Feedme(cs.getConfigurationSection("feedme")));
+		str2abil.put(cs.getString("firearrow.display"),
+				new FireArrow(cs.getConfigurationSection("firearrow")));
+		str2abil.put(cs.getString("fireball.display"),
+				new Fireball(cs.getConfigurationSection("fireball")));
+		str2abil.put(cs.getString("firenova.display"),
+				new Firenova(cs.getConfigurationSection("firenova")));
+		str2abil.put(cs.getString("firestorm.display"),
+				new FireStorm(cs.getConfigurationSection("firestorm")));
+		str2abil.put(cs.getString("healgroup.display"),
+				new HealGroup(cs.getConfigurationSection("healgroup")));
+		str2abil.put(cs.getString("healme.display"),
+				new Healme(cs.getConfigurationSection("healme")));
+		str2abil.put(cs.getString("healplayer.display"),
+				new HealPlayer(cs.getConfigurationSection("healplayer")));
 		str2abil.put("none", new None());
-		str2abil.put(
-				cs.getString("rally.display"),
-				new Rally(cs.getLong("rally.delay"), cs
-						.getString("rally.display"), cs.getInt("rally.cost"),
-						cs.getString("rally.description")));
+		str2abil.put(cs.getString("rally.display"),
+				new Rally(cs.getConfigurationSection("rally")));
 		str2abil.put(cs.getString("sap.display"),
-				new Sap(cs.getLong("sap.delay"), cs.getString("sap.display"),
-						cs.getInt("sap.cost"), cs.getString("sap.description")));
-		str2abil.put(
-				cs.getString("strike.display"),
-				new Strike(cs.getLong("strike.delay"), cs
-						.getString("strike.display"), cs.getInt("strike.cost"),
-						cs.getString("strike.description")));
-		str2abil.put(
-				cs.getString("volley.display"),
-				new Volley(cs.getLong("volley.delay"), cs
-						.getString("volley.display"), cs.getInt("volley.cost"),
-						cs.getString("volley.description")));
+				new Sap(cs.getConfigurationSection("sap")));
+		str2abil.put(cs.getString("strike.display"),
+				new Strike(cs.getConfigurationSection("strike")));
+		str2abil.put(cs.getString("volley.display"),
+				new Volley(cs.getConfigurationSection("volley")));
 	}
 
 	public static void addCooldown(Player p, BaseAbility b) {
@@ -156,8 +105,8 @@ public class AbilityTimer {
 				if (!go)
 					p.sendMessage(ChatColor.GRAY
 							+ "Ability is not ready yet ("
-							+ (b.getDelay() - (System.currentTimeMillis() - c.time
-									.longValue())) / 1000L + "s)");
+							+ (b.getDelay() - (System.currentTimeMillis() - c.time))
+							/ 1000L + "s)");
 				return System.currentTimeMillis() - c.time.longValue() > b
 						.getDelay();
 			}
@@ -167,7 +116,7 @@ public class AbilityTimer {
 	}
 
 	public static void onAttack(Player p, EntityDamageByEntityEvent e) {
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 
 		if (b == null)
 			return;
@@ -177,7 +126,7 @@ public class AbilityTimer {
 		if ((!b.OverrideAtt(p)) && (!checkTime(p, b)))
 			return;
 
-		if (b.getCost() > RCWars.getWarPoints(p).intValue()) {
+		if (b.getCost() > RCWars.getWarPoints(p)) {
 			p.sendMessage(ChatColor.RED + "Not enough warpoints");
 			return;
 		}
@@ -185,14 +134,18 @@ public class AbilityTimer {
 		if (b.onAttack(p, e)) {
 			if (b.getCost() != 0)
 				RCWars.spendWarPoints(p, b.getCost());
-			p.sendMessage(ChatColor.GREEN + "You have used ability "
-					+ b.getDisplay());
-			addCooldown(p, b);
+//			p.sendMessage(ChatColor.GREEN + "You have used ability "
+//					+ b.getDisplay());
+//			addCooldown(p, b);
+			Bukkit.getScheduler().runTask(
+					RCWars.returnPlugin(),
+					new AbilityCooldown(p, p.getInventory().getHeldItemSlot(),
+							b.getDelay()));
 		}
 	}
 
 	public static void onDefend(Player p, EntityDamageByEntityEvent e) {
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
 		if (!RCWars.warPointSave.containsKey(p)) {
@@ -207,14 +160,18 @@ public class AbilityTimer {
 		if (b.onDefend(p, e)) {
 			if (b.getCost() != 0)
 				RCWars.spendWarPoints(p, b.getCost());
-			p.sendMessage(ChatColor.GREEN + "You have used ability "
-					+ b.getDisplay());
-			addCooldown(p, b);
+//			p.sendMessage(ChatColor.GREEN + "You have used ability "
+//					+ b.getDisplay());
+//			addCooldown(p, b);
+			Bukkit.getScheduler().runTask(
+					RCWars.returnPlugin(),
+					new AbilityCooldown(p, p.getInventory().getHeldItemSlot(),
+							b.getDelay()));
 		}
 	}
 
 	public static void onInteract(Player p, PlayerInteractEvent e) {
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
 		if (!RCWars.warPointSave.containsKey(p)) {
@@ -229,14 +186,18 @@ public class AbilityTimer {
 		if (b.onInteract(p, e)) {
 			if (b.getCost() != 0)
 				RCWars.spendWarPoints(p, b.getCost());
-			p.sendMessage(ChatColor.GREEN + "You have used ability "
-					+ b.getDisplay());
-			addCooldown(p, b);
+			// p.sendMessage(ChatColor.GREEN + "You have used ability "
+			// + b.getDisplay());
+			// addCooldown(p, b);
+			Bukkit.getScheduler().runTask(
+					RCWars.returnPlugin(),
+					new AbilityCooldown(p, p.getInventory().getHeldItemSlot(),
+							b.getDelay()));
 		}
 	}
 
 	public static void onJoin(Player p, PlayerJoinEvent e) {
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
 		if (!RCWars.warPointSave.containsKey(p)) {
@@ -250,11 +211,15 @@ public class AbilityTimer {
 		}
 		if (b.onJoin(p, e))
 			RCWars.spendWarPoints(p, b.getCost());
-		addCooldown(p, b);
+//		addCooldown(p, b);
+		Bukkit.getScheduler().runTask(
+				RCWars.returnPlugin(),
+				new AbilityCooldown(p, p.getInventory().getHeldItemSlot(),
+						b.getDelay()));
 	}
 
 	public static void onLeave(Player p, PlayerQuitEvent e) {
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
 		b.onLeave(p, e);
@@ -265,7 +230,7 @@ public class AbilityTimer {
 		if (!(e.getEntity().getShooter() instanceof Player))
 			return;
 		Player p = (Player) e.getEntity().getShooter();
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
 		if (!RCWars.warPointSave.containsKey(p)) {
@@ -280,15 +245,19 @@ public class AbilityTimer {
 		if (b.onLaunch(e)) {
 			if (b.getCost() != 0)
 				RCWars.spendWarPoints(p, b.getCost());
-			p.sendMessage(ChatColor.GREEN + "You have used ability "
-					+ b.getDisplay());
-			addCooldown(p, b);
+//			p.sendMessage(ChatColor.GREEN + "You have used ability "
+//					+ b.getDisplay());
+//			addCooldown(p, b);
+			Bukkit.getScheduler().runTask(
+					RCWars.returnPlugin(),
+					new AbilityCooldown(p, p.getInventory().getHeldItemSlot(),
+							b.getDelay()));
 		}
 	}
 
 	public static void onTeleport(PlayerTeleportEvent e) {
 		Player p = e.getPlayer();
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
 		if (!RCWars.warPointSave.containsKey(p)) {
@@ -303,11 +272,15 @@ public class AbilityTimer {
 		if (b.onTeleport(e)) {
 			if (b.getCost() != 0)
 				RCWars.spendWarPoints(p, b.getCost());
-			e.getPlayer()
-					.sendMessage(
-							ChatColor.GREEN + "You have used ability "
-									+ b.getDisplay());
-			addCooldown(p, b);
+//			e.getPlayer()
+//					.sendMessage(
+//							ChatColor.GREEN + "You have used ability "
+//									+ b.getDisplay());
+//			addCooldown(p, b);
+			Bukkit.getScheduler().runTask(
+					RCWars.returnPlugin(),
+					new AbilityCooldown(p, p.getInventory().getHeldItemSlot(),
+							b.getDelay()));
 		}
 	}
 
@@ -320,7 +293,7 @@ public class AbilityTimer {
 		Player p = (Player) proj.getShooter();
 		if (p == null)
 			return;
-		BaseAbility b = WarRank.getAbility(p);
+		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
 		if (!RCWars.warPointSave.containsKey(p)) {
@@ -335,9 +308,23 @@ public class AbilityTimer {
 		if (b.onExplode(e)) {
 			if (b.getCost() != 0)
 				RCWars.spendWarPoints(p, b.getCost());
-			p.sendMessage(ChatColor.GREEN + "You have used ability "
-					+ b.getDisplay());
-			addCooldown(p, b);
+//			p.sendMessage(ChatColor.GREEN + "You have used ability "
+//					+ b.getDisplay());
+//			addCooldown(p, b);
+			Bukkit.getScheduler().runTask(
+					RCWars.returnPlugin(),
+					new AbilityCooldown(p, p.getInventory().getHeldItemSlot(),
+							b.getDelay()));
 		}
+	}
+
+	public static BaseAbility getAbility(Player p) {
+		ItemStack item = p.getItemInHand();
+		if (item == null)
+			return null;
+		ItemMeta im = item.getItemMeta();
+		if (im == null)
+			return null;
+		return str2abil.get(im.getDisplayName());
 	}
 }

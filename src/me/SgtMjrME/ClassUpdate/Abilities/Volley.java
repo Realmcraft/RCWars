@@ -1,11 +1,17 @@
 package me.SgtMjrME.ClassUpdate.Abilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.SgtMjrME.RCWars;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 public class Volley extends BaseAbility {
@@ -13,12 +19,23 @@ public class Volley extends BaseAbility {
 	public final long delay;
 	public final int cost;
 	public final String desc;
+	public final ItemStack item;
 
-	public Volley(long long1, String string, int i, String string2) {
-		delay = long1;
-		disp = string;
-		cost = i;
-		desc = string2;
+	public Volley(ConfigurationSection cs) {
+		disp = cs.getString("display", "volley");
+		cost = cs.getInt("cost", 3);
+		delay = cs.getLong("delay", 10000);
+		desc = cs.getString("description", "(3 wp) Launches a volley of arrows");
+		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
+		String s = cs.getString("lore", "");
+		ItemMeta im = item.getItemMeta();
+		im.setDisplayName(disp);
+		if (s != null && s != ""){
+			List<String> lore = new ArrayList<String>();
+			lore.add(s);
+			im.setLore(lore);
+		}
+		item.setItemMeta(im);
 	}
 
 	public boolean onInteract(Player p, PlayerInteractEvent e) {
@@ -47,5 +64,10 @@ public class Volley extends BaseAbility {
 
 	public String getDesc() {
 		return desc;
+	}
+
+	@Override
+	public ItemStack getItem() {
+		return item;
 	}
 }

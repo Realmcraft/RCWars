@@ -1,18 +1,23 @@
 package me.SgtMjrME.ClassUpdate.Abilities;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class DrainLife extends BaseAbility {
 	public final String disp;
@@ -20,12 +25,23 @@ public class DrainLife extends BaseAbility {
 	public final int cost;
 	private final String desc;
 	private HashSet<String> fired = new HashSet<String>();
+	public final ItemStack item;
 
-	public DrainLife(long long1, String string, int i, String string2) {
-		delay = long1;
-		disp = string;
-		cost = i;
-		desc = string2;
+	public DrainLife(ConfigurationSection cs) {
+		disp = cs.getString("display", "drainlife");
+		cost = cs.getInt("cost", 2);
+		delay = cs.getLong("delay", 5000);
+		desc = cs.getString("description", "(2 WP) Drain life from your enemy");
+		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
+		String s = cs.getString("lore", "");
+		ItemMeta im = item.getItemMeta();
+		im.setDisplayName(disp);
+		if (s != null && s != ""){
+			List<String> lore = new ArrayList<String>();
+			lore.add(s);
+			im.setLore(lore);
+		}
+		item.setItemMeta(im);
 	}
 
 	public boolean onAttack(Player p, EntityDamageByEntityEvent e) {
@@ -95,5 +111,10 @@ public class DrainLife extends BaseAbility {
 
 	public String getDesc() {
 		return desc;
+	}
+
+	@Override
+	public ItemStack getItem() {
+		return item;
 	}
 }

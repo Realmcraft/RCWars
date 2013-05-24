@@ -13,9 +13,11 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.WarClass;
 import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.ClassUpdate.Abilities.AbilityTimer;
+import me.SgtMjrME.ClassUpdate.Abilities.BaseAbility;
 import me.SgtMjrME.Object.Base;
 import me.SgtMjrME.Object.Kit;
 import me.SgtMjrME.Object.Race;
@@ -49,6 +51,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -60,6 +63,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
@@ -72,7 +76,7 @@ public class PlayerListenerNew implements Listener {
 	public HashMap<String, Integer> invType = new HashMap<String, Integer>();
 
 	// Soon to be replaced
-	public static HashMap<String, Long> lastClick = new HashMap<String, Long>();
+//	public static HashMap<String, Long> lastClick = new HashMap<String, Long>();
 
 	public static HashSet<Location> headLoc = new HashSet<Location>();
 	YamlConfiguration cfg;
@@ -208,22 +212,21 @@ public class PlayerListenerNew implements Listener {
 		try {
 			if ((e.getFrom().getWorld().equals(pl.getWarWorld()))
 					&& (!e.getTo().getWorld().equals(e.getFrom().getWorld()))) {
-				Race.readInv(e.getPlayer(), true);
+				Util.readInv(e.getPlayer(), true);
 				e.getPlayer().setAllowFlight(false);
 			}
 			if ((e.getTo().getWorld().equals(pl.getWarWorld()))
 					&& (!e.getTo().getWorld().equals(e.getFrom().getWorld()))) {
-				Race.readInv(e.getPlayer(), false);
+				Util.readInv(e.getPlayer(), false);
 				final Player p = e.getPlayer();
-				Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
-					public void run() {
-						Race r = WarPlayers.getRace(p);
-						if ((r != null) && (r.isRef())) {
+				Race r = WarPlayers.getRace(p);
+				if (r != null && r.isRef())
+					Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
+						public void run() {
 							p.setAllowFlight(true);
 							p.sendMessage("Fly: " + p.getAllowFlight());
 						}
-					}
-				}, 30L);
+					}, 30L);
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -234,7 +237,7 @@ public class PlayerListenerNew implements Listener {
 	public void onLeave(PlayerQuitEvent e) {
 		invTime.remove(e.getPlayer().getName());
 		times.remove(e.getPlayer().getName());
-		lastClick.remove(e.getPlayer().getName());
+//		lastClick.remove(e.getPlayer().getName());
 		Player p = e.getPlayer();
 		if (p == null) {
 			return;
@@ -320,25 +323,25 @@ public class PlayerListenerNew implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerHit(PlayerInteractEvent e) {
-		if ((WarPlayers.isPlaying(e.getPlayer().getName()))
-				&& ((e.getAction().equals(Action.RIGHT_CLICK_AIR)) || (e
-						.getAction().equals(Action.RIGHT_CLICK_BLOCK)))) {
-			if (lastClick.containsKey(e.getPlayer().getName())) {
-				long timedif = System.currentTimeMillis()
-						- ((Long) lastClick.get(e.getPlayer().getName()))
-								.longValue();
-
-				if (timedif < 250L) {
-					WarRank wr = WarRank.getPlayer(e.getPlayer());
-					if (wr == null)
-						WarClass.defaultClass.enterClass(e.getPlayer());
-					wr.cycleAbility(e.getPlayer());
-				}
-			}
-
-			lastClick.put(e.getPlayer().getName(),
-					Long.valueOf(System.currentTimeMillis()));
-		}
+//		if ((WarPlayers.isPlaying(e.getPlayer().getName()))
+//				&& ((e.getAction().equals(Action.RIGHT_CLICK_AIR)) || (e
+//						.getAction().equals(Action.RIGHT_CLICK_BLOCK)))) {
+//			if (lastClick.containsKey(e.getPlayer().getName())) {
+//				long timedif = System.currentTimeMillis()
+//						- ((Long) lastClick.get(e.getPlayer().getName()))
+//								.longValue();
+//
+//				if (timedif < 250L) {
+//					WarRank wr = WarRank.getPlayer(e.getPlayer());
+//					if (wr == null)
+//						WarClass.defaultClass.enterClass(e.getPlayer());
+//					wr.cycleAbility(e.getPlayer());
+//				}
+//			}
+//
+//			lastClick.put(e.getPlayer().getName(),
+//					Long.valueOf(System.currentTimeMillis()));
+//		}
 
 		if (RCWars.leaving.contains(e.getPlayer().getName()))
 			RCWars.leaving.remove(e.getPlayer().getName());
@@ -501,7 +504,7 @@ public class PlayerListenerNew implements Listener {
 			if (state.getLine(1).equalsIgnoreCase("Enchantment")) {
 				ItemStack item = p.getItemInHand().clone();
 				int cost = Integer.parseInt(state.getLine(3));
-				item = addEnchant(item, state.getLine(2));
+				item = Util.addEnchant(item, state.getLine(2));
 				if (item == null) {
 					p.sendMessage(ChatColor.RED
 							+ "Enchantment will not work");
@@ -624,7 +627,7 @@ public class PlayerListenerNew implements Listener {
 				} else if ((isArmor(mat)) || (isBow(mat))
 						|| (isSword(mat)) || (isTool(mat))) {
 					item = new ItemStack(mat, num);
-					item = addEnchant(item, state.getLine(2));
+					item = Util.addEnchant(item, state.getLine(2));
 				} else {
 					item = new ItemStack(mat, num,
 							(short) Integer.parseInt(state.getLine(2)));
@@ -650,74 +653,6 @@ public class PlayerListenerNew implements Listener {
 									.toString() + " has an error");
 			return;
 		}
-	}
-
-	private ItemStack addEnchant(ItemStack item, String s) {
-		String[] split = s.split(":");
-		if (split.length != 2)
-			return null;
-
-		String value = split[0];
-		Integer force = Integer.valueOf(Integer.parseInt(split[1]));
-		try {
-			if (value.equals("WATER_WORKER"))
-				item.addEnchantment(Enchantment.WATER_WORKER, force.intValue());
-			else if (value.equals("OXYGEN"))
-				item.addEnchantment(Enchantment.OXYGEN, force.intValue());
-			else if (value.equals("DIG_SPEED"))
-				item.addEnchantment(Enchantment.DIG_SPEED, force.intValue());
-			else if (value.equals("LOOT_BLOCK"))
-				item.addEnchantment(Enchantment.LOOT_BONUS_BLOCKS,
-						force.intValue());
-			else if (value.equals("SILK_TOUCH"))
-				item.addEnchantment(Enchantment.SILK_TOUCH, force.intValue());
-			else if (value.equals("SHARP"))
-				item.addEnchantment(Enchantment.DAMAGE_ALL, force.intValue());
-			else if (value.equals("DMG_SPIDER"))
-				item.addEnchantment(Enchantment.DAMAGE_ARTHROPODS,
-						force.intValue());
-			else if (value.equals("SMITE"))
-				item.addEnchantment(Enchantment.DAMAGE_UNDEAD, force.intValue());
-			else if (value.equals("DURABILITY"))
-				item.addEnchantment(Enchantment.DURABILITY, force.intValue());
-			else if (value.equals("FIRE_ASPECT"))
-				item.addEnchantment(Enchantment.FIRE_ASPECT, force.intValue());
-			else if (value.equals("KNOCKBACK"))
-				item.addEnchantment(Enchantment.KNOCKBACK, force.intValue());
-			else if (value.equals("LOOTING"))
-				item.addEnchantment(Enchantment.LOOT_BONUS_MOBS,
-						force.intValue());
-			else if (value.equals("PROT_ALL"))
-				item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL,
-						force.intValue());
-			else if (value.equals("PROT_EXPL"))
-				item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,
-						force.intValue());
-			else if (value.equals("FEATHER_FALL"))
-				item.addEnchantment(Enchantment.PROTECTION_FALL,
-						force.intValue());
-			else if (value.equals("PROT_FIRE"))
-				item.addEnchantment(Enchantment.PROTECTION_FIRE,
-						force.intValue());
-			else if (value.equals("PROT_PROJ"))
-				item.addEnchantment(Enchantment.PROTECTION_PROJECTILE,
-						force.intValue());
-			else if (value.equals("PROT_THORNS"))
-				item.addEnchantment(Enchantment.THORNS, force.intValue());
-			else if (value.equals("ARR_DMG"))
-				item.addEnchantment(Enchantment.ARROW_DAMAGE, force.intValue());
-			else if (value.equals("FIRE_ARROW"))
-				item.addEnchantment(Enchantment.ARROW_FIRE, force.intValue());
-			else if (value.equals("INF_ARROW"))
-				item.addEnchantment(Enchantment.ARROW_INFINITE,
-						force.intValue());
-			else if (value.equals("ARR_KNOCK"))
-				item.addEnchantment(Enchantment.ARROW_KNOCKBACK,
-						force.intValue());
-		} catch (Exception e) {
-			return null;
-		}
-		return item;
 	}
 
 	private ItemStack addItemSGT(PlayerInventory inventory, ItemStack item) {
@@ -819,7 +754,7 @@ public class PlayerListenerNew implements Listener {
 						.getInventory().getContents());
 			else if (((Integer) invType.get(modifyInv.get(e.getPlayer())))
 					.intValue() == 1)
-				Race.savePlayer((String) modifyInv.get(e.getPlayer()),
+				Util.savePlayer((String) modifyInv.get(e.getPlayer()),
 						"WarItems", e.getInventory().getContents());
 			invType.remove(modifyInv.get(e.getPlayer()));
 			modifyInv.remove(e.getPlayer());
@@ -1018,5 +953,25 @@ public class PlayerListenerNew implements Listener {
 		Race r = WarPlayers.getRace(e.getPlayer());
 		if ((r != null) && (r.isRef()))
 			e.setCancelled(true);
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onItemChange(PlayerItemHeldEvent e){
+		Player p = e.getPlayer();
+		Race r = WarPlayers.getRace(p);
+		if (r == null) return;
+		ItemStack item = e.getPlayer().getInventory().getItem(e.getPreviousSlot());
+		if (item == null) return;
+		ItemMeta im = item.getItemMeta();
+		if (im == null) return;
+		if (im.getDisplayName() == null) return;
+		BaseAbility b = AbilityTimer.str2abil.get(im.getDisplayName());
+		if (b != null)
+			b.clearAffects(p);
+		else{
+			b = AbilityTimer.str2abil.get(im.getDisplayName().substring(1, im.getDisplayName().length() - 1));
+			if (b != null)
+				b.clearAffects(p);
+		}
 	}
 }

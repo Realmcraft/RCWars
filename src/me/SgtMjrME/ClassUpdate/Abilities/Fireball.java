@@ -1,10 +1,16 @@
 package me.SgtMjrME.ClassUpdate.Abilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 public class Fireball extends BaseAbility {
@@ -12,18 +18,31 @@ public class Fireball extends BaseAbility {
 	public final long delay;
 	public final int cost;
 	public final String desc;
+	public final ItemStack item;
 
-	public Fireball(long long1, String string, int i, String string2) {
-		delay = long1;
-		disp = string;
-		cost = i;
-		desc = string2;
+	public Fireball(ConfigurationSection cs) {
+		disp = cs.getString("display", "fireball");
+		cost = cs.getInt("cost", 0);
+		delay = cs.getLong("delay", 5000);
+		desc = cs.getString("description", "Launches a fireball");
+		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
+		String s = cs.getString("lore", "");
+		ItemMeta im = item.getItemMeta();
+		im.setDisplayName(disp);
+		if (s != null && s != ""){
+			List<String> lore = new ArrayList<String>();
+			lore.add(s);
+			im.setLore(lore);
+		}
+		item.setItemMeta(im);
 	}
+
 
 	public boolean onAttack(Player p, EntityDamageByEntityEvent e) {
 		return false;
 	}
 
+	@Override
 	public boolean OverrideAtt(Player p) {
 		return true;
 	}
@@ -35,7 +54,13 @@ public class Fireball extends BaseAbility {
 		return false;
 	}
 
+	@Override
 	public boolean OverrideDef(Player p) {
+		return true;
+	}
+	
+	@Override
+	public boolean OverrideTnt(Player p){
 		return true;
 	}
 
@@ -67,5 +92,11 @@ public class Fireball extends BaseAbility {
 
 	public String getDesc() {
 		return desc;
+	}
+
+
+	@Override
+	public ItemStack getItem() {
+		return item;
 	}
 }

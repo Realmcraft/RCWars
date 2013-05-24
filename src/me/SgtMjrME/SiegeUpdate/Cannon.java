@@ -43,7 +43,7 @@ public class Cannon {
 		player = null;
 		velocity = 4.0D;
 		launch = null;
-		cannonCost = 25;
+		cannonCost = 1;
 		cannons.put(this, null);
 	}
 
@@ -176,7 +176,7 @@ public class Cannon {
 				int by = temp.getInt("by", 0);
 				int bz = temp.getInt("bz", 0);
 				String name = temp.getString("name", "");
-				int cost = temp.getInt("cost", 25);
+				int cost = temp.getInt("cost", 1);
 				new Cannon(new Location(w, x, y, z, yaw, pitch), new Location(
 						w, lx, ly, lz), name, 4.0D, cost, new Location(w, bx,
 						by, bz));

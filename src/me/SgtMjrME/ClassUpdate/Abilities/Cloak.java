@@ -2,6 +2,7 @@ package me.SgtMjrME.ClassUpdate.Abilities;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Object.Race;
@@ -9,12 +10,15 @@ import me.SgtMjrME.Object.WarPlayers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class Cloak extends BaseAbility {
 	public static ArrayList<String> cloaked = new ArrayList<String>();
@@ -22,12 +26,24 @@ public class Cloak extends BaseAbility {
 	public final long delay;
 	public final int cost;
 	public final String desc;
+	public final ItemStack item;
 
-	public Cloak(long long1, String string, int i, String string2) {
-		delay = long1;
-		disp = string;
-		cost = i;
-		desc = string2;
+	public Cloak(ConfigurationSection cs) {
+		disp = cs.getString("display", "cloak");
+		cost = cs.getInt("cost", 3);
+		delay = cs.getLong("delay", 60000);
+		desc = cs.getString("description", "(3 WP) Gain a temp invisibility. Lost when you attack");
+		item = new ItemStack(cs.getInt("item"), 1,
+				(short) cs.getInt("data"));
+		String s = cs.getString("lore", "");
+		ItemMeta im = item.getItemMeta();
+		im.setDisplayName(disp);
+		if (s != null && s != ""){
+			List<String> lore = new ArrayList<String>();
+			lore.add(s);
+			im.setLore(lore);
+		}
+		item.setItemMeta(im);
 	}
 
 	public boolean onAttack(Player p, EntityDamageByEntityEvent e) {
@@ -189,5 +205,10 @@ public class Cloak extends BaseAbility {
 
 	public String getDesc() {
 		return desc;
+	}
+
+	@Override
+	public ItemStack getItem() {
+		return item;
 	}
 }

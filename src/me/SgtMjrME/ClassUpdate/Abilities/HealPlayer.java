@@ -1,5 +1,6 @@
 package me.SgtMjrME.ClassUpdate.Abilities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.SgtMjrME.Object.Race;
@@ -8,9 +9,12 @@ import me.SgtMjrME.Object.WarPlayers;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -22,13 +26,25 @@ public class HealPlayer extends BaseAbility {
 	public final int cost;
 	public final String desc;
 	public final int exp;
+	public final ItemStack item;
 
-	public HealPlayer(long long1, String string, int i, String string2, int e) {
-		delay = long1;
-		disp = string;
-		cost = i;
-		desc = string2;
-		exp = e;
+	public HealPlayer(ConfigurationSection cs) {
+		exp = cs.getInt("exp");
+		
+		disp = cs.getString("display", "healplayer");
+		cost = cs.getInt("cost", 0);
+		delay = cs.getLong("delay", 5000);
+		desc = cs.getString("description", "Heals your targeted player");
+		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
+		String s = cs.getString("lore", "");
+		ItemMeta im = item.getItemMeta();
+		im.setDisplayName(disp);
+		if (s != null && s != ""){
+			List<String> lore = new ArrayList<String>();
+			lore.add(s);
+			im.setLore(lore);
+		}
+		item.setItemMeta(im);
 	}
 
 	public boolean onInteract(Player p, PlayerInteractEvent e) {
@@ -88,5 +104,10 @@ public class HealPlayer extends BaseAbility {
 
 	public String getDesc() {
 		return desc;
+	}
+
+	@Override
+	public ItemStack getItem() {
+		return item;
 	}
 }

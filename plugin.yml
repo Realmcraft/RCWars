@@ -1,6 +1,6 @@
 name: RCWars
 main: me.SgtMjrME.RCWars
-version: 2.0.5
+version: 2.0.7
 description: IT'S FRICKIN WARS V.2.0!!! 
 softdepend: [Essentials]
 depends: [TagAPI, Vault]
@@ -85,6 +85,8 @@ commands:
     boost:
     removeability:
     setheads:
+    purchase:
+        aliases: p
 permissions:
     rcwars.*:
         children:

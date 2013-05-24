@@ -1,27 +1,30 @@
 package me.SgtMjrME.Object;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class Kit {
 	private String name;
 	private ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+	private int cost;
 	public static HashMap<String, Kit> kits = new HashMap<String, Kit>();
 
 	public static void loadKits(RCWars pl) {
 		File f = new File(pl.getDataFolder().getAbsolutePath() + "/Kits");
 		String[] files = f.list();
 		for (String s : files) {
-			if (s.endsWith(".txt")) {
+			if (s.endsWith(".yml")) {
 				f = new File(pl.getDataFolder().getAbsolutePath() + "/Kits/"
 						+ s);
 				try {
@@ -33,23 +36,37 @@ public class Kit {
 		}
 	}
 
-	private int ti(String s) {
-		return Integer.parseInt(s);
-	}
-
-	Kit(File f) throws IOException {
-		name = f.getName().substring(0, f.getName().length() - 4);
-		BufferedReader in = new BufferedReader(new FileReader(f));
-		String input;
-		while ((input = in.readLine()) != null) {
-			String[] split = input.split(" ");
-			int typeid = ti(split[0]);
-			int amt = ti(split[1]);
-			short dmg = (short) ti(split[2]);
-			ItemStack i = new ItemStack(typeid, amt, dmg);
-			items.add(i);
+	Kit(File f) throws IOException, InvalidConfigurationException {
+		YamlConfiguration cfg = new YamlConfiguration();
+		cfg.load(f);
+		name = cfg.getString("name");
+		cost = cfg.getInt("cost");
+		for(String cs : cfg.getConfigurationSection("items").getKeys(false)){
+			ItemStack it = new ItemStack(cfg.getInt("items." + cs + ".itemid"),
+					cfg.getInt("items." + cs + ".itemqty"),
+					(short) cfg.getInt("items." + cs + ".itemdat"));
+			String s = cfg.getString("items." + cs + ".lore");
+			if (s != null && s != ""){
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(s);
+				ItemMeta itmeta = it.getItemMeta();
+				itmeta.setLore(lore);
+				it.setItemMeta(itmeta);
+			}
+			s = cfg.getString("items." + cs + ".name");
+			if (s != null && s != ""){
+				ItemMeta itmeta = it.getItemMeta();
+				itmeta.setDisplayName(s);
+				it.setItemMeta(itmeta);
+			}
+			s = cfg.getString("items." + cs + ".enchantments");
+			if (s != null && s != ""){
+				for(String ench : s.split(",")){
+					Util.addEnchant(it, ench);
+				}
+			}
+			items.add(it);
 		}
-		in.close();
 	}
 
 	public String getName() {
@@ -58,7 +75,12 @@ public class Kit {
 
 	public void addKit(Player p) {
 		for (ItemStack item : items)
-			p.getInventory().addItem(new ItemStack[] { item.clone() });
+			p.getInventory().addItem(item);
+	}
+	
+	public void addKitCost(Player p){
+		if (RCWars.spendWarPoints(p, cost))
+			addKit(p);
 	}
 
 	public static Kit getKit(String name) {
@@ -71,8 +93,8 @@ public class Kit {
 		for (Kit k : kits.values()) {
 			p.sendMessage(k.getName());
 			for (ItemStack item : k.items) {
-				p.sendMessage(item.getType().toString() + " amt "
-						+ item.getAmount());
+				p.sendMessage(item.toString() + item.getEnchantments().toString());
+				if (item.getItemMeta().hasLore()) p.sendMessage(item.getItemMeta().getLore().toString());
 			}
 			p.sendMessage("~~~~~~~~~~~~~~~~~~~~~~~~");
 		}

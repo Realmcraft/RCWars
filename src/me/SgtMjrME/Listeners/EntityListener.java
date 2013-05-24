@@ -68,7 +68,7 @@ public class EntityListener
         damageep = (Player)((Projectile)e.getEntity()).getShooter();
         BaseAbility b = null;
         if (damageep != null)
-          b = WarRank.getAbility(damageep);
+          b = AbilityTimer.getAbility(damageep);
         if (b != null) b.onDefend(damageep, e);
         //Not sure what this was supposed to do, but that's what it decompiled to
 //        if (!e.isCancelled())
@@ -95,7 +95,6 @@ public class EntityListener
       damagerp = (Player)((Projectile)e.getDamager()).getShooter();
       if (((e.getDamager() instanceof Explosive)) && 
         (((Explosive)e.getDamager()).isIncendiary())) setFire = true;
-
     }
     else if ((e.getDamager() instanceof TNTPrimed)) {
       List<MetadataValue> mdvlist = ((TNTPrimed)e.getDamager()).getMetadata("shooter");

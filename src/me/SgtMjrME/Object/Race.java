@@ -1,21 +1,13 @@
 package me.SgtMjrME.Object;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.SgtMjrME.RCWars;
-import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.WarClass;
-import me.SgtMjrME.Listeners.PlayerListenerNew;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,11 +16,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.material.MaterialData;
 
 public class Race {
@@ -295,140 +284,6 @@ public class Race {
 		return 9001;
 	}
 
-	public static void savePlayer(String p, String subDir, ItemStack[] items) {
-		try {
-			String directory = RCWars.returnPlugin().getDataFolder()
-					.getAbsolutePath()
-					+ "/" + subDir + "/";
-			if (p == null)
-				return;
-			FileWriter fstream = new FileWriter(directory + p.toLowerCase()
-					+ ".txt");
-			BufferedWriter out = new BufferedWriter(fstream);
-			if (items == null) {
-				for (int i = 0; i < 40; i++)
-					out.write("0\n");
-				out.close();
-				fstream.close();
-				return;
-			}
-			for (ItemStack tempItem : items) {
-				if (tempItem == null) {
-					out.write("0");
-					out.newLine();
-				} else {
-					out.write(tempItem.getTypeId() + " " + tempItem.getAmount()
-							+ " " + tempItem.getDurability() + " "
-							+ tempItem.getData().getData());
-					for (Enchantment e : tempItem.getEnchantments().keySet()) {
-						out.write(" " + e.getId() + ' '
-								+ tempItem.getEnchantmentLevel(e));
-					}
-
-					if ((tempItem.getItemMeta() instanceof EnchantmentStorageMeta)) {
-						for (Enchantment tempEnchant : ((EnchantmentStorageMeta) tempItem
-								.getItemMeta()).getStoredEnchants().keySet())
-							out.write(" "
-									+ tempEnchant.getId()
-									+ ' '
-									+ ((EnchantmentStorageMeta) tempItem
-											.getItemMeta())
-											.getStoredEnchantLevel(tempEnchant));
-					}
-					out.newLine();
-				}
-			}
-			out.close();
-			fstream.close();
-		} catch (Exception e1) {
-			if (p == null)
-				return;
-			Player player = Bukkit.getServer().getPlayer(p);
-			if (player == null)
-				return;
-			player.sendMessage(ChatColor.RED
-					+ "Error: Please tell a mod and refrain from re-entering wars (savePlayer)");
-			System.err.println("Error: " + e1.getMessage());
-		}
-	}
-
-	public static <T> T[] concat(T[] first, T[] second) {
-		T[] result = Arrays.copyOf(first, first.length + second.length);
-		System.arraycopy(second, 0, result, first.length, second.length);
-		return result;
-	}
-
-	public static boolean readInv(Player p, boolean inWars) throws Exception {
-		int count = 0;
-		try {
-			if (p == null)
-				return false;
-			ItemStack[] allItemsBack = (ItemStack[]) p.getInventory()
-					.getContents().clone();
-			allItemsBack = (ItemStack[]) concat(allItemsBack, (ItemStack[]) p
-					.getInventory().getArmorContents().clone());
-			if (!inWars)
-				savePlayer(p.getName(), "Backup", allItemsBack);
-			String directory = RCWars.returnPlugin().getDataFolder()
-					.getAbsolutePath();
-			if (inWars)
-				directory = directory + "/Items/";
-			else
-				directory = directory + "/WarItems/";
-			File f = new File(directory + p.getName().toLowerCase() + ".txt");
-			if (!f.exists()) {
-				p.sendMessage("No previous war data found");
-				if (!inWars)
-					savePlayer(
-							p.getName(),
-							"Items",
-							(ItemStack[]) concat(
-									p.getInventory().getContents(), p
-											.getInventory().getArmorContents()));
-				else
-					savePlayer(
-							p.getName(),
-							"WarItems",
-							(ItemStack[]) concat(
-									p.getInventory().getContents(), p
-											.getInventory().getArmorContents()));
-				p.getInventory().clear();
-				for (int i = 0; i < p.getInventory().getArmorContents().length; i++) {
-					p.getInventory().setArmorContents(null);
-				}
-				return false;
-			}
-			FileReader in = new FileReader(f);
-			BufferedReader data = new BufferedReader(in);
-			String s;
-			while (((s = data.readLine()) != null) && (count < 40)) {
-				ItemStack setItem = Util.str2Item(s);
-				if (count < 36)
-					p.getInventory().setItem(count, setItem);
-				else if (count == 39)
-					p.getInventory().setHelmet(setItem);
-				else if (count == 38)
-					p.getInventory().setChestplate(setItem);
-				else if (count == 37)
-					p.getInventory().setLeggings(setItem);
-				else
-					p.getInventory().setBoots(setItem);
-				count++;
-			}
-			data.close();
-			in.close();
-			if (!inWars)
-				savePlayer(p.getName(), "Items", allItemsBack);
-			else
-				savePlayer(p.getName(), "WarItems", allItemsBack);
-			return true;
-		} catch (Exception e) {
-			Bukkit.getLogger().info(
-					"Error saving player " + p.getName() + " at " + count);
-		}
-		return false;
-	}
-
 	public void sendMessage(String mes) {
 		Iterator<String> players = WarPlayers.listPlayers();
 		while (players.hasNext()) {
@@ -449,7 +304,6 @@ public class Race {
 
 	public void removePlayer(String name) {
 		p2c.remove(name);
-		PlayerListenerNew.lastClick.remove(name);
 	}
 
 	public int getPlayersInRace() {

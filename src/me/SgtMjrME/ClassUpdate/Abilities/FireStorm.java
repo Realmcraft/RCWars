@@ -1,13 +1,20 @@
 package me.SgtMjrME.ClassUpdate.Abilities;
 
 import com.google.common.collect.Sets;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 public class FireStorm extends BaseAbility {
@@ -17,12 +24,23 @@ public class FireStorm extends BaseAbility {
 	public final long delay;
 	public final int cost;
 	public final String desc;
+	public final ItemStack item;
 
-	public FireStorm(long long1, String string, int i, String string2) {
-		delay = long1;
-		disp = string;
-		cost = i;
-		desc = string2;
+	public FireStorm(ConfigurationSection cs) {
+		disp = cs.getString("display", "firestorm");
+		cost = cs.getInt("cost", 3);
+		delay = cs.getLong("delay", 30000);
+		desc = cs.getString("description", "(3 WP) Launches a firestorm");
+		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
+		String s = cs.getString("lore", "");
+		ItemMeta im = item.getItemMeta();
+		im.setDisplayName(disp);
+		if (s != null && s != ""){
+			List<String> lore = new ArrayList<String>();
+			lore.add(s);
+			im.setLore(lore);
+		}
+		item.setItemMeta(im);
 	}
 
 	public boolean onDefend(Player p, EntityDamageByEntityEvent e) {
@@ -33,6 +51,10 @@ public class FireStorm extends BaseAbility {
 	}
 
 	public boolean OverrideDef(Player p) {
+		return true;
+	}
+	
+	public boolean OverrideTnt(Player p){
 		return true;
 	}
 
@@ -79,5 +101,10 @@ public class FireStorm extends BaseAbility {
 
 	public String getDesc() {
 		return desc;
+	}
+
+	@Override
+	public ItemStack getItem() {
+		return item;
 	}
 }

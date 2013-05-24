@@ -5,7 +5,9 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.SgtMjrME.RCWars;
-import me.SgtMjrME.ClassUpdate.Abilities.None;
+//import me.SgtMjrME.ClassUpdate.Abilities.None;
+import me.SgtMjrME.Object.Race;
+import me.SgtMjrME.Object.WarPlayers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -95,6 +97,15 @@ public class WarClass {
 					+ "Do not have permission to join this class");
 			return false;
 		}
+		Race r = WarPlayers.getRace(p);
+		if (r == null){
+			p.sendMessage(ChatColor.RED + "Not in a race");
+			return false;
+		}
+		if (!r.inSpawn(p) && !r.isRef()){
+			p.sendMessage(ChatColor.RED + "Not allowed to switch classes unless you are in your spawn");
+			return false;
+		}
 		for (int i = ranks.size() - 1; i > 0; i--) {
 			if (p.hasPermission(((WarRank) ranks.get(i)).defaultStart)) {
 				final int ranknum = i;
@@ -106,8 +117,8 @@ public class WarClass {
 								p.setLevel(((WarRank) ranks.get(ranknum)).levelRequirement);
 							}
 						}, 1L);
-				WarRank.removeAbility(p);
-				WarRank.setAbility(p.getName(), new None());
+//				WarRank.removeAbility(p);
+//				WarRank.setAbility(p.getName(), new None());
 				return true;
 			}
 		}
@@ -120,8 +131,8 @@ public class WarClass {
 					}
 				}, 1L);
 
-		WarRank.removeAbility(p);
-		WarRank.setAbility(p.getName(), new None());
+//		WarRank.removeAbility(p);
+//		WarRank.setAbility(p.getName(), new None());
 		return true;
 	}
 

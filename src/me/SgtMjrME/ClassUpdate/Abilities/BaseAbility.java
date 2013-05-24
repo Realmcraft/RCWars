@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 
 public abstract class BaseAbility {
 	public boolean onAttack(Player p, EntityDamageByEntityEvent e) {
@@ -51,6 +52,8 @@ public abstract class BaseAbility {
 	public abstract int getCost();
 
 	public abstract String getDesc();
+	
+	public abstract ItemStack getItem();
 
 	public boolean OverrideAtt(Player p) {
 		return false;

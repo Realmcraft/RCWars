@@ -83,7 +83,7 @@ public class RCWars extends JavaPlugin {
 	public static Player headmodifier;
 	public static HashSet<String> leaving = new HashSet<String>();
 
-	public static HashSet<Integer> blockedItems = new HashSet<Integer>();
+	public static HashSet<Integer> allowedItems = new HashSet<Integer>();
 
 	public static HashMap<Race, Rally> rallyDat = new HashMap<Race, Rally>();
 
@@ -129,10 +129,16 @@ public class RCWars extends JavaPlugin {
 		killexp = config.getInt("exp.kill", 10);
 		basecapexp = config.getInt("exp.basecap", 20);
 		baserepexp = config.getInt("exp.baserepair", 10);
+		try{
 		mysql = new mysqlLink(config.getString("address", "localhost"),
 				config.getString("port", "3306"), config.getString("username",
 						"root"), config.getString("password", ""),
 				config.getString("dbname", "rcwars"));
+		}
+		catch(Exception e){
+			log.warning("Could not load mysql, continuing");
+			mysql = null;
+		}
 		if (temp == null)
 			world = null;
 		else
@@ -156,9 +162,9 @@ public class RCWars extends JavaPlugin {
 				dropItems.add(Integer.parseInt(s));
 			} catch (Exception localException) {
 			}
-		String[] block = config.getString("blockedItems", "").split(",");
+		String[] block = config.getString("allowedItems", "").split(",");
 		for (String bl : block) {
-			blockedItems.add(Integer.parseInt(bl));
+			allowedItems.add(Integer.parseInt(bl));
 		}
 
 		loadRaces();
@@ -218,21 +224,38 @@ public class RCWars extends JavaPlugin {
 				swordid = 283;
 			}
 			if (name != null) {
-				File f = new File(temp + name + ".txt");
+				File f = new File(temp + name + ".yml");
 				try {
 					f.createNewFile();
-					BufferedWriter out = new BufferedWriter(new FileWriter(f));
-					for (int j = 0; j < 3; j++) {
-						out.write(299 + i * 4 + j + " 1 0");
-						out.newLine();
+					YamlConfiguration config = new YamlConfiguration();
+					config.load(f);
+					config.set("name", name);
+					config.set("cost", 0);
+					for (int j = 0; j < 3; j++){
+						config.set("items.it" + j + ".itemid", 299 + i * 4 + j);
+						config.set("items.it" + j + ".itemdat", 0);
+						config.set("items.it" + j + ".itemqty", 1);
+						config.set("items.it" + j + ".enchantments", "");
+						config.set("items.it" + j + ".lore", "");
 					}
-					out.write(swordid + " 1 0");
-					out.newLine();
-					out.write("261 1 0");
-					out.newLine();
-					out.write("262 16 0");
-					out.close();
+					config.set("items.it" + 3 + ".itemid", swordid);
+					config.set("items.it" + 3 + ".itemdat", 0);
+					config.set("items.it" + 3 + ".itemqty", 1);
+					config.set("items.it" + 3 + ".enchantments", "SHARP:1,KNOCKBACK:1");
+					config.set("items.it" + 3 + ".lore", "DIS SPECIAL SWORD");
+					config.set("items.it" + 4 + ".itemid", 261);
+					config.set("items.it" + 4 + ".itemdat", 0);
+					config.set("items.it" + 4 + ".itemqty", 1);
+					config.set("items.it" + 4 + ".enchantments", "");
+					config.set("items.it" + 4 + ".lore", "");
+					config.set("items.it" + 5 + ".itemid", 262);
+					config.set("items.it" + 5 + ".itemdat", 0);
+					config.set("items.it" + 5 + ".itemqty", 16);
+					config.set("items.it" + 5 + ".enchantments", "");
+					config.set("items.it" + 5 + ".lore", "");
+					config.save(f);
 				} catch (Exception localException) {
+					localException.printStackTrace();
 				}
 			}
 		}
@@ -260,15 +283,16 @@ public class RCWars extends JavaPlugin {
 				&& (((Integer) warPointSave.get(player)).intValue() + warPoints > warPointMax)) {
 			player.sendMessage("You have hit the max of " + warPointMax);
 			warPointSave.put(player, warPointMax);
-			mysql.updatePlayer(player, "wp", warPoints);
+			if (mysql != null)
+				mysql.updatePlayer(player, "wp", warPoints);
 			return;
 		}
 		if (!warPointSave.containsKey(player)) {
 			warPointSave.put(player, warPoints);
-			mysql.updatePlayer(player, "wp", warPoints);
+			if (mysql != null) mysql.updatePlayer(player, "wp", warPoints);
 		} else {
 			warPointSave.put(player, warPointSave.get(player) + warPoints);
-			mysql.updatePlayer(player, "wp", warPoints);
+			if (mysql != null) mysql.updatePlayer(player, "wp", warPoints);
 		}
 		player.sendMessage(ChatColor.GREEN + "You have been given " + warPoints
 				+ " warpoints");
@@ -299,7 +323,7 @@ public class RCWars extends JavaPlugin {
 
 	public void saveWPnoRemove(Player p) {
 		if (warPointSave.containsKey(p)) {
-			int points = ((Integer) warPointSave.get(p)).intValue();
+			int points = warPointSave.get(p);
 			try {
 				File f = new File(getDataFolder() + "/WarPoints");
 				if (!f.exists())
@@ -307,7 +331,7 @@ public class RCWars extends JavaPlugin {
 				BufferedWriter b = new BufferedWriter(
 						new FileWriter(new File(getDataFolder() + "/WarPoints/"
 								+ p.getName() + ".txt")));
-				b.write(points);
+				b.write("" + points);
 				b.close();
 			} catch (IOException e) {
 				sendLogs("Could not save player");
@@ -333,7 +357,7 @@ public class RCWars extends JavaPlugin {
 
 			if (shouldDie(p)) {
 				p.setHealth(0);
-				mysql.updatePlayer(p, "death");
+				if (mysql != null) mysql.updatePlayer(p, "death");
 			}
 
 			WarPlayers.remove(p, "Disconnect");
@@ -353,7 +377,7 @@ public class RCWars extends JavaPlugin {
 				|| (isRunning.equals(state.TOO_FEW_PLAYERS)))
 			endGame();
 		Kit.kits.clear();
-		mysql.close();
+		if (mysql != null) mysql.close();
 	}
 
 	private void loadRaces() {
@@ -388,9 +412,13 @@ public class RCWars extends JavaPlugin {
 				Siege.repairAll();
 				return true;
 			} else if (commandLabel.equalsIgnoreCase("testWarCommand")) {
-				mysql.updatePlayer(getServer().getPlayer(args[0]), "kill");
+				if (mysql != null) mysql.updatePlayer(getServer().getPlayer(args[0]), "kill");
 				return true;
 			} else if (commandLabel.equalsIgnoreCase("resetwarstats")) {
+				if (mysql == null){
+					sender.sendMessage("MySQL not loaded");
+					return false;
+				}
 				mysql.dropTable();
 				mysql.createTable();
 				log.info("[RCWars] New table created, stats reset");
@@ -536,6 +564,22 @@ public class RCWars extends JavaPlugin {
 				}
 				sender.sendMessage(out);
 			}
+		} else if (cmd.getLabel().equalsIgnoreCase("purchase")){
+			Race r = WarPlayers.getRace(p);
+			if (r == null){
+				p.sendMessage(ChatColor.RED + "Not currently in wars");
+				return false;
+			}
+			if (args.length < 1){
+				p.sendMessage(ChatColor.RED + "No kit requested");
+				return false;
+			}
+			Kit k = Kit.getKit(args[0]);
+			if (k == null){
+				p.sendMessage("Not a valid kit");
+				return false;
+			}
+			k.addKitCost(p);
 		} else if (commandLabel.equalsIgnoreCase("wp")) {
 			if (warPointSave.containsKey(p)) {
 				p.sendMessage("You have " + warPointSave.get(p)
@@ -563,6 +607,10 @@ public class RCWars extends JavaPlugin {
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("warstats"))
 						&& (p.hasPermission("rcwars.stats"))) {
+			if (mysql == null){
+				p.sendMessage("MySQL not loaded");
+				return false;
+			}
 			int[] out = mysql.getStats(p.getName());
 			if (out == null) {
 				p.sendMessage(ChatColor.RED
@@ -626,6 +674,15 @@ public class RCWars extends JavaPlugin {
 				p.sendMessage("Class does not exist");
 				return true;
 			}
+			Race r = WarPlayers.getRace(p);
+			if (r == null){
+				p.sendMessage(ChatColor.RED + "Not in a race");
+				return false;
+			}
+//			if (!r.inSpawn(p)){
+//				p.sendMessage(ChatColor.RED + "Not allowed to switch classes unless you are in your spawn");
+//				return false;
+//			}
 			if (w.enterClass(p)) {
 				return true;
 			}
@@ -1397,9 +1454,11 @@ public class RCWars extends JavaPlugin {
 				player.sendMessage(s);
 			}
 		}
-		returnPlugin().mysql.updatePlayer(damageep, "death");
-		if (damagerp != null)
-			returnPlugin().mysql.updatePlayer(damagerp, "kill");
+		if (returnPlugin().mysql != null){
+			returnPlugin().mysql.updatePlayer(damageep, "death");
+			if (damagerp != null)
+				returnPlugin().mysql.updatePlayer(damagerp, "kill");
+		}
 	}
 
 	private void cancelMyTasks() {
@@ -1592,6 +1651,7 @@ public class RCWars extends JavaPlugin {
 	}
 
 	public void sendToMySQL(Player p, String d, int place) {
+		if (mysql == null) return;
 		if (place == 0)
 			mysql.updatePlayer(p, d);
 	}
