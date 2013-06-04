@@ -14,10 +14,7 @@ import me.SgtMjrME.SiegeUpdate.TntMeta;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Explosive;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -28,11 +25,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -193,35 +187,6 @@ public class EntityListener
           if (damagee.getName().equals(damager.getName()))
             e.setIntensity(temp, 0.0D);  } 
       }
-    }
-  }
-
-  @EventHandler(priority=EventPriority.MONITOR)
-  public void ondeath(PlayerDeathEvent e) { Player dead = e.getEntity();
-    Player killer = e.getEntity().getKiller();
-    if ((killer == null) && 
-      (explDmg.containsKey(dead.getName()))) {
-      killer = Bukkit.getPlayer((String)explDmg.remove(dead.getName()));
-    }
-
-    ExperienceOrb o = (ExperienceOrb)dead.getWorld().spawnEntity(dead.getLocation(), EntityType.EXPERIENCE_ORB);
-    o.setExperience(e.getDroppedExp());
-    e.setDroppedExp(0);
-
-    if (WarPlayers.isPlaying(dead.getName())) {
-      Iterator<ItemStack> i = e.getDrops().iterator();
-      while (i.hasNext()) {
-        ItemStack itemStack = (ItemStack)i.next();
-        if (!RCWars.dropItems.contains(Integer.valueOf(itemStack.getTypeId())))
-          i.remove();
-      }
-      ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
-      is.setDurability((short)3);
-      SkullMeta meta = (SkullMeta)is.getItemMeta();
-      meta.setOwner(dead.getName());
-      is.setItemMeta(meta);
-      e.getDrops().add(is);
-      RCWars.logKill(dead, killer);
     }
   }
 

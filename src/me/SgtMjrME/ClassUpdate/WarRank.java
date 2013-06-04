@@ -8,7 +8,6 @@ import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.Abilities.AbilityTimer;
 import me.SgtMjrME.ClassUpdate.Abilities.BaseAbility;
-import me.SgtMjrME.ClassUpdate.Abilities.None;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 import me.SgtMjrME.Tasks.SetHelmetColor;
@@ -98,7 +97,7 @@ public class WarRank {
 			if (b != null)
 				commands.add(b);
 		}
-		commands.add(new None());
+//		commands.add(new None());
 		}
 		catch(Exception e){
 			Bukkit.getLogger().warning("RCWars: Problem reading commands " + cs.toString());

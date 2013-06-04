@@ -7,9 +7,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import me.SgtMjrME.RCWars;
@@ -37,12 +39,15 @@ import org.bukkit.block.Skull;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -74,6 +79,8 @@ public class PlayerListenerNew implements Listener {
 	public HashMap<Player, String> modifyInv = new HashMap<Player, String>();
 
 	public HashMap<String, Integer> invType = new HashMap<String, Integer>();
+	
+	public HashMap<String, ItemStack[]> itemsReturn = new HashMap<String, ItemStack[]>();
 
 	// Soon to be replaced
 //	public static HashMap<String, Long> lastClick = new HashMap<String, Long>();
@@ -284,25 +291,67 @@ public class PlayerListenerNew implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerRespawn(PlayerRespawnEvent e) {
+	public void onPlayerRespawn(final PlayerRespawnEvent e) {
 		Race r;
 		if ((r = WarPlayers.getRace(e.getPlayer())) == null) {
 			return;
 		}
 		if (r.getSpawn() != null)
 			e.setRespawnLocation(r.getSpawn());
-		e.getPlayer().getInventory().clear();
-		e.getPlayer().getInventory().setArmorContents(null);
+//		removeItems(e.getPlayer());
+//		e.getPlayer().getInventory().setArmorContents(null);
+		try{
 		if (pl.kitOnSpawn != null) {
 			pl.kitOnSpawn.addKit(e.getPlayer());
 		}
 		e.getPlayer().getInventory()
 				.setHelmet(new ItemStack(35, 1, r.getColor().byteValue()));
-		WarRank wr = WarRank.getPlayer(e.getPlayer());
+		final WarRank wr = WarRank.getPlayer(e.getPlayer());
 		if (wr == null)
-			WarClass.defaultClass.enterClass(e.getPlayer());
-		else
-			wr.c.resetRank(e.getPlayer());
+			Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+
+				@Override
+				public void run() {
+					if (itemsReturn.containsKey(e.getPlayer().getName())){
+						System.out.println("returning items");
+						ItemStack[] returning = itemsReturn.get(e.getPlayer().getName());
+						for(int i = 0; i < 9; i++){
+							e.getPlayer().getInventory().setItem(8 - i, returning[i]);
+						}
+					}
+					WarClass.defaultClass.enterClass(e.getPlayer());
+				}
+				
+			}, 10L);
+		else{
+			Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+
+				@Override
+				public void run() {
+					if (itemsReturn.containsKey(e.getPlayer().getName())){
+						System.out.println("returning items");
+						ItemStack[] returning = itemsReturn.get(e.getPlayer().getName());
+						for(int i = 0; i < 9 && i < returning.length; i++){
+							e.getPlayer().getInventory().setItem(8 - i, returning[i]);
+						}
+					}
+					wr.c.resetRank(e.getPlayer());
+				}
+				
+			}, 10L);
+		}
+		}
+		catch(Exception e1){System.out.println("damn");}
+	}
+	
+	@SuppressWarnings("unused")
+	private void removeItems(Player p){
+		for (int i = 0; i < 54; i++) {
+			if (p.getInventory().getItem(i) != null
+					&& !RCWars.allowedItems.contains(p.getInventory()
+							.getItem(i).getTypeId()))
+				p.getInventory().setItem(i, null);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -469,11 +518,13 @@ public class PlayerListenerNew implements Listener {
 		if (state.getLine(0) == null)
 			return;
 		if (times.containsKey(p.getName())) {
-			long l = times.get(p.getName());
-			if (l + 5L > System.currentTimeMillis() / 1000L) {
+			long time = times.get(p.getName());
+			if ((System.currentTimeMillis() - time)/1000 < 5) {
 				return;
 			}
 		}
+		times.put(p.getName(),
+				System.currentTimeMillis());
 		if (state.getLine(0).equals("[Cannon]")) {
 			Cannon.enterCannon(p, state.getLine(1));
 			return;
@@ -497,8 +548,6 @@ public class PlayerListenerNew implements Listener {
 			}
 		} catch (Exception e) {
 			p.sendMessage("error");
-			times.put(p.getName(),
-					Long.valueOf(System.currentTimeMillis() / 1000L));
 		}
 		try {
 			if (state.getLine(1).equalsIgnoreCase("Enchantment")) {
@@ -943,9 +992,9 @@ public class PlayerListenerNew implements Listener {
 		WarRank wr = WarRank.getPlayer(e.getPlayer());
 		if (wr == null)
 			return;
-		for (ItemStack i : wr.otherItems)
-			if (i.getTypeId() == e.getItemDrop().getItemStack().getTypeId())
-				e.setCancelled(true);
+		int typeid = e.getItemDrop().getItemStack().getTypeId();
+		if (typeid == 366 || typeid == 262) return;
+		e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -974,4 +1023,40 @@ public class PlayerListenerNew implements Listener {
 				b.clearAffects(p);
 		}
 	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	  public void ondeath(PlayerDeathEvent e) { 
+		Player dead = e.getEntity();
+	    Player killer = e.getEntity().getKiller();
+	    if ((killer == null) && 
+	      (EntityListener.explDmg.containsKey(dead.getName()))) {
+	      killer = Bukkit.getPlayer((String)EntityListener.explDmg.remove(dead.getName()));
+	    }
+	    ExperienceOrb o = (ExperienceOrb)dead.getWorld().spawnEntity(dead.getLocation(), EntityType.EXPERIENCE_ORB);
+	    o.setExperience(e.getDroppedExp());
+	    e.setDroppedExp(0);
+	    ArrayList<ItemStack> toreturn = new ArrayList<ItemStack>();
+	    if (WarPlayers.isPlaying(dead.getName())) {
+	    	Iterator<ItemStack> i = e.getDrops().iterator();
+	    	while(i.hasNext()) {
+	    		ItemStack itemStack = i.next();
+	    		if (itemStack == null){
+	    			continue;
+	    		}
+	    		else if (RCWars.allowedItems.contains(itemStack.getTypeId())){
+	    			toreturn.add(itemStack);
+	    		}
+	    		if (!RCWars.dropItems.contains(itemStack.getTypeId()))
+	    			i.remove();
+	    	}
+	    	if (toreturn.size() != 0) itemsReturn.put(e.getEntity().getName(), toreturn.toArray(new ItemStack[0]));
+	    	ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
+	    	is.setDurability((short)3);
+	    	SkullMeta meta = (SkullMeta)is.getItemMeta();
+	    	meta.setOwner(dead.getName());
+	    	is.setItemMeta(meta);
+	    	e.getDrops().add(is);
+	    	RCWars.logKill(dead, killer);
+	    }
+	  }
 }

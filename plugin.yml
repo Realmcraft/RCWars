@@ -1,6 +1,6 @@
 name: RCWars
 main: me.SgtMjrME.RCWars
-version: 2.0.7
+version: 2.1.0
 description: IT'S FRICKIN WARS V.2.0!!! 
 softdepend: [Essentials]
 depends: [TagAPI, Vault]

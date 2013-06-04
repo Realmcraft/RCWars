@@ -50,7 +50,7 @@ public class AbilityTimer {
 				new Healme(cs.getConfigurationSection("healme")));
 		str2abil.put(cs.getString("healplayer.display"),
 				new HealPlayer(cs.getConfigurationSection("healplayer")));
-		str2abil.put("none", new None());
+//		str2abil.put("none", new None());
 		str2abil.put(cs.getString("rally.display"),
 				new Rally(cs.getConfigurationSection("rally")));
 		str2abil.put(cs.getString("sap.display"),

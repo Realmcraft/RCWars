@@ -234,13 +234,15 @@ public class Race {
 	}
 
 	private boolean checkSpawnLocation(Location p) {
-		if ((spawnZll == null) || (spawnZur == null))
+		if ((spawnZll == null) || (spawnZur == null)){
+			System.out.println("Check failed for spawn location on race " + getDisplay());
 			return false;
-		if ((spawnZll.getX() > p.getX()) || (spawnZll.getZ() > p.getZ())
-				|| (spawnZll.getY() > p.getY()))
+		}
+		if ((spawnZll.getX() > p.getX() || spawnZll.getZ() > p.getZ()
+				|| spawnZll.getY() > p.getY()))
 			return false;
-		if ((spawnZur.getX() < p.getX()) || (spawnZur.getZ() < p.getZ())
-				|| (spawnZur.getY() < p.getY())) {
+		if ((spawnZur.getX() < p.getX() || spawnZur.getZ() < p.getZ()
+				|| spawnZur.getY() < p.getY())) {
 			return false;
 		}
 		return true;

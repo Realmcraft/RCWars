@@ -129,7 +129,7 @@ public class WarClass {
 						p.setLevel(0);
 						p.setExp(0.0F);
 					}
-				}, 1L);
+				}, 20L);
 
 //		WarRank.removeAbility(p);
 //		WarRank.setAbility(p.getName(), new None());

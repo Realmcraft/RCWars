@@ -53,16 +53,21 @@ public class mysqlLink {
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
-			try {
-				PreparedStatement createTable = con
-						.prepareStatement("CREATE  TABLE `"
-								+ database_name
-								+ "`.`data` (`name` VARCHAR(16) NOT NULL ,`kills` INT NULL "
-								+ ",`deaths` INT NULL ,`wp` INT NULL ,PRIMARY KEY (`name`) );");
-				createTable.execute();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			return;
+		}
+		try {
+			PreparedStatement createTable = con
+					.prepareStatement("CREATE  TABLE " + 
+							"data (`name` VARCHAR(16) NOT NULL ,"+
+							"`kills` INT NOT NULL DEFAULT 0 ,"+
+							"`deaths` INT NOT NULL DEFAULT 0 ,"+
+							"`wp` INT NOT NULL DEFAULT 0 ,"+
+							"PRIMARY KEY (`name`) );");
+			if (!createTable.execute())
+				System.out.println("problem creating table");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
