@@ -173,4 +173,8 @@ public class WarClass {
 			}
 		}
 	}
+	
+	public String display() {
+		return color + "[" + displayName + "]";
+	}
 }

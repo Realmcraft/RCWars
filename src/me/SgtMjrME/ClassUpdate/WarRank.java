@@ -192,7 +192,7 @@ public class WarRank {
 	private void removeSkills(Player p) {
 		// Fuck it, I'm going to remove everything in the hotbar, they can deal
 		// with it later
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < 54; i++) {
 			if (p.getInventory().getItem(i) != null
 					&& !RCWars.allowedItems.contains(p.getInventory()
 							.getItem(i).getTypeId()))
