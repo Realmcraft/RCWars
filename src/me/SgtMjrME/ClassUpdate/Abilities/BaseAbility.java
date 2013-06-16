@@ -77,4 +77,12 @@ public abstract class BaseAbility {
 
 	public void clearAffects(Player player) {
 	}
+
+	public boolean allowUsed() {
+		return false;
+	}
+
+	public boolean onInteractUsed(Player p, PlayerInteractEvent e) {
+		return false;
+	}
 }

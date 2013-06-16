@@ -86,13 +86,13 @@ public class Cloak extends BaseAbility {
 		RCWars.returnPlugin().getServer().getScheduler()
 				.runTaskLater(RCWars.returnPlugin(), new Runnable() {
 					public void run() {
-						Cloak.this.uncloakPlayer(p);
+						Cloak.uncloakPlayer(p);
 					}
 				}, 400L);
 		p.sendMessage(ChatColor.GRAY + "You have been cloaked");
 	}
 
-	private void uncloakPlayer(Player p) {
+	private static void uncloakPlayer(Player p) {
 		if (!cloaked.contains(p.getName()))
 			return;
 		Iterator<String> pl = WarPlayers.listPlayers();
@@ -107,13 +107,12 @@ public class Cloak extends BaseAbility {
 		p.sendMessage(ChatColor.WHITE + "You have been uncloaked");
 	}
 
-	private void removeCloak(Player p) {
+	protected static void removeCloak(Player p) {
 		uncloakPlayer(p);
 	}
 
 	public boolean onDefend(Player p, EntityDamageByEntityEvent e) {
 		removeCloak(p);
-		e.setCancelled(true);
 		return false;
 	}
 
@@ -210,5 +209,10 @@ public class Cloak extends BaseAbility {
 	@Override
 	public ItemStack getItem() {
 		return item;
+	}
+	
+	@Override
+	public boolean allowUsed(){
+		return true;
 	}
 }

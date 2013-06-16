@@ -172,14 +172,22 @@ public class AbilityTimer {
 
 	public static void onInteract(Player p, PlayerInteractEvent e) {
 		BaseAbility b = getAbility(p);
-		if (b == null)
+		if (b == null){
+			if ((b = getUsedAbility(p)) != null && b.allowUsed()){
+				b.onInteractUsed(p, e);
+			}
 			return;
+		}
+		if (Cloak.cloaked.contains(p.getName())){
+			Cloak.removeCloak(p);
+			return;
+		}
 		if (!RCWars.warPointSave.containsKey(p)) {
 			return;
 		}
 		if ((!b.OverrideInt(p)) && (!checkTime(p, b)))
 			return;
-		if (b.getCost() > RCWars.getWarPoints(p).intValue()) {
+		if (b.getCost() > RCWars.getWarPoints(p)) {
 			p.sendMessage(ChatColor.RED + "Not enough warpoints");
 			return;
 		}
@@ -195,6 +203,8 @@ public class AbilityTimer {
 							b.getDelay()));
 		}
 	}
+
+
 
 	public static void onJoin(Player p, PlayerJoinEvent e) {
 		BaseAbility b = getAbility(p);
@@ -326,5 +336,17 @@ public class AbilityTimer {
 		if (im == null)
 			return null;
 		return str2abil.get(im.getDisplayName());
+	}
+	
+	private static BaseAbility getUsedAbility(Player p) {
+		ItemStack item = p.getItemInHand();
+		if (item == null)
+			return null;
+		ItemMeta im = item.getItemMeta();
+		if (im == null)
+			return null;
+		String d = im.getDisplayName();
+		if (d == null) return null;
+		return str2abil.get(d.substring(1, d.length()));
 	}
 }
