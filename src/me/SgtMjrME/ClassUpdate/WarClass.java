@@ -94,11 +94,7 @@ public class WarClass {
 	}
 
 	public boolean enterClass(final Player p) {
-		if (permission == null){
-			p.sendMessage(ChatColor.RED + "Error reading permissions");
-			return false;
-		}
-		if (!p.hasPermission(permission)) {
+		if (permission != null && !p.hasPermission(permission)) {
 			p.sendMessage(ChatColor.RED
 					+ "This class is for donators.  Donate @ www.REALMC.net");
 			if (!RCWars.spendWarPoints(p, bypassCost)){
