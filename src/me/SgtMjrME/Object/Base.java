@@ -38,6 +38,7 @@ public class Base {
 	private String disp;
 	private boolean gateOpen;
 	private int exp;
+	private boolean display;
 	private ArrayList<Location> flags = new ArrayList<Location>();
 	private ArrayList<Location> gates = new ArrayList<Location>();
 
@@ -111,6 +112,7 @@ public class Base {
 		health = config.getInt("health", 100);
 		setWeight(config.getDouble("weight", 1.0D));
 		disp = config.getString("displayName", basename);
+		display = config.getBoolean("display",false);
 		try {
 			spawn = pl.str2Loc(config.getString("spawn"));
 		} catch (Exception e) {
@@ -612,5 +614,9 @@ public class Base {
 	public void setWeight(double weight) {
 		this.weight = weight;
 		saveDouble("weight", weight);
+	}
+
+	public boolean willDisplay() {
+		return display;
 	}
 }

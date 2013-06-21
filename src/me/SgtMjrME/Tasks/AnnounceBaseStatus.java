@@ -15,6 +15,7 @@ public class AnnounceBaseStatus implements Runnable {
 		Iterator<Base> bases = Base.returnBases().iterator();
 		while (bases.hasNext()) {
 			Base b = bases.next();
+			if (!b.willDisplay()) continue;
 			Iterator<String> players = WarPlayers.listPlayers();
 			while (players.hasNext()) {
 				String pstring = players.next();

@@ -262,18 +262,18 @@ public class RCWars extends JavaPlugin {
 	}
 
 	public static Boolean spendWarPoints(Player p, int cost) {
-		if (warPointSave.get(p) != null) {
-			if (((Integer) warPointSave.get(p)).intValue() < cost) {
+		if (warPointSave.containsKey(p)) {
+			int points = warPointSave.get(p);
+			if (points < cost) {
 				p.sendMessage(ChatColor.RED + "Not enough War Points");
 				return false;
 			}
 			p.sendMessage(ChatColor.GREEN + "You have been charged " + cost
 					+ " warpoints");
-			warPointSave.put(p, warPointSave.get(p) - cost);
+			warPointSave.put(p, points - cost);
 			returnPlugin().saveWPnoRemove(p);
 			return true;
 		}
-
 		p.sendMessage(ChatColor.RED + "War data not loaded");
 		return false;
 	}
@@ -294,8 +294,8 @@ public class RCWars extends JavaPlugin {
 			warPointSave.put(player, warPointSave.get(player) + warPoints);
 			if (mysql != null) mysql.updatePlayer(player, "wp", warPoints);
 		}
-		player.sendMessage(ChatColor.GREEN + "You have been given " + warPoints
-				+ " warpoints");
+//		player.sendMessage(ChatColor.GREEN + "You have been given " + warPoints
+//				+ " warpoints");
 	}
 
 	public static Integer getWarPoints(Player p) {

@@ -24,6 +24,7 @@ public class WarClass {
 	String displayName;
 	String permission;
 	ChatColor color;
+	int bypassCost;
 	Vector<WarRank> ranks = new Vector<WarRank>();
 	RCWars pl;
 	boolean valid = false;
@@ -45,6 +46,7 @@ public class WarClass {
 		displayName = cfg.getString("display");
 		permission = cfg.getString("permission", null);
 		color = ChatColor.valueOf(cfg.getString("color", "WHITE"));
+		bypassCost = cfg.getInt("bypassCost",0);
 		if (cfg.getBoolean("defaultclass", false))
 			defaultClass = this;
 
@@ -92,10 +94,19 @@ public class WarClass {
 	}
 
 	public boolean enterClass(final Player p) {
-		if ((permission != null) && (!p.hasPermission(permission))) {
-			p.sendMessage(ChatColor.RED
-					+ "Do not have permission to join this class");
+		if (permission == null){
+			p.sendMessage(ChatColor.RED + "Error reading permissions");
 			return false;
+		}
+		if (!p.hasPermission(permission)) {
+			p.sendMessage(ChatColor.RED
+					+ "This class is for donators.  Donate @ www.REALMC.net");
+			if (!RCWars.spendWarPoints(p, bypassCost)){
+				p.sendMessage(ChatColor.RED + "You do not have enough warpoints to bypass this check");
+				defaultClass.enterClass(p);
+				return false;
+			}
+			p.sendMessage(ChatColor.RED + "You paid " + bypassCost + " to enter this class.  Donators get it for free");
 		}
 		Race r = WarPlayers.getRace(p);
 		if (r == null){

@@ -274,6 +274,7 @@ public class WarRank {
 	}
 
 	public String display() {
-		return c.color + "[" + c.displayName + ' ' + curRank + "]";
+		if (curRank != 1) return c.color + "[" + c.displayName + ' ' + curRank + "]";
+		return c.color + "[" + c.displayName + "]";
 	}
 }
