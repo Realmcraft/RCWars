@@ -338,7 +338,13 @@ public class AbilityTimer {
 		return str2abil.get(im.getDisplayName());
 	}
 	
-	private static BaseAbility getUsedAbility(Player p) {
+	public static boolean isBaseAbility(String s){
+		if (str2abil.containsKey(s)) return true;
+		else if (str2abil.containsKey(s.substring(1,s.length()))) return true;
+		return false;
+	}
+	
+	public static BaseAbility getUsedAbility(Player p) {
 		ItemStack item = p.getItemInHand();
 		if (item == null)
 			return null;
@@ -348,5 +354,11 @@ public class AbilityTimer {
 		String d = im.getDisplayName();
 		if (d == null) return null;
 		return str2abil.get(d.substring(1, d.length()));
+	}
+
+	public static boolean isUsedBaseAbility(String s) {
+		if (s == null) return false;
+		if (s.length() < 2) return false;
+		return str2abil.containsKey(s.substring(1,s.length()));
 	}
 }

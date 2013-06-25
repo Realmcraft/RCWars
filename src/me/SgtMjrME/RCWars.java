@@ -82,6 +82,31 @@ public class RCWars extends JavaPlugin {
 	private long timedTime;
 	public static Player headmodifier;
 	public static HashSet<String> leaving = new HashSet<String>();
+	
+	
+	
+	/*
+	 * UPDATE #1:  DONE
+		move "other items" to backpack
+	 * UPDATE #2: DONE
+		Allow them to move all items, that are not part of their class items (ones they spawn with)
+	 * UPDATE #3: TODO
+		Kits can run commands OR have items
+	 * UPDATE #4: TODO
+		spawn eggs (this is gonna be an epic one)
+		-spawneggs will spawn mobs to fight, but wont hurt teammates
+	 * UPDATE #5: TODO
+		-load warpoints stats in the lobby, but dont allow to buy (not in game)
+		- Scoreboard for WarPoints (from player.yml, not from database)
+		- Scoreboard for kills, Scoreboard for deaths
+	 * UPDATE #6: TODO
+	    this:  http://puu.sh/3lbEr.jpg
+		for top 3 killers (database)
+	 * UPDATE #7: TODO
+		give warpoints for kills (1 wp or configurable)
+	 * UPDATE #8: TODO
+	 	Place tnt 1 block from wall (ground,etc)
+	 */
 
 	public static HashSet<Integer> allowedItems = new HashSet<Integer>();
 

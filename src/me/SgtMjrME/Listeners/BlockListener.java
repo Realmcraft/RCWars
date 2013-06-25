@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
@@ -147,5 +148,10 @@ public class BlockListener
       event.setCancelled(true);
       event.getPlayer().sendMessage(ChatColor.RED + "Not allowed to place a " + event.getLine(0));
     }
+  }
+  
+  @EventHandler(priority = EventPriority.NORMAL)
+  public void onPainting(HangingBreakEvent e){
+	  if (e.getEntity().getWorld().equals(RCWars.returnPlugin().getWarWorld())) e.setCancelled(true);
   }
 }

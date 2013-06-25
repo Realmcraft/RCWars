@@ -109,13 +109,12 @@ public class WarRank {
 	}
 
 	public void addOther(final Player p) {
-		for (int i = 0; i < otherItems.size(); i++)
-			p.getInventory().clear(i);
+		p.getInventory().remove(262);
 		Bukkit.getScheduler().runTaskLater(RCWars.returnPlugin(),
 				new Runnable() {
 					public void run() {
 						for (int i = 0; i < otherItems.size(); i++) {
-							p.getInventory().setItem(i,
+							p.getInventory().setItem(i+9,
 									(ItemStack) otherItems.get(i));
 						}
 						int slot = p.getInventory().first(119);

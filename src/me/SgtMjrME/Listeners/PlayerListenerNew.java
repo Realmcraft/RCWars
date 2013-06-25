@@ -281,13 +281,19 @@ public class PlayerListenerNew implements Listener {
 
 		if (r == null)
 			return;
-		int sl = e.getRawSlot();
-		int end = 37;
-		WarRank wr = WarRank.getPlayer(p);
-		if (wr != null)
-			end = 36 + wr.otherItems.size();
-		if (((sl >= 5) && (sl <= 8)) || ((sl >= 36) && (sl < end)))
-			e.setCancelled(true);
+		ItemStack item = e.getCurrentItem();
+		if (item == null) return;
+		ItemMeta im = item.getItemMeta();
+		if (im == null) return;
+		String display = im.getDisplayName();
+		if (AbilityTimer.isUsedBaseAbility(display)) e.setCancelled(true); //If it's a used ability, can't change.  Otherwise, I don't give a F***
+//		int sl = e.getRawSlot();
+//		int end = 37;
+//		WarRank wr = WarRank.getPlayer(p);
+//		if (wr != null)
+//			end = 36 + wr.otherItems.size();
+//		if (((sl >= 5) && (sl <= 8)) || ((sl >= 36) && (sl < end)))
+//			e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -313,7 +319,6 @@ public class PlayerListenerNew implements Listener {
 				@Override
 				public void run() {
 					if (itemsReturn.containsKey(e.getPlayer().getName())){
-						System.out.println("returning items");
 						ItemStack[] returning = itemsReturn.get(e.getPlayer().getName());
 						for(int i = 0; i < 9; i++){
 							e.getPlayer().getInventory().setItem(8 - i, returning[i]);
@@ -329,7 +334,6 @@ public class PlayerListenerNew implements Listener {
 				@Override
 				public void run() {
 					if (itemsReturn.containsKey(e.getPlayer().getName())){
-						System.out.println("returning items");
 						ItemStack[] returning = itemsReturn.get(e.getPlayer().getName());
 						for(int i = 0; i < 9 && i < returning.length; i++){
 							e.getPlayer().getInventory().setItem(8 - i, returning[i]);
