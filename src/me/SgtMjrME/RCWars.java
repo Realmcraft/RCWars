@@ -106,6 +106,9 @@ public class RCWars extends JavaPlugin {
 		give warpoints for kills (1 wp or configurable)
 	 * UPDATE #8: TODO
 	 	Place tnt 1 block from wall (ground,etc)
+	 	
+	 	TODO EMERGENCY
+	 	Bug: Healmage teleports
 	 */
 
 	public static HashSet<Integer> allowedItems = new HashSet<Integer>();
