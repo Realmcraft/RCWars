@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.SiegeUpdate.Siege;
 
 import org.bukkit.Bukkit;
@@ -78,23 +79,23 @@ public class Base {
 			try {
 				String baseName = i.next();
 				Base b = getBase(baseName);
-				p.sendMessage("Internal base name: " + baseName);
+				Util.sendMessage(p, "Internal base name: " + baseName, false);
 				if (b != null) {
-					p.sendMessage("Display name: " + b.getDisp());
-					p.sendMessage("Damage: " + b.getDamage());
-					p.sendMessage("Health: " + b.getHealth());
+					Util.sendMessage(p, "Display name: " + b.getDisp(), false);
+					Util.sendMessage(p, "Damage: " + b.getDamage(), false);
+					Util.sendMessage(p, "Health: " + b.getHealth(), false);
 
-					p.sendMessage("Exp: " + b.getExp());
+					Util.sendMessage(p, "Exp: " + b.getExp(), false);
 					if (b.getOwner() != null)
-						p.sendMessage("Owner: " + b.getOwner().getDisplay());
+						Util.sendMessage(p, "Owner: " + b.getOwner().getDisplay(), false);
 					else
-						p.sendMessage("Owner: None");
+						Util.sendMessage(p, "Owner: None", false);
 					if (b.zonesAreSet())
-						p.sendMessage("Capture zones are set");
+						Util.sendMessage(p, "Capture zones are set", false);
 				}
 			} catch (Exception e) {
-				p.sendMessage(ChatColor.DARK_RED
-						+ "Error displaying base, moving to next one");
+				Util.sendMessage(p, ChatColor.DARK_RED
+						+ "Error displaying base, moving to next one", false);
 				RCWars.sendLogs("[RCWars] Error displaying bases");
 			}
 	}
@@ -266,7 +267,7 @@ public class Base {
 						WarPlayers.remove(temp);
 						players = WarPlayers.listPlayers();
 					} else {
-						p.sendMessage(s);
+						Util.sendMessage(p, s);
 					}
 				}
 			}
@@ -427,68 +428,68 @@ public class Base {
 		if (setItemBase.containsKey(p)) {
 			setItemBase.remove(p);
 			setitem.remove(p);
-			p.sendMessage(ChatColor.DARK_GREEN + "No longer setting flags");
+			Util.sendMessage(p, ChatColor.DARK_GREEN + "No longer setting flags");
 			return;
 		}
 		if (setItemBase.containsValue(this)) {
-			p.sendMessage(ChatColor.DARK_RED
+			Util.sendMessage(p, ChatColor.DARK_RED
 					+ "Someone is already editing flags");
 			return;
 		}
 		setItemBase.put(p, this);
 		setitem.put(p, "flags");
-		p.sendMessage(ChatColor.DARK_GREEN + "To end, re-type the command");
+		Util.sendMessage(p, ChatColor.DARK_GREEN + "To end, re-type the command");
 	}
 
 	public void setZone(Player p) {
 		if (setItemBase.containsKey(p)) {
 			setItemBase.remove(p);
 			setitem.remove(p);
-			p.sendMessage("No longer setting zones");
+			Util.sendMessage(p, "No longer setting zones");
 			return;
 		}
 		if (setItemBase.containsValue(this)) {
-			p.sendMessage(ChatColor.DARK_RED
+			Util.sendMessage(p, ChatColor.DARK_RED
 					+ "Someone is already editing this zone");
 			return;
 		}
 		setItemBase.put(p, this);
 		setitem.put(p, "zones");
-		p.sendMessage(ChatColor.DARK_GREEN + "Punch 2 corners of the zone");
+		Util.sendMessage(p, ChatColor.DARK_GREEN + "Punch 2 corners of the zone");
 	}
 
 	public void setSpawnZone(Player p) {
 		if (setItemBase.containsKey(p)) {
 			setItemBase.remove(p);
 			setitem.remove(p);
-			p.sendMessage("No longer setting zones");
+			Util.sendMessage(p, "No longer setting zones");
 			return;
 		}
 		if (setItemBase.containsValue(this)) {
-			p.sendMessage(ChatColor.DARK_RED
+			Util.sendMessage(p, ChatColor.DARK_RED
 					+ "Someone is already editing this zone");
 			return;
 		}
 		setItemBase.put(p, this);
 		setitem.put(p, "spawn");
-		p.sendMessage(ChatColor.DARK_GREEN + "Punch 2 corners of the zone");
+		Util.sendMessage(p, ChatColor.DARK_GREEN + "Punch 2 corners of the zone");
 	}
 
 	public void setGate(Player p) {
 		if (setItemBase.containsKey(p)) {
 			setItemBase.remove(p);
 			setitem.remove(p);
-			p.sendMessage(ChatColor.DARK_GREEN + "No longer setting gates");
+			Util.sendMessage(p, ChatColor.DARK_GREEN + "No longer setting gates");
 			return;
 		}
 		if (setItemBase.containsValue(this)) {
-			p.sendMessage(ChatColor.DARK_RED
+			Util.sendMessage(p, ChatColor.DARK_RED
 					+ "Someone is already editing gates");
 			return;
 		}
 		setItemBase.put(p, this);
 		setitem.put(p, "gates");
-		p.sendMessage(ChatColor.DARK_GREEN + "To end, re-type the command");
+		Util.sendMessage(p, ChatColor.DARK_GREEN + "To end, re-type the command");
 	}
 
 	public void addFlag(Block clickedBlock) {
@@ -512,18 +513,18 @@ public class Base {
 		Base b = (Base) setItemBase.get(p);
 		if (s == "flags") {
 			b.addFlag(e.getClickedBlock());
-			p.sendMessage("Flag added");
+			Util.sendMessage(p, "Flag added");
 		} else if (s == "zones") {
 			int val = b.setProtect(e.getClickedBlock().getLocation(), p);
 			if (val == 1)
-				e.getPlayer().sendMessage("First marker hit");
+				Util.sendMessage(e.getPlayer(), "First marker hit");
 			else if (val == 2)
-				e.getPlayer().sendMessage("Second marker hit");
+				Util.sendMessage(e.getPlayer(), "Second marker hit");
 			else if (val == 3)
-				e.getPlayer().sendMessage("Zone removed");
+				Util.sendMessage(e.getPlayer(), "Zone removed");
 		} else if (s == "gates") {
 			b.addGate(e.getClickedBlock());
-			p.sendMessage("Gate added");
+			Util.sendMessage(p, "Gate added");
 		}
 	}
 
@@ -581,7 +582,7 @@ public class Base {
 			if (p == null) {
 				WarPlayers.remove(pstring);
 			} else
-				p.sendMessage(c + disp + to.getCcolor()
+				Util.sendMessage(p, c + disp + to.getCcolor()
 						+ " has been captured by the " + to.getDisplay()
 						+ "'s!");
 		}
@@ -600,7 +601,7 @@ public class Base {
 					i.remove();
 				} else if (WarPlayers.getRace(p).equals(winner)) {
 					p.giveExp(RCWars.basecapexp);
-					p.sendMessage(ChatColor.GREEN + "You have been given "
+					Util.sendMessage(p, ChatColor.GREEN + "You have been given "
 							+ RCWars.basecapexp + " exp for capturing a base");
 				}
 			}

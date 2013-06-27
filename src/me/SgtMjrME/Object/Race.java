@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.WarClass;
 
 import org.bukkit.Bukkit;
@@ -199,7 +200,7 @@ public class Race {
 					+ ".yml");
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 
 	public int setSpawnProtect(Location protect, Player p) {
@@ -257,26 +258,26 @@ public class Race {
 		int val = ((Race) setItemRace.get(p)).setSpawnProtect(e
 				.getClickedBlock().getLocation(), p);
 		if (val == 1)
-			e.getPlayer().sendMessage("First marker hit");
+			Util.sendMessage(e.getPlayer(), "First marker hit");
 		else if (val == 2)
-			e.getPlayer().sendMessage("Second marker hit");
+			Util.sendMessage(e.getPlayer(), "Second marker hit");
 		else if (val == 3)
-			e.getPlayer().sendMessage("Zone removed");
+			Util.sendMessage(e.getPlayer(), "Zone removed");
 	}
 
 	public void setSpawnZone(Player p) {
 		if (setItemRace.containsKey(p)) {
 			setItemRace.remove(p);
-			p.sendMessage("No longer setting zones");
+			Util.sendMessage(p, "No longer setting zones");
 			return;
 		}
 		if (setItemRace.containsValue(this)) {
-			p.sendMessage(ChatColor.DARK_RED
+			Util.sendMessage(p, ChatColor.DARK_RED
 					+ "Someone is already editing this zone");
 			return;
 		}
 		setItemRace.put(p, this);
-		p.sendMessage(ChatColor.DARK_GREEN + "Punch 2 corners of the zone");
+		Util.sendMessage(p, ChatColor.DARK_GREEN + "Punch 2 corners of the zone");
 	}
 
 	public static int toInt(String s) {
@@ -293,7 +294,7 @@ public class Race {
 			String s = (String) players.next();
 			Player send = Bukkit.getServer().getPlayer(s);
 			if ((send != null) && (WarPlayers.getRace(s).equals(this)))
-				send.sendMessage(mes);
+				Util.sendMessage(send, mes);
 		}
 	}
 

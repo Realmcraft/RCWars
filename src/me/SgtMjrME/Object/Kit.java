@@ -91,12 +91,12 @@ public class Kit {
 
 	public static void listKits(Player p) {
 		for (Kit k : kits.values()) {
-			p.sendMessage(k.getName());
+			Util.sendMessage(p, k.getName(), false);
 			for (ItemStack item : k.items) {
-				p.sendMessage(item.toString() + item.getEnchantments().toString());
-				if (item.getItemMeta().hasLore()) p.sendMessage(item.getItemMeta().getLore().toString());
+				Util.sendMessage(p, item.toString() + item.getEnchantments().toString(), false);
+				if (item.getItemMeta().hasLore()) Util.sendMessage(p, item.getItemMeta().getLore().toString(), false);
 			}
-			p.sendMessage("~~~~~~~~~~~~~~~~~~~~~~~~");
+			Util.sendMessage(p, "~~~~~~~~~~~~~~~~~~~~~~~~", false);
 		}
 	}
 }

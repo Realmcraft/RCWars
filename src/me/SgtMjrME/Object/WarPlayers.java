@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.WarClass;
 import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.Listeners.EntityListener;
@@ -112,7 +113,7 @@ public class WarPlayers {
 		WarRank wr = WarRank.getPlayer(p);
 		if (wr != null)
 			wr.leave(p);
-		p.sendMessage("You have been removed from Wars: " + reason);
+		Util.sendMessage(p, "You have been removed from Wars: " + reason);
 	}
 
 	public void leave(Player p) {
