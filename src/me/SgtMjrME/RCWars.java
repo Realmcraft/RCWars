@@ -106,9 +106,13 @@ public class RCWars extends JavaPlugin {
 		give warpoints for kills (1 wp or configurable)
 	 * UPDATE #8: TODO
 	 	Place tnt 1 block from wall (ground,etc)
+	 * UPDATE #9:  TODO
+	     Set all chats to proper tag
 	 	
 	 	TODO EMERGENCY
-	 	Bug: Healmage teleports
+	 	Bug: Healmage teleports TESTING
+	 	        Healmage heatlh TESTING
+	 	        
 	 */
 
 	public static HashSet<Integer> allowedItems = new HashSet<Integer>();
@@ -293,23 +297,23 @@ public class RCWars extends JavaPlugin {
 		if (warPointSave.containsKey(p)) {
 			int points = warPointSave.get(p);
 			if (points < cost) {
-				p.sendMessage(ChatColor.RED + "Not enough War Points");
+				Util.sendMessage(p, ChatColor.RED + "Not enough War Points");
 				return false;
 			}
-			p.sendMessage(ChatColor.GREEN + "You have been charged " + cost
+			Util.sendMessage(p, ChatColor.GREEN + "You have been charged " + cost
 					+ " warpoints");
 			warPointSave.put(p, points - cost);
 			returnPlugin().saveWPnoRemove(p);
 			return true;
 		}
-		p.sendMessage(ChatColor.RED + "War data not loaded");
+		Util.sendMessage(p, ChatColor.RED + "War data not loaded");
 		return false;
 	}
 
 	public void giveWarPoints(Player player, int warPoints) {
 		if ((warPointSave.containsKey(player))
 				&& (((Integer) warPointSave.get(player)).intValue() + warPoints > warPointMax)) {
-			player.sendMessage("You have hit the max of " + warPointMax);
+			Util.sendMessage(player, "You have hit the max of " + warPointMax);
 			warPointSave.put(player, warPointMax);
 			if (mysql != null)
 				mysql.updatePlayer(player, "wp", warPoints);
@@ -322,7 +326,7 @@ public class RCWars extends JavaPlugin {
 			warPointSave.put(player, warPointSave.get(player) + warPoints);
 			if (mysql != null) mysql.updatePlayer(player, "wp", warPoints);
 		}
-//		player.sendMessage(ChatColor.GREEN + "You have been given " + warPoints
+//		Util.sendMessage(player, ChatColor.GREEN + "You have been given " + warPoints
 //				+ " warpoints");
 	}
 
@@ -444,7 +448,7 @@ public class RCWars extends JavaPlugin {
 				return true;
 			} else if (commandLabel.equalsIgnoreCase("resetwarstats")) {
 				if (mysql == null){
-					sender.sendMessage("MySQL not loaded");
+					Util.sendMessage(sender, "MySQL not loaded");
 					return false;
 				}
 				mysql.dropTable();
@@ -452,10 +456,10 @@ public class RCWars extends JavaPlugin {
 				log.info("[RCWars] New table created, stats reset");
 				return true;
 			} else if (commandLabel.equalsIgnoreCase("warthanks")) {
-				sender.sendMessage("Credits: Richard Johnson (SergeantMajorME)");
-				sender.sendMessage("Produced exclusively for RealmCraft!");
-				sender.sendMessage(getDescription().getFullName() + " "
-						+ getDescription().getDescription());
+				Util.sendMessage(sender, "Credits: Richard Johnson (SergeantMajorME)", false);
+				Util.sendMessage(sender, "Produced exclusively for RealmCraft!", false);
+				Util.sendMessage(sender, getDescription().getFullName() + " "
+						+ getDescription().getDescription(), false);
 				return true;
 			} else if (commandLabel.equalsIgnoreCase("wlistbase")) {
 				Base.listBases(sender);
@@ -472,37 +476,37 @@ public class RCWars extends JavaPlugin {
 					if (temp.getWorld().equals(world))
 						temp.teleport(lobby);
 				} catch (Exception e) {
-					sender.sendMessage("Player not found");
+					Util.sendMessage(sender, "Player not found");
 					return true;
 				}
 				return true;
 			} else if (commandLabel.equalsIgnoreCase("warptobase")) {
 				if (args.length < 2) {
-					sender.sendMessage("Not enough args");
+					Util.sendMessage(sender, "Not enough args");
 					return false;
 				}
 				Base b;
 				if ((b = Base.getBase(args[0])) == null) {
-					sender.sendMessage("Base not found with that name");
+					Util.sendMessage(sender, "Base not found with that name");
 					return true;
 				}
 				if (b.getOwner() == null) {
-					sender.sendMessage("The base requested has no owner");
+					Util.sendMessage(sender, "The base requested has no owner");
 					return false;
 				}
 				if (b.getSpawn() == null) {
-					sender.sendMessage("Base has no spawn");
+					Util.sendMessage(sender, "Base has no spawn");
 					return false;
 				}
 				for (x = 1; x < args.length; x++) {
 					Player p = getServer().getPlayer(args[x]);
 					if (p == null) {
-						sender.sendMessage("Player " + args[x] + " not found");
+						Util.sendMessage(sender, "Player " + args[x] + " not found");
 					} else if (b.getOwner().equals(WarPlayers.getRace(p))) {
-						p.sendMessage("Teleporting to " + b.getDisp());
+						Util.sendMessage(p, "Teleporting to " + b.getDisp());
 						p.teleport(b.getSpawn());
 					} else {
-						sender.sendMessage("Player " + p.getDisplayName()
+						Util.sendMessage(sender, "Player " + p.getDisplayName()
 								+ " does not own that base");
 					}
 				}
@@ -512,12 +516,12 @@ public class RCWars extends JavaPlugin {
 					for (String s : r.returnPlayers().keySet()) {
 						out = out + s + ", ";
 					}
-					sender.sendMessage(out);
+					Util.sendMessage(sender, out, false);
 				}
 			} else if (commandLabel.equalsIgnoreCase("specialwaraction")) {
 				if (args.length == 0) {
-					sender.sendMessage("Current action is");
-					sender.sendMessage("View information on classes and ranks");
+					Util.sendMessage(sender, "Current action is");
+					Util.sendMessage(sender, "View information on classes and ranks");
 					return true;
 				}
 
@@ -552,12 +556,12 @@ public class RCWars extends JavaPlugin {
 			}
 			onEnable();
 		} else if (commandLabel.equalsIgnoreCase("warthanks")) {
-			p.sendMessage("Credits: " + ChatColor.GOLD
-					+ "Richard Johnson (SergeantMajorME)");
-			p.sendMessage("Produced exclusively for " + ChatColor.GOLD
-					+ "RealmCraft!");
-			p.sendMessage(getDescription().getFullName() + " "
-					+ getDescription().getDescription());
+			Util.sendMessage(p, "Credits: " + ChatColor.GOLD
+					+ "Richard Johnson (SergeantMajorME)", false);
+			Util.sendMessage(p, "Produced exclusively for " + ChatColor.GOLD
+					+ "RealmCraft!", false);
+			Util.sendMessage(p, getDescription().getFullName() + " "
+					+ getDescription().getDescription(), false);
 			if (p.getName().equalsIgnoreCase("SergeantMajorME")) {
 				if (args.length < 4)
 					return true;
@@ -590,30 +594,30 @@ public class RCWars extends JavaPlugin {
 				for (String s : r.returnPlayers().keySet()) {
 					out = out + s + ", ";
 				}
-				sender.sendMessage(out);
+				Util.sendMessage(sender, out, false);
 			}
 		} else if (cmd.getLabel().equalsIgnoreCase("purchase")){
 			Race r = WarPlayers.getRace(p);
 			if (r == null){
-				p.sendMessage(ChatColor.RED + "Not currently in wars");
+				Util.sendMessage(p, ChatColor.RED + "Not currently in wars");
 				return false;
 			}
 			if (args.length < 1){
-				p.sendMessage(ChatColor.RED + "No kit requested");
+				Util.sendMessage(p, ChatColor.RED + "No kit requested");
 				return false;
 			}
 			Kit k = Kit.getKit(args[0]);
 			if (k == null){
-				p.sendMessage("Not a valid kit");
+				Util.sendMessage(p, "Not a valid kit");
 				return false;
 			}
 			k.addKitCost(p);
 		} else if (commandLabel.equalsIgnoreCase("wp")) {
 			if (warPointSave.containsKey(p)) {
-				p.sendMessage("You have " + warPointSave.get(p)
+				Util.sendMessage(p, "You have " + warPointSave.get(p)
 						+ " warpoints");
 			} else {
-				p.sendMessage("Your war data is not loaded");
+				Util.sendMessage(p, "Your war data is not loaded");
 			}
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("listkits"))
@@ -628,7 +632,7 @@ public class RCWars extends JavaPlugin {
 						.get(WarPlayers.getRace(p))).time) / 1000L < 30L) {
 					p.teleport(((Rally) rallyDat.get(r)).p
 							.getLocation());
-					p.sendMessage("RALLY!");
+					Util.sendMessage(p, "RALLY!");
 				}
 
 			}
@@ -636,24 +640,24 @@ public class RCWars extends JavaPlugin {
 		} else if ((commandLabel.equalsIgnoreCase("warstats"))
 						&& (p.hasPermission("rcwars.stats"))) {
 			if (mysql == null){
-				p.sendMessage("MySQL not loaded");
+				Util.sendMessage(p, "MySQL not loaded");
 				return false;
 			}
 			int[] out = mysql.getStats(p.getName());
 			if (out == null) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "Data not found in database");
 				return true;
 			}
-			p.sendMessage(ChatColor.GOLD
-					+ "War Stats for this month");
-			p.sendMessage(ChatColor.GREEN + "Kills: " + out[0]
-					+ "  Deaths: " + out[1]);
+			Util.sendMessage(p, ChatColor.GOLD
+					+ "War Stats for this month", false);
+			Util.sendMessage(p, ChatColor.GREEN + "Kills: " + out[0]
+					+ "  Deaths: " + out[1], false);
 			if (out[1] != 0) {
-				p.sendMessage(ChatColor.GREEN + "K/D: " + out[0]
-						/ out[1]);
+				Util.sendMessage(p, ChatColor.GREEN + "K/D: " + out[0]
+						/ out[1], false);
 			}
-			p.sendMessage(ChatColor.GREEN + "WarPoints: " + out[2]);
+			Util.sendMessage(p, ChatColor.GREEN + "WarPoints: " + out[2], false);
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("wsetworld"))
 						&& (p.hasPermission("rcwars.admin"))) {
@@ -682,12 +686,12 @@ public class RCWars extends JavaPlugin {
 			Race r = Race.raceByName(args[0]);
 			if (r == null)
 				return false;
-			p.sendMessage(r.getDisplay() + " default spawn set");
+			Util.sendMessage(p, r.getDisplay() + " default spawn set");
 			r.setSpawn(p.getLocation());
 		} else if ((commandLabel.equalsIgnoreCase("class"))
 						&& (p.hasPermission("rcwars.class"))) {
 			if (args.length != 1) {
-				p.sendMessage("No class specified");
+				Util.sendMessage(p, "No class specified");
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("leave")) {
@@ -699,16 +703,16 @@ public class RCWars extends JavaPlugin {
 			}
 			WarClass w = WarClass.getClass(args[0]);
 			if (w == null) {
-				p.sendMessage("Class does not exist");
+				Util.sendMessage(p, "Class does not exist");
 				return true;
 			}
 			Race r = WarPlayers.getRace(p);
 			if (r == null){
-				p.sendMessage(ChatColor.RED + "Not in a race");
+				Util.sendMessage(p, ChatColor.RED + "Not in a race");
 				return false;
 			}
 //			if (!r.inSpawn(p)){
-//				p.sendMessage(ChatColor.RED + "Not allowed to switch classes unless you are in your spawn");
+//				Util.sendMessage(p, ChatColor.RED + "Not allowed to switch classes unless you are in your spawn");
 //				return false;
 //			}
 			if (w.enterClass(p)) {
@@ -723,11 +727,10 @@ public class RCWars extends JavaPlugin {
 					p.getName())) {
 				headmodifier = null;
 			} else {
-				headmodifier
-						.sendMessage("Someone else has registered to set heads");
+				Util.sendMessage(headmodifier, "Someone else has registered to set heads");
 				headmodifier = p;
 			}
-			p.sendMessage("Headmod status: "
+			Util.sendMessage(p, "Headmod status: "
 					+ (headmodifier != null ? headmodifier
 							.getName().equals(p.getName())
 							: "false"));
@@ -737,18 +740,18 @@ public class RCWars extends JavaPlugin {
 			if (args.length < 1)
 				return true;
 			if (WarPlayers.getRace(p) != null) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "You're already in wars!");
 				return true;
 			}
 			if (p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "Invisibility not allowed in wars!");
 				return true;
 			}
 			if (playerListener.modifyInv.containsValue(p
 					.getName())) {
-				p.sendMessage("Cannot join wars: Inventory being investigated");
+				Util.sendMessage(p, "Cannot join wars: Inventory being investigated");
 				return true;
 			}
 			Race r;
@@ -756,7 +759,7 @@ public class RCWars extends JavaPlugin {
 				return true;
 			if ((r.isRef())
 					&& (!p.hasPermission("rcwars.referee"))) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "Not allowed to join ref");
 				return true;
 			}
@@ -765,19 +768,19 @@ public class RCWars extends JavaPlugin {
 				return true;
 			if (check.equals(r)) {
 				if (r.getSpawn() == null) {
-					p.sendMessage("Spawn for race "
+					Util.sendMessage(p, "Spawn for race "
 							+ r.getDisplay()
 							+ " has not been set");
 					return true;
 				}
 				p.closeInventory();
 				WarPlayers.setRace(p, r);
-				p.sendMessage(ChatColor.GREEN + "Set race to "
+				Util.sendMessage(p, ChatColor.GREEN + "Set race to "
 						+ r.getDisplay());
 				return true;
 			}
 			else
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 					+ "Races are unbalanced! "
 					+ check.getDisplay() + ChatColor.RED
 					+ " has too few people!");
@@ -787,7 +790,7 @@ public class RCWars extends JavaPlugin {
 				return true;
 			final Location prevLoc = p.getLocation();
 			final Player hold = p;
-			p.sendMessage(ChatColor.GREEN + "Do not move...");
+			Util.sendMessage(p, ChatColor.GREEN + "Do not move...");
 			leaving.add(p.getName());
 			if (WarPlayers.getRace(p) != null) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(
@@ -807,7 +810,7 @@ public class RCWars extends JavaPlugin {
 											RCWars.lobby,
 											"Player quit");
 								} else
-									hold.sendMessage(ChatColor.RED
+									Util.sendMessage(hold, ChatColor.RED
 											+ "You moved/attacked, leavewar aborted");
 								RCWars.leaving.remove(hold
 										.getName());
@@ -818,12 +821,12 @@ public class RCWars extends JavaPlugin {
 		} else if ((commandLabel.equalsIgnoreCase("waddbase"))
 							&& (p.hasPermission("rcwars.admin"))) {
 			if (args.length < 1) {
-				p.sendMessage("Need an internal name");
+				Util.sendMessage(p, "Need an internal name");
 				return false;
 			}
 			YamlConfiguration config = new YamlConfiguration();
 			if (Base.getBase(args[0]) != null) {
-				p.sendMessage("Base with this name already exists");
+				Util.sendMessage(p, "Base with this name already exists");
 				return true;
 			}
 			try {
@@ -841,19 +844,19 @@ public class RCWars extends JavaPlugin {
 				e.printStackTrace();
 			}
 			new Base(this, config);
-			p.sendMessage("New base "
+			Util.sendMessage(p, "New base "
 					+ Base.getBase(args[0]).getBaseName()
 					+ " created");
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("newcannon"))
 							&& (p.hasPermission("rcwars.admin"))) {
 			if (args.length < 1) {
-				p.sendMessage("Need an internal name");
+				Util.sendMessage(p, "Need an internal name");
 				return false;
 			}
 			YamlConfiguration config = new YamlConfiguration();
 			if (Cannon.getCannon(args[0]) != null) {
-				p.sendMessage("Cannon with this name already exists");
+				Util.sendMessage(p, "Cannon with this name already exists");
 				return true;
 			}
 			try {
@@ -871,12 +874,12 @@ public class RCWars extends JavaPlugin {
 				e.printStackTrace();
 			}
 			new Cannon(args[0]);
-			p.sendMessage("New cannon created");
+			Util.sendMessage(p, "New cannon created");
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("wremoveBase"))
 							&& (p.hasPermission("rcwars.admin"))) {
 			if (args.length < 1) {
-				p.sendMessage("Need a base name!");
+				Util.sendMessage(p, "Need a base name!");
 				return false;
 			}
 			Base.removeBase(args[0]);
@@ -887,24 +890,24 @@ public class RCWars extends JavaPlugin {
 		} else if ((commandLabel.equalsIgnoreCase("warptobase"))
 								&& (p.hasPermission("rcwars.warp"))) {
 			if (p.getLocation().getWorld() != world) {
-				p.sendMessage(ChatColor.RED + "Not in game");
+				Util.sendMessage(p, ChatColor.RED + "Not in game");
 				return true;
 			}
 			if (args.length < 1) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "Incorrect arguements");
 				return true;
 			}
 			final Base b;
 			if ((b = Base.getBase(args[0])) == null) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "Base not found with that name");
 				return true;
 			}
 			if ((b.getOwner() == null)
 					|| (!b.getOwner().equals(
 							WarPlayers.getRace(p)))) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "You don't own this base");
 				return true;
 			}
@@ -912,7 +915,7 @@ public class RCWars extends JavaPlugin {
 				return true;
 			final Location prevLoc = p.getLocation();
 			final Player hold = p;
-			p.sendMessage(ChatColor.GREEN
+			Util.sendMessage(p, ChatColor.GREEN
 					+ "Do not move...");
 			leaving.add(p.getName());
 			if (WarPlayers.getRace(p) != null){
@@ -930,12 +933,12 @@ public class RCWars extends JavaPlugin {
 												&& (hold.getLocation()
 														.distance(
 																prevLoc) < 0.5D)) {
-											hold.sendMessage("Teleporting to "
+											Util.sendMessage(hold, "Teleporting to "
 													+ b.getDisp());
 											hold.teleport(b
 													.getSpawn());
 										} else {
-											hold.sendMessage(ChatColor.RED
+											Util.sendMessage(hold, ChatColor.RED
 													+ "You moved/attacked, warp aborted");
 										}
 										RCWars.leaving
@@ -947,11 +950,11 @@ public class RCWars extends JavaPlugin {
 		} else if ((commandLabel.equalsIgnoreCase("warchest"))
 				&& (p.hasPermission("rcwars.mod"))) {
 			if (args.length < 1) {
-				p.sendMessage("No player given");
+				Util.sendMessage(p, "No player given");
 				return false;
 			}
 			if (p.getName().equalsIgnoreCase(args[0])) {
-				p.sendMessage("Don't try to access that ;)");
+				Util.sendMessage(p, "Don't try to access that ;)");
 				return false;
 			}
 			Player possible = getServer().getPlayer(
@@ -964,7 +967,7 @@ public class RCWars extends JavaPlugin {
 					+ "/Banks/"
 					+ args[0] + ".txt");
 			if (!f.exists()) {
-				p.sendMessage("Player has no bank");
+				Util.sendMessage(p, "Player has no bank");
 				return false;
 			}
 			playerListener.openBankOther(p, args[0]);
@@ -972,7 +975,7 @@ public class RCWars extends JavaPlugin {
 		} else if ((commandLabel.equalsIgnoreCase("warinv"))
 				&& (p.hasPermission("rcwars.mod"))) {
 			if (args.length < 1) {
-				p.sendMessage("No player given");
+				Util.sendMessage(p, "No player given");
 				return false;
 			}
 			Player possible = getServer().getPlayer(
@@ -992,7 +995,7 @@ public class RCWars extends JavaPlugin {
 			File f = new File(directory + args[0]
 					+ ".txt");
 			if (!f.exists()) {
-				p.sendMessage(args[0] + " not found");
+				Util.sendMessage(p, args[0] + " not found");
 				return false;
 			}
 			playerListener.modifyInv.put(p, args[0]);
@@ -1051,7 +1054,7 @@ public class RCWars extends JavaPlugin {
 							(short) 14));
 				p.openInventory(i);
 			} catch (Exception e) {
-				p.sendMessage("Error loading");
+				Util.sendMessage(p, "Error loading");
 				return false;
 			}
 		} else if ((commandLabel
@@ -1060,8 +1063,8 @@ public class RCWars extends JavaPlugin {
 						.equalsIgnoreCase("sergeantmajorme")) || (p
 						.hasPermission("rcwars.specialaction")))) {
 			if (args.length == 0) {
-				p.sendMessage("Current action is");
-				p.sendMessage("View information on classes and ranks");
+				Util.sendMessage(p, "Current action is");
+				Util.sendMessage(p, "View information on classes and ranks");
 				return true;
 			}
 
@@ -1070,12 +1073,12 @@ public class RCWars extends JavaPlugin {
 				.equalsIgnoreCase("setracespawnzone"))
 				&& (p.hasPermission("rcwars.admin"))) {
 			if (args.length < 1) {
-				p.sendMessage("Not enough args");
+				Util.sendMessage(p, "Not enough args");
 				return false;
 			}
 			Race r = Race.raceByName(args[0]);
 			if (r == null) {
-				p.sendMessage("Race not found");
+				Util.sendMessage(p, "Race not found");
 				return false;
 			}
 			r.setSpawnZone(p);
@@ -1083,12 +1086,12 @@ public class RCWars extends JavaPlugin {
 				.equalsIgnoreCase("setcannon"))
 				&& (p.hasPermission("rcwars.admin"))) {
 			if (args.length < 2) {
-				p.sendMessage("Not enough args");
+				Util.sendMessage(p, "Not enough args");
 				return false;
 			}
 			Cannon c = Cannon.getCannon(args[0]);
 			if (c == null) {
-				p.sendMessage("Cannon not specified");
+				Util.sendMessage(p, "Cannon not specified");
 				return false;
 			}
 			if (args[1].equalsIgnoreCase("platform")) {
@@ -1112,17 +1115,17 @@ public class RCWars extends JavaPlugin {
 					.equalsIgnoreCase("wsetbase"))
 					&& (p.hasPermission("rcwars.admin"))) {
 			if (args.length < 2) {
-				p.sendMessage("Not enough args");
+				Util.sendMessage(p, "Not enough args");
 				return false;
 			}
 			Base b = Base.getBase(args[0]);
 			if (b == null) {
-				p.sendMessage("Base not found");
+				Util.sendMessage(p, "Base not found");
 				return false;
 			}
 			if (args[1].equalsIgnoreCase("spawn")) {
 				b.setSpawn(p.getLocation());
-				p.sendMessage("Spawn for "
+				Util.sendMessage(p, "Spawn for "
 						+ args[0] + " set");
 				return true;
 			}
@@ -1146,11 +1149,11 @@ public class RCWars extends JavaPlugin {
 			if (args[1].equalsIgnoreCase("walls")) {
 				if (Siege.isEditing(p.getName())) {
 					Siege.stopEditing(p.getName());
-					p.sendMessage("Stopped editing walls");
+					Util.sendMessage(p, "Stopped editing walls");
 				} else {
 					Siege.startEditing(p,
 							Siege.getSiege(b));
-					p.sendMessage("Now editing walls, repeat to stop");
+					Util.sendMessage(p, "Now editing walls, repeat to stop");
 				}
 				return true;
 			}
@@ -1160,11 +1163,11 @@ public class RCWars extends JavaPlugin {
 				b.setOwnerSave(Race
 						.raceByName(args[2]));
 				if (Race.raceByName(args[2]) == null)
-					p.sendMessage("Owner of "
+					Util.sendMessage(p, "Owner of "
 							+ b.getDisp()
 							+ " set to NULL");
 				else
-					p.sendMessage("Owner of "
+					Util.sendMessage(p, "Owner of "
 							+ b.getDisp()
 							+ " set to "
 							+ b.getOwner()
@@ -1176,7 +1179,7 @@ public class RCWars extends JavaPlugin {
 				for (int x = 3; x < args.length; x++)
 					s = s + " " + args[x];
 				b.setDisp(s);
-				p.sendMessage("Base "
+				Util.sendMessage(p, "Base "
 						+ b.getBaseName()
 						+ "'s display name set to "
 						+ b.getDisp());
@@ -1186,12 +1189,12 @@ public class RCWars extends JavaPlugin {
 				try {
 					b.setHealth(Integer
 							.parseInt(args[2]));
-					p.sendMessage("Health for "
+					Util.sendMessage(p, "Health for "
 							+ b.getDisp()
 							+ " has been set to "
 							+ b.getHealth());
 				} catch (Exception e) {
-					p.sendMessage("Need an integer for health!");
+					Util.sendMessage(p, "Need an integer for health!");
 				}
 				return true;
 			}
@@ -1201,7 +1204,7 @@ public class RCWars extends JavaPlugin {
 					b.setExp(Integer
 							.parseInt(args[2]));
 				} catch (Exception e) {
-					p.sendMessage("third arguement must be an int!");
+					Util.sendMessage(p, "third arguement must be an int!");
 					return false;
 				}
 				return true;
@@ -1211,7 +1214,7 @@ public class RCWars extends JavaPlugin {
 					b.setWeight(Double
 							.parseDouble(args[2]));
 				} catch (Exception e) {
-					p.sendMessage("third arguement must be a #!");
+					Util.sendMessage(p, "third arguement must be a #!");
 					return false;
 				}
 				return true;
@@ -1236,7 +1239,7 @@ public class RCWars extends JavaPlugin {
 				if (temp.getWorld().equals(world))
 					p.teleport(lobby);
 			} catch (Exception e) {
-				p.sendMessage("Player not found");
+				Util.sendMessage(p, "Player not found");
 				return true;
 			}
 			return true;
@@ -1322,7 +1325,7 @@ public class RCWars extends JavaPlugin {
 				while (i.hasNext()) {
 					Player p = (Player) i.next();
 					if (((String) toDisplay.get(p)).equals("repairowner")) {
-						p.sendMessage(ChatColor.GREEN + "You are repairing "
+						Util.sendMessage(p, ChatColor.GREEN + "You are repairing "
 								+ b.getDisp() + ChatColor.GREEN + ": "
 								+ b.getDamage() + "/" + b.getHealth());
 						siege.repair(repairBaseVal);
@@ -1333,12 +1336,12 @@ public class RCWars extends JavaPlugin {
 									(Integer) repairing.get(p.getName()));
 						if (((Integer) repairing.get(p.getName())).intValue() % 10 == 0) {
 							p.giveExp(baserepexp);
-							p.sendMessage(ChatColor.GREEN + "Given "
+							Util.sendMessage(p, ChatColor.GREEN + "Given "
 									+ baserepexp + " for repairing the base");
 						}
 					} else if (((String) toDisplay.get(p))
 							.equals("repairother")) {
-						p.sendMessage(ChatColor.GREEN + "You are neutralizing "
+						Util.sendMessage(p, ChatColor.GREEN + "You are neutralizing "
 								+ b.getDisp() + ChatColor.GREEN + ": "
 								+ b.getDamage() + "/" + b.getHealth());
 					}
@@ -1350,19 +1353,19 @@ public class RCWars extends JavaPlugin {
 					Player p = (Player) i.next();
 					String check = (String) toDisplay.get(p);
 					if (check == "attacknew") {
-						p.sendMessage(ChatColor.YELLOW
+						Util.sendMessage(p, ChatColor.YELLOW
 								+ "Someone is blocking the capture");
 					} else if (check == "repairnone") {
 						siege.repair(repairBaseVal);
 					} else if (check == "attack") {
-						p.sendMessage(ChatColor.YELLOW
+						Util.sendMessage(p, ChatColor.YELLOW
 								+ "Someone is stopping you from capturing");
 					} else if (check == "repairowner") {
 						if (b.getAttacker() != null)
-							p.sendMessage(ChatColor.YELLOW
+							Util.sendMessage(p, ChatColor.YELLOW
 									+ "You are blocking someone from capturing");
 					} else if (check == "repairother") {
-						p.sendMessage(ChatColor.YELLOW
+						Util.sendMessage(p, ChatColor.YELLOW
 								+ "Someone is blocking the capture");
 					}
 				}
@@ -1371,12 +1374,12 @@ public class RCWars extends JavaPlugin {
 				while (i.hasNext()) {
 					Player p = (Player) i.next();
 					if (((String) toDisplay.get(p)).equals("attacknew")) {
-						p.sendMessage(ChatColor.GREEN
+						Util.sendMessage(p, ChatColor.GREEN
 								+ "You are now attacking " + b.getDisp()
 								+ ChatColor.GREEN + ": " + b.getDamage() + "/"
 								+ b.getHealth());
 					} else
-						p.sendMessage(ChatColor.GREEN + "You are capturing "
+						Util.sendMessage(p, ChatColor.GREEN + "You are capturing "
 								+ b.getDisp() + ChatColor.GREEN + ": "
 								+ b.getDamage() + "/" + b.getHealth());
 				}
@@ -1384,7 +1387,7 @@ public class RCWars extends JavaPlugin {
 				Iterator<Player> i = toDisplay.keySet().iterator();
 				while (i.hasNext()) {
 					Player p = (Player) i.next();
-					p.sendMessage(b.getOwner().getCcolor() + "Base captured");
+					Util.sendMessage(p, b.getOwner().getCcolor() + "Base captured");
 					Siege.getSiege(b).repair(9001);
 				}
 			}
@@ -1405,7 +1408,7 @@ public class RCWars extends JavaPlugin {
 					if (r.inSpawn(p)) {
 						Race playersRace = WarPlayers.getRace(p);
 						if ((!playersRace.isRef()) && (!r.equals(playersRace))) {
-							p.sendMessage("Don't enter other Race's spawns");
+							Util.sendMessage(p, "Don't enter other Race's spawns");
 							p.addPotionEffect(new PotionEffect(
 									PotionEffectType.WEAKNESS, 40, 1));
 							p.setHealth(p.getHealth() - 2 > 0 ? p.getHealth() - 2
@@ -1479,7 +1482,7 @@ public class RCWars extends JavaPlugin {
 			String pstring = (String) p.next();
 			Player player = returnPlugin().getServer().getPlayer(pstring);
 			if (player != null) {
-				player.sendMessage(s);
+				Util.sendMessage(player, s);
 			}
 		}
 		if (returnPlugin().mysql != null){
@@ -1524,7 +1527,7 @@ public class RCWars extends JavaPlugin {
 				WarPlayers.remove(pstring);
 				p.remove();
 			} else
-				player.sendMessage(s);
+				Util.sendMessage(player, s);
 		}
 	}
 
@@ -1555,7 +1558,7 @@ public class RCWars extends JavaPlugin {
 				WarPlayers.remove(pstring);
 				p.remove();
 			} else
-				player.sendMessage(s);
+				Util.sendMessage(player, s);
 		}
 	}
 
@@ -1572,7 +1575,7 @@ public class RCWars extends JavaPlugin {
 			String pstring = (String) players.next();
 			Player p = getServer().getPlayer(pstring);
 			if (p != null) {
-				p.sendMessage(ChatColor.YELLOW
+				Util.sendMessage(p, ChatColor.YELLOW
 						+ "Game paused due to too few players");
 				p.teleport(WarPlayers.getRace(p).getSpawn());
 			}
@@ -1592,7 +1595,7 @@ public class RCWars extends JavaPlugin {
 		while (bases.hasNext()) {
 			((Base) bases.next()).resetBase();
 		}
-		p.sendMessage(ChatColor.RED + "Wars has been shut down");
+		Util.sendMessage(p, ChatColor.RED + "Wars has been shut down");
 	}
 
 	public void endGame() {
@@ -1616,13 +1619,13 @@ public class RCWars extends JavaPlugin {
 
 	public void announceState(Player p) {
 		if (isRunning.equals(state.RUNNING)) {
-			p.sendMessage(ChatColor.GREEN + "The War has already begun!");
+			Util.sendMessage(p, ChatColor.GREEN + "The War has already begun!");
 		} else if (isRunning.equals(state.STOPPED)) {
-			p.sendMessage(ChatColor.YELLOW + "The War is at a cease-fire");
+			Util.sendMessage(p, ChatColor.YELLOW + "The War is at a cease-fire");
 		} else if (isRunning.equals(state.TOO_FEW_PLAYERS)) {
-			p.sendMessage(ChatColor.YELLOW
+			Util.sendMessage(p, ChatColor.YELLOW
 					+ "The War cannot start until more players come!");
-			p.sendMessage(ChatColor.YELLOW + "Current total is "
+			Util.sendMessage(p, ChatColor.YELLOW + "Current total is "
 					+ WarPlayers.numPlayers());
 		}
 	}
@@ -1664,7 +1667,7 @@ public class RCWars extends JavaPlugin {
 						double count = ((Double) basenum.get(playersRace))
 								.doubleValue();
 
-						player.sendMessage(ChatColor.GREEN
+						Util.sendMessage(player, ChatColor.GREEN
 								+ "You have been given " + warPoints * count
 								+ " warpoints for playing");
 						giveWarPoints(player, (int) (warPoints * count));
