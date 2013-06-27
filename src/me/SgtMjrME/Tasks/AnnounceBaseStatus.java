@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.bukkit.entity.Player;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.Object.WarPlayers;
 import me.SgtMjrME.Object.Base;
 
@@ -24,7 +25,7 @@ public class AnnounceBaseStatus implements Runnable {
 					WarPlayers.remove(pstring);
 					continue;
 				}
-				p.sendMessage(b.getDisp());
+				Util.sendMessage(p, b.getDisp());
 			}
 		}
 	}

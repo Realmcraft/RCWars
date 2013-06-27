@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.Object.Base;
 
 import org.bukkit.Location;
@@ -93,10 +94,10 @@ public class Siege {
 			stopEditing(p.getName());
 		} else if (prev.l == null) {
 			prev.l = l2;
-			p.sendMessage("First block set");
+			Util.sendMessage(p, "First block set");
 		} else {
-			p.sendMessage("Second wall set: adding wall");
-			p.sendMessage(prev.s.addWall(prev.l, l2) + " blocks added");
+			Util.sendMessage(p, "Second wall set: adding wall");
+			Util.sendMessage(p, prev.s.addWall(prev.l, l2) + " blocks added");
 			prev.l = null;
 		}
 	}
