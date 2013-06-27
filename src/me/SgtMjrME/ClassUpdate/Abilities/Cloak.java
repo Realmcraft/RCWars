@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
@@ -89,7 +90,7 @@ public class Cloak extends BaseAbility {
 						Cloak.uncloakPlayer(p);
 					}
 				}, 400L);
-		p.sendMessage(ChatColor.GRAY + "You have been cloaked");
+		Util.sendMessage(p, ChatColor.GRAY + "You have been cloaked");
 	}
 
 	private static void uncloakPlayer(Player p) {
@@ -104,7 +105,7 @@ public class Cloak extends BaseAbility {
 			} catch (Exception localException) {
 			}
 		cloaked.remove(p.getName());
-		p.sendMessage(ChatColor.WHITE + "You have been uncloaked");
+		Util.sendMessage(p, ChatColor.WHITE + "You have been uncloaked");
 	}
 
 	protected static void removeCloak(Player p) {
