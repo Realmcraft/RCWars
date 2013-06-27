@@ -145,7 +145,7 @@ public class PlayerListenerNew implements Listener {
 			return;
 		if ((e.getMessage().split(" ")[0].equalsIgnoreCase("/spawn"))
 				&& (WarPlayers.getRace(e.getPlayer()) != null)) {
-			e.getPlayer().sendMessage(ChatColor.RED + "Nuh uh");
+			Util.sendMessage(e.getPlayer(), ChatColor.RED + "Nuh uh");
 			e.setCancelled(true);
 		}
 	}
@@ -210,7 +210,7 @@ public class PlayerListenerNew implements Listener {
 						.equals(RCWars.returnPlugin().getWarWorld()))) {
 			if (WarPlayers.gotDamaged(e.getPlayer())) {
 				e.getPlayer().setHealth(0);
-				e.getPlayer().sendMessage(
+				Util.sendMessage(e.getPlayer(), 
 						"Killed due to damage before teleportation");
 			}
 			WarPlayers.remove(e.getPlayer(),
@@ -231,7 +231,7 @@ public class PlayerListenerNew implements Listener {
 					Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
 						public void run() {
 							p.setAllowFlight(true);
-							p.sendMessage("Fly: " + p.getAllowFlight());
+							Util.sendMessage(p, "Fly: " + p.getAllowFlight());
 						}
 					}, 30L);
 			}
@@ -268,8 +268,7 @@ public class PlayerListenerNew implements Listener {
 		if ((modifyInv.containsKey(e.getWhoClicked()))
 				&& (((Integer) invType.get(modifyInv.get(e.getWhoClicked())))
 						.intValue() == 1) && (e.getSlot() >= 40)) {
-			((Player) e.getWhoClicked())
-					.sendMessage("Modifying this would erase the item");
+			Util.sendMessage(((Player) e.getWhoClicked()), "Modifying this would erase the item");
 			e.setCancelled(true);
 			return;
 		}
@@ -368,7 +367,7 @@ public class PlayerListenerNew implements Listener {
 		Location l = (Location) Cannon.cannons.get(c);
 		if ((l.getWorld().equals(e.getTo().getWorld()))
 				&& (l.distance(e.getTo()) > 2.0D)) {
-			e.getPlayer().sendMessage("You have exit the cannon's seat");
+			Util.sendMessage(e.getPlayer(), "You have exit the cannon's seat");
 			Cannon.leaveCannon(c);
 			return;
 		}
@@ -414,7 +413,7 @@ public class PlayerListenerNew implements Listener {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			e.getPlayer().sendMessage("Block set");
+			Util.sendMessage(e.getPlayer(), "Block set");
 			return;
 		}
 		String s;
@@ -500,7 +499,7 @@ public class PlayerListenerNew implements Listener {
 				l.setX(l.getX() + x);
 				l.setZ(l.getZ() + z);
 				if (count++ > 10) {
-					e.getPlayer().sendMessage(
+					Util.sendMessage(e.getPlayer(), 
 							ChatColor.RED + "No viable spot found");
 					return;
 				}
@@ -541,7 +540,7 @@ public class PlayerListenerNew implements Listener {
 		}
 		try {
 			if (state.getLine(1).equals("MobHead")) {
-				p.sendMessage("itemid " + p.getItemInHand().getTypeId());
+				Util.sendMessage(p, "itemid " + p.getItemInHand().getTypeId());
 				if (p.getItemInHand().getTypeId() != 397)
 					return;
 				int val = Integer.parseInt(state.getLine(3));
@@ -551,7 +550,7 @@ public class PlayerListenerNew implements Listener {
 				return;
 			}
 		} catch (Exception e) {
-			p.sendMessage("error");
+			Util.sendMessage(p, "error");
 		}
 		try {
 			if (state.getLine(1).equalsIgnoreCase("Enchantment")) {
@@ -559,7 +558,7 @@ public class PlayerListenerNew implements Listener {
 				int cost = Integer.parseInt(state.getLine(3));
 				item = Util.addEnchant(item, state.getLine(2));
 				if (item == null) {
-					p.sendMessage(ChatColor.RED
+					Util.sendMessage(p, ChatColor.RED
 							+ "Enchantment will not work");
 					return;
 				}
@@ -575,7 +574,7 @@ public class PlayerListenerNew implements Listener {
 				return;
 			}
 		} catch (Exception e3) {
-			p.sendMessage("ERROR");
+			Util.sendMessage(p, "ERROR");
 			RCWars.sendLogs("Sign at "
 					+ state.getBlock().getLocation().toString()
 					+ " error enchanting");
@@ -589,22 +588,22 @@ public class PlayerListenerNew implements Listener {
 		}
 		if (state.getLine(1).equals("repair")) {
 			if (state.getLine(2) == null) {
-				p.sendMessage("Error with 3rd line of sign, should be base name");
+				Util.sendMessage(p, "Error with 3rd line of sign, should be base name");
 				return;
 			}
 			Base b = Base.getBase(state.getLine(2));
 			if (b == null) {
-				p.sendMessage("Error with 3rd line of sign, should be base name");
+				Util.sendMessage(p, "Error with 3rd line of sign, should be base name");
 				return;
 			}
 			Siege s = Siege.getSiege(b);
 			if (s == null) {
-				p.sendMessage("Error with 3rd line of sign, could not find siege");
+				Util.sendMessage(p, "Error with 3rd line of sign, could not find siege");
 				return;
 			}
 			String[] str = state.getLine(3).split(":");
 			if (str.length != 2) {
-				p.sendMessage("Error with 4th line, should be \"#:#\"");
+				Util.sendMessage(p, "Error with 4th line, should be \"#:#\"");
 				return;
 			}
 			if (RCWars.spendWarPoints(p, Integer.parseInt(str[1]))){
@@ -616,7 +615,7 @@ public class PlayerListenerNew implements Listener {
 		if (state.getLine(1).equalsIgnoreCase("kit")) {
 			Kit k = Kit.getKit(state.getLine(2));
 			if (k == null) {
-				p.sendMessage("Kit not found");
+				Util.sendMessage(p, "Kit not found");
 				return;
 			}
 			if (!RCWars.spendWarPoints(p,
@@ -646,7 +645,7 @@ public class PlayerListenerNew implements Listener {
 				num = 1;
 				cost = Integer.parseInt(split[0]);
 			} else {
-				p.sendMessage("Incorrect sign setup");
+				Util.sendMessage(p, "Incorrect sign setup");
 				RCWars.sendLogs("Sign at "
 						+ state.getBlock().getLocation().toString()
 						+ " has incorrect cost/num");
@@ -654,7 +653,7 @@ public class PlayerListenerNew implements Listener {
 			}
 			if ((RCWars.getWarPoints(p) == null)
 					|| (RCWars.getWarPoints(p) < cost)) {
-				p.sendMessage(ChatColor.RED
+				Util.sendMessage(p, ChatColor.RED
 						+ "You don't have enough WarPoints");
 				return;
 			}
@@ -663,7 +662,7 @@ public class PlayerListenerNew implements Listener {
 				mat = Material.getMaterial(Integer.parseInt(state
 						.getLine(1)));
 				if (mat == null) {
-					p.sendMessage("Error with sign(mat)");
+					Util.sendMessage(p, "Error with sign(mat)");
 					return;
 				}
 				if (mat.name().length() < 16) {
@@ -693,11 +692,11 @@ public class PlayerListenerNew implements Listener {
 			if (leftover != null) {
 				p.getLocation().getWorld()
 						.dropItem(p.getLocation(), leftover);
-				p.sendMessage("Inv full, dropping at your feet");
+				Util.sendMessage(p, "Inv full, dropping at your feet");
 			}
 			p.updateInventory();
 		} catch (Exception e) {
-			p.sendMessage(ChatColor.RED + "ERROR");
+			Util.sendMessage(p, ChatColor.RED + "ERROR");
 			e.printStackTrace();
 			RCWars.returnPlugin()
 					.getLogger()
@@ -782,7 +781,7 @@ public class PlayerListenerNew implements Listener {
 					if ((invTime.containsKey(e.getPlayer().getName()))
 							&& ((System.currentTimeMillis() - ((Long) invTime
 									.get(e.getPlayer().getName())).longValue()) / 1000L < 10L)) {
-						e.getPlayer().sendMessage(
+						Util.sendMessage(e.getPlayer(), 
 								ChatColor.RED
 										+ "You must wait to re-open the chest");
 						return;
@@ -820,12 +819,12 @@ public class PlayerListenerNew implements Listener {
 
 	public void openBankOther(Player player, String other) {
 		if (checkValid(other)) {
-			player.sendMessage("Already being edited");
+			Util.sendMessage(player, "Already being edited");
 			return;
 		}
 		Inventory i = openBank(other, player);
 		if (i == null) {
-			player.sendMessage(other + " does not have a warchest");
+			Util.sendMessage(player, other + " does not have a warchest");
 			return;
 		}
 		modifyInv.put(player, other);
@@ -835,7 +834,7 @@ public class PlayerListenerNew implements Listener {
 
 	public void openBankOwn(Player player) {
 		if (checkValid(player.getName())) {
-			player.sendMessage("Bank is being checked, ask a mod for details");
+			Util.sendMessage(player, "Bank is being checked, ask a mod for details");
 			return;
 		}
 		Inventory i = openBank(player.getName(), player);
@@ -916,7 +915,7 @@ public class PlayerListenerNew implements Listener {
 			Player player = Bukkit.getPlayer(p);
 			if (player == null)
 				return;
-			player.sendMessage("Error: Please tell a mod and refrain from re-entering wars (savePlayer)");
+			Util.sendMessage(player, "Error: Please tell a mod and refrain from re-entering wars (savePlayer)");
 		}
 	}
 

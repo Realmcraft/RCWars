@@ -10,6 +10,7 @@ import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.SiegeUpdate.TntMeta;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -230,7 +231,7 @@ public class EntityListener
       activatePortal(p, b, e);
       return;
     }
-    p.sendMessage("No data found");
+    Util.sendMessage(p, "No data found");
   }
 
   private Block checkFour(Location temp) {
@@ -275,7 +276,7 @@ public class EntityListener
     e.setCancelled(true);
     if (r == null) return;
     if ((r.isRef()) && (!p.hasPermission("rcwars.ref"))) {
-      p.sendMessage(ChatColor.RED + "Not allowed to join ref");
+      Util.sendMessage(p, ChatColor.RED + "Not allowed to join ref");
       delay.put(p.getName(), Long.valueOf(System.currentTimeMillis()));
       return;
     }
@@ -284,7 +285,7 @@ public class EntityListener
       return;
     if (check.equals(r)) {
       if (r.getSpawn() == null) {
-        p.sendMessage("Spawn for race " + r.getDisplay() + " has not been set");
+        Util.sendMessage(p, "Spawn for race " + r.getDisplay() + " has not been set");
         delay.put(p.getName(), Long.valueOf(System.currentTimeMillis()));
         return;
       }
@@ -294,7 +295,7 @@ public class EntityListener
         {
           p.closeInventory();
           WarPlayers.setRace(p, r);
-          p.sendMessage(ChatColor.GREEN + "Set race to " + r.getDisplay());
+          Util.sendMessage(p, ChatColor.GREEN + "Set race to " + r.getDisplay());
           delay.remove(p.getName());
         }
       }
@@ -303,7 +304,7 @@ public class EntityListener
       return;
     }
 
-    p.sendMessage(ChatColor.RED + "Races are unbalanced! " + check.getDisplay() + 
+    Util.sendMessage(p, ChatColor.RED + "Races are unbalanced! " + check.getDisplay() + 
       ChatColor.RED + " has too few people!");
     delay.put(p.getName(), Long.valueOf(System.currentTimeMillis()));
   }

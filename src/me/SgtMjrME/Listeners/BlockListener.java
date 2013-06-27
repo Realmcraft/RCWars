@@ -3,6 +3,7 @@ package me.SgtMjrME.Listeners;
 import java.util.Iterator;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.Abilities.AbilityTimer;
 import me.SgtMjrME.Object.Base;
 import me.SgtMjrME.Object.WarPlayers;
@@ -59,7 +60,7 @@ public class BlockListener
         while (i.hasNext()) {
           Player p = Bukkit.getPlayer((String)i.next());
           if (p != null)
-            p.sendMessage(ChatColor.RED + "Base " + b.getDisp() + ChatColor.RED + " is being sieged!");
+            Util.sendMessage(p, ChatColor.RED + "Base " + b.getDisp() + ChatColor.RED + " is being sieged!");
         }
         final Location place = e.getBlock().getLocation();
 
@@ -146,7 +147,7 @@ public class BlockListener
       (event.getLine(0).equals("[Class]"))) && 
       (!event.getPlayer().hasPermission("rcwars.admin"))) {
       event.setCancelled(true);
-      event.getPlayer().sendMessage(ChatColor.RED + "Not allowed to place a " + event.getLine(0));
+      Util.sendMessage(event.getPlayer(), ChatColor.RED + "Not allowed to place a " + event.getLine(0));
     }
   }
   
