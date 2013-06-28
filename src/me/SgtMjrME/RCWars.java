@@ -90,7 +90,7 @@ public class RCWars extends JavaPlugin {
 		move "other items" to backpack
 	 * UPDATE #2: DONE
 		Allow them to move all items, that are not part of their class items (ones they spawn with)
-	 * UPDATE #3: TODO
+	 * UPDATE #3: DONE
 		Kits can run commands OR have items
 	 * UPDATE #4: TODO
 		spawn eggs (this is gonna be an epic one)
@@ -108,6 +108,8 @@ public class RCWars extends JavaPlugin {
 	 	Place tnt 1 block from wall (ground,etc)
 	 * UPDATE #9:  TODO
 	     Set all chats to proper tag
+	 * UPDATE #10: TODO
+	     remove rain
 	 	
 	 	TODO EMERGENCY
 	 	Bug: Healmage teleports TESTING
