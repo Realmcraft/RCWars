@@ -24,6 +24,7 @@ import me.SgtMjrME.Object.Base;
 import me.SgtMjrME.Object.Kit;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
+import me.SgtMjrME.Object.WarPoints;
 import me.SgtMjrME.SiegeUpdate.Cannon;
 import me.SgtMjrME.SiegeUpdate.Siege;
 
@@ -252,7 +253,7 @@ public class PlayerListenerNew implements Listener {
 		AbilityTimer.onLeave(e.getPlayer(), e);
 
 		if (WarPlayers.getRace(p) != null) {
-			RCWars.returnPlugin().saveWarPoints(p);
+			WarPoints.saveWarPoints(p);
 			if (WarPlayers.gotDamaged(p)) {
 				p.damage(1000);
 				RCWars.returnPlugin().sendToMySQL(p, "death", 0);
@@ -544,7 +545,7 @@ public class PlayerListenerNew implements Listener {
 				if (p.getItemInHand().getTypeId() != 397)
 					return;
 				int val = Integer.parseInt(state.getLine(3));
-				RCWars.returnPlugin().giveWarPoints(p,
+				WarPoints.giveWarPoints(p,
 						val * p.getItemInHand().getAmount());
 				p.setItemInHand(null);
 				return;
@@ -562,7 +563,7 @@ public class PlayerListenerNew implements Listener {
 							+ "Enchantment will not work");
 					return;
 				}
-				if (!RCWars.spendWarPoints(p, cost).booleanValue())
+				if (!WarPoints.spendWarPoints(p, cost))
 					return;
 				final Player hold = p;
 				final ItemStack holdi = item;
@@ -575,7 +576,7 @@ public class PlayerListenerNew implements Listener {
 			}
 		} catch (Exception e3) {
 			Util.sendMessage(p, "ERROR");
-			RCWars.sendLogs("Sign at "
+			Util.sendLog("Sign at "
 					+ state.getBlock().getLocation().toString()
 					+ " error enchanting");
 			return;
@@ -606,7 +607,7 @@ public class PlayerListenerNew implements Listener {
 				Util.sendMessage(p, "Error with 4th line, should be \"#:#\"");
 				return;
 			}
-			if (RCWars.spendWarPoints(p, Integer.parseInt(str[1]))){
+			if (WarPoints.spendWarPoints(p, Integer.parseInt(str[1]))){
 				s.repair(Integer.parseInt(str[0]));
 				return;
 			}
@@ -618,7 +619,7 @@ public class PlayerListenerNew implements Listener {
 				Util.sendMessage(p, "Kit not found");
 				return;
 			}
-			if (!RCWars.spendWarPoints(p,
+			if (!WarPoints.spendWarPoints(p,
 					Integer.parseInt(state.getLine(3)))) {
 				return;
 			}
@@ -646,13 +647,13 @@ public class PlayerListenerNew implements Listener {
 				cost = Integer.parseInt(split[0]);
 			} else {
 				Util.sendMessage(p, "Incorrect sign setup");
-				RCWars.sendLogs("Sign at "
+				Util.sendLog("Sign at "
 						+ state.getBlock().getLocation().toString()
 						+ " has incorrect cost/num");
 				return;
 			}
-			if ((RCWars.getWarPoints(p) == null)
-					|| (RCWars.getWarPoints(p) < cost)) {
+			if ((WarPoints.getWarPoints(p) == null)
+					|| (WarPoints.getWarPoints(p) < cost)) {
 				Util.sendMessage(p, ChatColor.RED
 						+ "You don't have enough WarPoints");
 				return;
@@ -687,7 +688,7 @@ public class PlayerListenerNew implements Listener {
 			} else {
 				item = new ItemStack(mat, num);
 			}
-				RCWars.spendWarPoints(p, cost);
+				WarPoints.spendWarPoints(p, cost);
 			ItemStack leftover = addItemSGT(p.getInventory(), item);
 			if (leftover != null) {
 				p.getLocation().getWorld()

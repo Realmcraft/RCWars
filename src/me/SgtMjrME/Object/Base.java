@@ -96,7 +96,7 @@ public class Base {
 			} catch (Exception e) {
 				Util.sendMessage(p, ChatColor.DARK_RED
 						+ "Error displaying base, moving to next one", false);
-				RCWars.sendLogs("[RCWars] Error displaying bases");
+				Util.sendLog("[RCWars] Error displaying bases");
 			}
 	}
 
@@ -160,7 +160,7 @@ public class Base {
 		setExp(config.getInt("exp", 5));
 		changeFlagColor();
 		resetGate();
-		RCWars.sendLogs("Base " + basename + " set up");
+		Util.sendLog("Base " + basename + " set up");
 	}
 
 	public void resetGate() {

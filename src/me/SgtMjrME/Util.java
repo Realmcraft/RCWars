@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import me.SgtMjrME.Object.Race;
 
@@ -24,6 +25,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 public class Util {
 	
 	static String colStr = ChatColor.translateAlternateColorCodes('&', "&f&l[&6&lRC&4&lWars&f&l] ");
+	static Logger l = Bukkit.getLogger();
 	
 	public static int toInt(String s) {
 		return Integer.parseInt(s);
@@ -284,4 +286,11 @@ public class Util {
 	}
 	
 	public static void sendMessage(CommandSender p, String message){sendMessage(p, message, true);}
+	
+	public static void sendLog(String s, boolean tag){
+		if (tag) s = "[RCWARS]" + s;
+		l.info(s);
+	}
+	
+	public static void sendLog(String s){sendLog(s,true);}
 }

@@ -49,13 +49,13 @@ public class WarPlayers {
 			points = Integer.parseInt(temp);
 			b.close();
 		} catch (FileNotFoundException e) {
-			RCWars.sendLogs("File not found for player " + p.getName());
+			Util.sendLog("File not found for player " + p.getName());
 		} catch (IOException e) {
-			RCWars.sendLogs("Error reading player " + p.getName());
+			Util.sendLog("Error reading player " + p.getName());
 		} catch (Exception e) {
-			RCWars.sendLogs("Other Error with " + p.getName());
+			Util.sendLog("Other Error with " + p.getName());
 		}
-		RCWars.warPointSave.put(p, Integer.valueOf(points));
+		WarPoints.warPointSave.put(p, Integer.valueOf(points));
 
 		add(p, r);
 		p.teleport(r.getSpawn());
@@ -96,7 +96,7 @@ public class WarPlayers {
 			return;
 		}
 
-		RCWars.returnPlugin().saveWarPoints(p);
+		WarPoints.saveWarPoints(p);
 
 		if ((numPlayers() < 8)
 				&& (RCWars.returnPlugin().isRunning().equals(state.RUNNING)))

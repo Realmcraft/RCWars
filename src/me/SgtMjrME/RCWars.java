@@ -2,11 +2,9 @@ package me.SgtMjrME;
 
 import com.earth2me.essentials.Essentials;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +22,7 @@ import me.SgtMjrME.Object.Kit;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.Rally;
 import me.SgtMjrME.Object.WarPlayers;
+import me.SgtMjrME.Object.WarPoints;
 import me.SgtMjrME.Object.state;
 import me.SgtMjrME.SiegeUpdate.Cannon;
 import me.SgtMjrME.SiegeUpdate.Siege;
@@ -63,14 +62,14 @@ public class RCWars extends JavaPlugin {
 	private PlayerListenerNew playerListener;
 	private BlockListener blockListener;
 	private EntityListener entityListener;
+	@SuppressWarnings("unused")
+	private WarPoints warPoints;
 	private World world;
 	private static Location lobby;
 	private YamlConfiguration config;
 	private File configfile;
 	private int openDuration;
 	private int closeDuration;
-	private int warPoints;
-	private int warPointMax;
 	public Kit kitOnSpawn;
 	private int repairBaseVal;
 	private mysqlLink mysql;
@@ -78,7 +77,6 @@ public class RCWars extends JavaPlugin {
 	public static int killexp;
 	public static int basecapexp;
 	public int baserepexp;
-	public static HashMap<Player, Integer> warPointSave = new HashMap<Player, Integer>();
 	private long timedTime;
 	public static Player headmodifier;
 	public static HashSet<String> leaving = new HashSet<String>();
@@ -92,9 +90,6 @@ public class RCWars extends JavaPlugin {
 		Allow them to move all items, that are not part of their class items (ones they spawn with)
 	 * UPDATE #3: DONE
 		Kits can run commands OR have items
-	 * UPDATE #4: TODO
-		spawn eggs (this is gonna be an epic one)
-		-spawneggs will spawn mobs to fight, but wont hurt teammates
 	 * UPDATE #5: TODO
 		-load warpoints stats in the lobby, but dont allow to buy (not in game)
 		- Scoreboard for WarPoints (from player.yml, not from database)
@@ -110,6 +105,9 @@ public class RCWars extends JavaPlugin {
 	     Set all chats to proper tag
 	 * UPDATE #10: TODO
 	     remove rain
+	     	 * UPDATE #4: TODO
+		spawn eggs (this is gonna be an epic one)
+		-spawneggs will spawn mobs to fight, but wont hurt teammates
 	 	
 	 	TODO EMERGENCY
 	 	Bug: Healmage teleports TESTING
@@ -125,6 +123,7 @@ public class RCWars extends JavaPlugin {
 
 	public static HashMap<String, Integer> repairing = new HashMap<String, Integer>();
 	boolean open;
+	private int timedWarPoints;
 
 	public void onEnable() {
 		pm = getServer().getPluginManager();
@@ -185,8 +184,9 @@ public class RCWars extends JavaPlugin {
 		openDuration = config.getInt("gateopentime", 10);
 		closeDuration = config.getInt("gateclosetime", 10);
 		open = true;
-		warPoints = config.getInt("warpoints", 1);
-		warPointMax = config.getInt("warpointmax", 150);
+		
+		warPoints = new WarPoints(config.getInt("warpointmax",150), mysql, this);
+		timedWarPoints = config.getInt("warpoints",1);
 
 		repairBaseVal = config.getInt("repairBaseVal", 1);
 		timedTime = (config.getLong("timedTimer", 1L) * 20L * 60L);
@@ -295,91 +295,6 @@ public class RCWars extends JavaPlugin {
 		}
 	}
 
-	public static Boolean spendWarPoints(Player p, int cost) {
-		if (warPointSave.containsKey(p)) {
-			int points = warPointSave.get(p);
-			if (points < cost) {
-				Util.sendMessage(p, ChatColor.RED + "Not enough War Points");
-				return false;
-			}
-			Util.sendMessage(p, ChatColor.GREEN + "You have been charged " + cost
-					+ " warpoints");
-			warPointSave.put(p, points - cost);
-			returnPlugin().saveWPnoRemove(p);
-			return true;
-		}
-		Util.sendMessage(p, ChatColor.RED + "War data not loaded");
-		return false;
-	}
-
-	public void giveWarPoints(Player player, int warPoints) {
-		if ((warPointSave.containsKey(player))
-				&& (((Integer) warPointSave.get(player)).intValue() + warPoints > warPointMax)) {
-			Util.sendMessage(player, "You have hit the max of " + warPointMax);
-			warPointSave.put(player, warPointMax);
-			if (mysql != null)
-				mysql.updatePlayer(player, "wp", warPoints);
-			return;
-		}
-		if (!warPointSave.containsKey(player)) {
-			warPointSave.put(player, warPoints);
-			if (mysql != null) mysql.updatePlayer(player, "wp", warPoints);
-		} else {
-			warPointSave.put(player, warPointSave.get(player) + warPoints);
-			if (mysql != null) mysql.updatePlayer(player, "wp", warPoints);
-		}
-//		Util.sendMessage(player, ChatColor.GREEN + "You have been given " + warPoints
-//				+ " warpoints");
-	}
-
-	public static Integer getWarPoints(Player p) {
-		return (Integer) warPointSave.get(p);
-	}
-
-	public static void loadWarPoints(Player p) {
-		int points = 0;
-		try {
-			BufferedReader b = new BufferedReader(new FileReader(new File(
-					returnPlugin().getDataFolder() + "/WarPoints/"
-							+ p.getName() + ".txt")));
-			String temp = b.readLine();
-			points = Integer.parseInt(temp);
-			b.close();
-		} catch (FileNotFoundException e) {
-			sendLogs("File not found for player " + p.getName());
-		} catch (IOException e) {
-			sendLogs("Error reading player " + p.getName());
-		} catch (Exception e) {
-			sendLogs("Other Error with " + p.getName());
-		}
-		warPointSave.put(p, points);
-	}
-
-	public void saveWPnoRemove(Player p) {
-		if (warPointSave.containsKey(p)) {
-			int points = warPointSave.get(p);
-			try {
-				File f = new File(getDataFolder() + "/WarPoints");
-				if (!f.exists())
-					f.mkdir();
-				BufferedWriter b = new BufferedWriter(
-						new FileWriter(new File(getDataFolder() + "/WarPoints/"
-								+ p.getName() + ".txt")));
-				b.write("" + points);
-				b.close();
-			} catch (IOException e) {
-				sendLogs("Could not save player");
-			}
-		}
-	}
-
-	public void saveWarPoints(Player p) {
-		if (warPointSave.containsKey(p)) {
-			saveWPnoRemove(p);
-			warPointSave.remove(p);
-		}
-	}
-
 	protected void playerLeave(String player) {
 		Player p = getServer().getPlayer(player);
 		if (p == null) {
@@ -387,7 +302,7 @@ public class RCWars extends JavaPlugin {
 		}
 
 		if (WarPlayers.getRace(p) != null) {
-			saveWarPoints(p);
+			WarPoints.saveWarPoints(p);
 
 			if (shouldDie(p)) {
 				p.setHealth(0);
@@ -615,12 +530,7 @@ public class RCWars extends JavaPlugin {
 			}
 			k.addKitCost(p);
 		} else if (commandLabel.equalsIgnoreCase("wp")) {
-			if (warPointSave.containsKey(p)) {
-				Util.sendMessage(p, "You have " + warPointSave.get(p)
-						+ " warpoints");
-			} else {
-				Util.sendMessage(p, "Your war data is not loaded");
-			}
+			WarPoints.dispWP(p);
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("listkits"))
 					&& (p.hasPermission("rcwars.mod"))) {
@@ -1276,10 +1186,6 @@ public class RCWars extends JavaPlugin {
 		return lobby;
 	}
 
-	public void sendLog(String string) {
-		sendLogs(string);
-	}
-
 	public void checkPlayerBase() {
 		Iterator<Base> bases = Base.returnBases().iterator();
 		while (bases.hasNext()) {
@@ -1423,10 +1329,6 @@ public class RCWars extends JavaPlugin {
 				players.remove();
 			}
 		}
-	}
-
-	public static void sendLogs(String currentPath) {
-		log.info(currentPath);
 	}
 
 	public static void logKill(Player damageep, Player damagerp) {
@@ -1589,7 +1491,7 @@ public class RCWars extends JavaPlugin {
 	}
 
 	public void endGame(Player p) {
-		sendLogs("Wars has been shut down");
+		Util.sendLog("Wars has been shut down");
 		WarPlayers.removeAll(lobby);
 		isRunning = state.STOPPED;
 		cancelMyTasks();
@@ -1668,11 +1570,7 @@ public class RCWars extends JavaPlugin {
 					if (!inspawn) {
 						double count = ((Double) basenum.get(playersRace))
 								.doubleValue();
-
-						Util.sendMessage(player, ChatColor.GREEN
-								+ "You have been given " + warPoints * count
-								+ " warpoints for playing");
-						giveWarPoints(player, (int) (warPoints * count));
+						WarPoints.giveWarPoints(player, (int) (timedWarPoints * count));
 					}
 				}
 			}

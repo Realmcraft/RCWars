@@ -53,7 +53,7 @@ public class Siege {
 		for (String s : allLoc) {
 			String[] split = s.split(",");
 			if (split.length != 5) {
-				RCWars.sendLogs("Siege did not properly grab data "
+				Util.sendLog("Siege did not properly grab data "
 						+ b.getDisp());
 			} else {
 				int x = Integer.parseInt(split[0]);

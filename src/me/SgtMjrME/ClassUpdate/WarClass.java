@@ -9,6 +9,7 @@ import me.SgtMjrME.Util;
 //import me.SgtMjrME.ClassUpdate.Abilities.None;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
+import me.SgtMjrME.Object.WarPoints;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,7 +41,7 @@ public class WarClass {
 		try {
 			cfg.load(f);
 		} catch (Exception e) {
-			rcWars.sendLog("Error loading " + string);
+			Util.sendLog("Error loading " + string);
 			valid = false;
 		}
 		className = cfg.getString("name");
@@ -56,9 +57,9 @@ public class WarClass {
 		while ((cs = cfg.getConfigurationSection("rank" + ++i)) != null) {
 			WarRank newRank = new WarRank(cs, className, i, this);
 			if (!newRank.valid) {
-				RCWars.sendLogs("Rank " + i + " in " + string
+				Util.sendLog("Rank " + i + " in " + string
 						+ " could not load");
-				RCWars.sendLogs(cs.toString());
+				Util.sendLog(cs.toString());
 			} else {
 				ranks.add(newRank);
 			}
@@ -75,12 +76,12 @@ public class WarClass {
 				WarClass c = new WarClass(f.getAbsoluteFile() + "/" + file,
 						rcWars);
 				if (!c.valid) {
-					rcWars.sendLog("Error loading class data for " + file);
+					Util.sendLog("Error loading class data for " + file);
 				} else
 					s2c.put(c.className, c);
 			}
 		if (defaultClass == null)
-			RCWars.sendLogs("Could not find default class");
+			Util.sendLog("Could not find default class");
 	}
 
 	public static WarClass getClass(String p) {
@@ -98,7 +99,7 @@ public class WarClass {
 		if (permission != null && !p.hasPermission(permission)) {
 			Util.sendMessage(p, ChatColor.RED
 					+ "This class is for donators.  Donate @ www.REALMC.net");
-			if (!RCWars.spendWarPoints(p, bypassCost)){
+			if (!WarPoints.spendWarPoints(p, bypassCost)){
 				Util.sendMessage(p, ChatColor.RED + "You do not have enough warpoints to bypass this check");
 				defaultClass.enterClass(p);
 				return false;

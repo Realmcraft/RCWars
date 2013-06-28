@@ -138,7 +138,7 @@ public class Race {
 			rcs.save(RCWars.returnPlugin().getDataFolder() + "/Races/" + name
 					+ ".yml");
 		} catch (IOException e) {
-			RCWars.sendLogs("Crashed");
+			Util.sendLog("Crashed");
 			e.printStackTrace();
 		}
 	}

@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Util;
+import me.SgtMjrME.Object.WarPoints;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -131,7 +132,7 @@ public class Cannon {
 	}
 
 	private void launchTNT(Player p) {
-		if (!RCWars.spendWarPoints(p, cannonCost).booleanValue()) {
+		if (!WarPoints.spendWarPoints(p, cannonCost).booleanValue()) {
 			Util.sendMessage(p, ChatColor.RED
 					+ "Not enough War Points, removing from cannon");
 			leaveCannon(getCannon(p));
@@ -150,7 +151,7 @@ public class Cannon {
 		rcwars = rcWars;
 		File f = new File(rcWars.getDataFolder() + "/Cannons");
 		if (!f.exists()) {
-			RCWars.sendLogs("Cannon folder not found");
+			Util.sendLog("Cannon folder not found");
 			f.mkdir();
 		}
 		String[] files = f.list();
@@ -256,7 +257,7 @@ public class Cannon {
 		try {
 			cost = Integer.parseInt(string);
 		} catch (Exception e) {
-			RCWars.sendLogs("Error, not an int");
+			Util.sendLog("Error, not an int");
 			return;
 		}
 		cannonCost = cost;

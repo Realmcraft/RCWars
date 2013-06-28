@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Util;
+import me.SgtMjrME.Object.WarPoints;
 import me.SgtMjrME.Tasks.AbilityCooldown;
 
 import org.bukkit.Bukkit;
@@ -121,20 +122,20 @@ public class AbilityTimer {
 
 		if (b == null)
 			return;
-		if (!RCWars.warPointSave.containsKey(p)) {
+		if (!WarPoints.warPointSave.containsKey(p)) {
 			return;
 		}
 		if ((!b.OverrideAtt(p)) && (!checkTime(p, b)))
 			return;
 
-		if (b.getCost() > RCWars.getWarPoints(p)) {
+		if (b.getCost() > WarPoints.getWarPoints(p)) {
 			Util.sendMessage(p, ChatColor.RED + "Not enough warpoints");
 			return;
 		}
 
 		if (b.onAttack(p, e)) {
 			if (b.getCost() != 0)
-				RCWars.spendWarPoints(p, b.getCost());
+				WarPoints.spendWarPoints(p, b.getCost());
 //			Util.sendMessage(p, ChatColor.GREEN + "You have used ability "
 //					+ b.getDisplay());
 //			addCooldown(p, b);
@@ -149,18 +150,18 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!RCWars.warPointSave.containsKey(p)) {
+		if (!WarPoints.warPointSave.containsKey(p)) {
 			return;
 		}
 		if ((!b.OverrideDef(p)) && (!checkTime(p, b)))
 			return;
-		if (b.getCost() > RCWars.getWarPoints(p).intValue()) {
+		if (b.getCost() > WarPoints.getWarPoints(p)) {
 			Util.sendMessage(p, ChatColor.RED + "Not enough warpoints");
 			return;
 		}
 		if (b.onDefend(p, e)) {
 			if (b.getCost() != 0)
-				RCWars.spendWarPoints(p, b.getCost());
+				WarPoints.spendWarPoints(p, b.getCost());
 //			Util.sendMessage(p, ChatColor.GREEN + "You have used ability "
 //					+ b.getDisplay());
 //			addCooldown(p, b);
@@ -183,18 +184,18 @@ public class AbilityTimer {
 			Cloak.removeCloak(p);
 			return;
 		}
-		if (!RCWars.warPointSave.containsKey(p)) {
+		if (!WarPoints.warPointSave.containsKey(p)) {
 			return;
 		}
 		if ((!b.OverrideInt(p)) && (!checkTime(p, b)))
 			return;
-		if (b.getCost() > RCWars.getWarPoints(p)) {
+		if (b.getCost() > WarPoints.getWarPoints(p)) {
 			Util.sendMessage(p, ChatColor.RED + "Not enough warpoints");
 			return;
 		}
 		if (b.onInteract(p, e)) {
 			if (b.getCost() != 0)
-				RCWars.spendWarPoints(p, b.getCost());
+				WarPoints.spendWarPoints(p, b.getCost());
 			// Util.sendMessage(p, ChatColor.GREEN + "You have used ability "
 			// + b.getDisplay());
 			// addCooldown(p, b);
@@ -211,17 +212,17 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!RCWars.warPointSave.containsKey(p)) {
+		if (!WarPoints.warPointSave.containsKey(p)) {
 			return;
 		}
 		if (!checkTime(p, b))
 			return;
-		if (b.getCost() > RCWars.getWarPoints(p).intValue()) {
+		if (b.getCost() > WarPoints.getWarPoints(p).intValue()) {
 			Util.sendMessage(p, ChatColor.RED + "Not enough warpoints");
 			return;
 		}
 		if (b.onJoin(p, e))
-			RCWars.spendWarPoints(p, b.getCost());
+			WarPoints.spendWarPoints(p, b.getCost());
 //		addCooldown(p, b);
 		Bukkit.getScheduler().runTask(
 				RCWars.returnPlugin(),
@@ -244,18 +245,18 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!RCWars.warPointSave.containsKey(p)) {
+		if (!WarPoints.warPointSave.containsKey(p)) {
 			return;
 		}
 		if (!checkTime(p, b))
 			return;
-		if (b.getCost() > RCWars.getWarPoints(p).intValue()) {
+		if (b.getCost() > WarPoints.getWarPoints(p)) {
 			Util.sendMessage(p, ChatColor.RED + "Not enough warpoints");
 			return;
 		}
 		if (b.onLaunch(e)) {
 			if (b.getCost() != 0)
-				RCWars.spendWarPoints(p, b.getCost());
+				WarPoints.spendWarPoints(p, b.getCost());
 //			Util.sendMessage(p, ChatColor.GREEN + "You have used ability "
 //					+ b.getDisplay());
 //			addCooldown(p, b);
@@ -271,18 +272,18 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!RCWars.warPointSave.containsKey(p)) {
+		if (!WarPoints.warPointSave.containsKey(p)) {
 			return;
 		}
 		if ((!b.OverrideTpt(p)) && (!checkTime(p, b)))
 			return;
-		if (b.getCost() > RCWars.getWarPoints(p).intValue()) {
+		if (b.getCost() > WarPoints.getWarPoints(p)) {
 			Util.sendMessage(p, ChatColor.RED + "Not enough warpoints");
 			return;
 		}
 		if (b.onTeleport(e)) {
 			if (b.getCost() != 0)
-				RCWars.spendWarPoints(p, b.getCost());
+				WarPoints.spendWarPoints(p, b.getCost());
 //			e.getPlayer()
 //					.sendMessage(
 //							ChatColor.GREEN + "You have used ability "
@@ -307,18 +308,18 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!RCWars.warPointSave.containsKey(p)) {
+		if (!WarPoints.warPointSave.containsKey(p)) {
 			return;
 		}
 		if ((!b.OverrideTnt(p)) && (!checkTime(p, b)))
 			return;
-		if (b.getCost() > RCWars.getWarPoints(p).intValue()) {
+		if (b.getCost() > WarPoints.getWarPoints(p)) {
 			Util.sendMessage(p, ChatColor.RED + "Not enough warpoints");
 			return;
 		}
 		if (b.onExplode(e)) {
 			if (b.getCost() != 0)
-				RCWars.spendWarPoints(p, b.getCost());
+				WarPoints.spendWarPoints(p, b.getCost());
 //			Util.sendMessage(p, ChatColor.GREEN + "You have used ability "
 //					+ b.getDisplay());
 //			addCooldown(p, b);

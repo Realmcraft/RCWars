@@ -90,7 +90,7 @@ public class Kit {
 	}
 	
 	public void addKitCost(Player p){
-		if (RCWars.spendWarPoints(p, cost))
+		if (WarPoints.spendWarPoints(p, cost))
 			addKit(p);
 	}
 
