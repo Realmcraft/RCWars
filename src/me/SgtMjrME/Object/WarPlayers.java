@@ -1,15 +1,11 @@
 package me.SgtMjrME.Object;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.WarClass;
 import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.Listeners.EntityListener;
@@ -39,23 +35,6 @@ public class WarPlayers {
 	}
 
 	public static void setRace(Player p, Race r) {
-		int points = 0;
-		try {
-			BufferedReader b = new BufferedReader(new FileReader(new File(
-					RCWars.returnPlugin().getDataFolder() + "/WarPoints/"
-							+ p.getName() + ".txt")));
-			String temp = b.readLine();
-			points = Integer.parseInt(temp);
-			b.close();
-		} catch (FileNotFoundException e) {
-			RCWars.sendLogs("File not found for player " + p.getName());
-		} catch (IOException e) {
-			RCWars.sendLogs("Error reading player " + p.getName());
-		} catch (Exception e) {
-			RCWars.sendLogs("Other Error with " + p.getName());
-		}
-		RCWars.warPointSave.put(p, Integer.valueOf(points));
-
 		add(p, r);
 		p.teleport(r.getSpawn());
 		WarClass.defaultClass.enterClass(p);
@@ -95,7 +74,7 @@ public class WarPlayers {
 			return;
 		}
 
-		RCWars.returnPlugin().saveWarPoints(p);
+//		WarPoints.saveWarPoints(p);
 
 		if ((numPlayers() < 8)
 				&& (RCWars.returnPlugin().isRunning().equals(state.RUNNING)))
@@ -112,7 +91,7 @@ public class WarPlayers {
 		WarRank wr = WarRank.getPlayer(p);
 		if (wr != null)
 			wr.leave(p);
-		p.sendMessage("You have been removed from Wars: " + reason);
+		Util.sendMessage(p, "You have been removed from Wars: " + reason);
 	}
 
 	public void leave(Player p) {

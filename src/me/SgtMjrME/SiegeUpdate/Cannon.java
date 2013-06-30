@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
+import me.SgtMjrME.Object.WarPoints;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -75,23 +77,23 @@ public class Cannon {
 	public static void enterCannon(Player p, String s) {
 		Cannon c = getCannon(s);
 		if (c == null) {
-			p.sendMessage("Cannon not found");
+			Util.sendMessage(p, "Cannon not found");
 			return;
 		}
 		if (c.occupied) {
-			p.sendMessage("Cannon already occupied");
+			Util.sendMessage(p, "Cannon already occupied");
 			if ((times.get(c) != null)
 					&& ((System.currentTimeMillis() - ((Long) times.get(c))
 							.longValue()) / 1000L < 60L)) {
 				return;
 			}
 			leaveCannon(c);
-			p.sendMessage("Person is overtime, entering cannon");
+			Util.sendMessage(p, "Person is overtime, entering cannon");
 			enterCannon(p, s);
 			return;
 		}
 		if (cannons.get(c) == null) {
-			p.sendMessage("Cannon has no seat");
+			Util.sendMessage(p, "Cannon has no seat");
 			return;
 		}
 
@@ -99,7 +101,7 @@ public class Cannon {
 
 		c.player = p;
 		c.occupied = true;
-		c.player.sendMessage(ChatColor.GREEN + "You have entered the cannon");
+		Util.sendMessage(c.player, ChatColor.GREEN + "You have entered the cannon");
 		times.put(c, Long.valueOf(System.currentTimeMillis()));
 	}
 
@@ -130,8 +132,8 @@ public class Cannon {
 	}
 
 	private void launchTNT(Player p) {
-		if (!RCWars.spendWarPoints(p, cannonCost).booleanValue()) {
-			p.sendMessage(ChatColor.RED
+		if (!WarPoints.spendWarPoints(p, cannonCost).booleanValue()) {
+			Util.sendMessage(p, ChatColor.RED
 					+ "Not enough War Points, removing from cannon");
 			leaveCannon(getCannon(p));
 			return;
@@ -149,7 +151,7 @@ public class Cannon {
 		rcwars = rcWars;
 		File f = new File(rcWars.getDataFolder() + "/Cannons");
 		if (!f.exists()) {
-			RCWars.sendLogs("Cannon folder not found");
+			Util.sendLog("Cannon folder not found");
 			f.mkdir();
 		}
 		String[] files = f.list();
@@ -255,7 +257,7 @@ public class Cannon {
 		try {
 			cost = Integer.parseInt(string);
 		} catch (Exception e) {
-			RCWars.sendLogs("Error, not an int");
+			Util.sendLog("Error, not an int");
 			return;
 		}
 		cannonCost = cost;
@@ -282,12 +284,12 @@ public class Cannon {
 
 	public void setPlayerButton(Player p) {
 		if (setItem.containsKey(p)) {
-			p.sendMessage("Not setting button");
+			Util.sendMessage(p, "Not setting button");
 			setItem.remove(p);
 			return;
 		}
 		setItem.put(p, this);
-		p.sendMessage("Setting button for " + getName());
+		Util.sendMessage(p, "Setting button for " + getName());
 	}
 
 	public String getName() {

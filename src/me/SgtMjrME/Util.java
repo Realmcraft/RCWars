@@ -7,12 +7,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import me.SgtMjrME.Object.Race;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +23,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class Util {
+	
+	static String colStr = ChatColor.translateAlternateColorCodes('&', "&f&l[&6&lRC&4&lWars&f&l]&r ");
+	static Logger l = Bukkit.getLogger();
+	
 	public static int toInt(String s) {
 		return Integer.parseInt(s);
 	}
@@ -159,7 +165,7 @@ public class Util {
 				directory = directory + "/WarItems/";
 			File f = new File(directory + p.getName().toLowerCase() + ".txt");
 			if (!f.exists()) {
-				p.sendMessage("No previous war data found");
+				sendMessage(p, "No previous war data found");
 				if (!inWars)
 					savePlayer(
 							p.getName(),
@@ -268,9 +274,23 @@ public class Util {
 			Player player = Bukkit.getServer().getPlayer(p);
 			if (player == null)
 				return;
-			player.sendMessage(ChatColor.RED
+			Util.sendMessage(player, ChatColor.RED
 					+ "Error: Please tell a mod and refrain from re-entering wars (savePlayer)");
 			System.err.println("Error: " + e1.getMessage());
 		}
 	}
+	
+	public static void sendMessage(CommandSender p, String message, boolean tag){
+		if (tag) message = colStr + message;
+		p.sendMessage(message);
+	}
+	
+	public static void sendMessage(CommandSender p, String message){sendMessage(p, message, true);}
+	
+	public static void sendLog(String s, boolean tag){
+		if (tag) s = "[RCWARS]" + s;
+		l.info(s);
+	}
+	
+	public static void sendLog(String s){sendLog(s,true);}
 }

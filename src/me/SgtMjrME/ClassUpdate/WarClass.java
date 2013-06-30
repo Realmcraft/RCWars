@@ -5,9 +5,11 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.SgtMjrME.RCWars;
+import me.SgtMjrME.Util;
 //import me.SgtMjrME.ClassUpdate.Abilities.None;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
+import me.SgtMjrME.Object.WarPoints;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -39,7 +41,7 @@ public class WarClass {
 		try {
 			cfg.load(f);
 		} catch (Exception e) {
-			rcWars.sendLog("Error loading " + string);
+			Util.sendLog("Error loading " + string);
 			valid = false;
 		}
 		className = cfg.getString("name");
@@ -55,9 +57,9 @@ public class WarClass {
 		while ((cs = cfg.getConfigurationSection("rank" + ++i)) != null) {
 			WarRank newRank = new WarRank(cs, className, i, this);
 			if (!newRank.valid) {
-				RCWars.sendLogs("Rank " + i + " in " + string
+				Util.sendLog("Rank " + i + " in " + string
 						+ " could not load");
-				RCWars.sendLogs(cs.toString());
+				Util.sendLog(cs.toString());
 			} else {
 				ranks.add(newRank);
 			}
@@ -74,12 +76,12 @@ public class WarClass {
 				WarClass c = new WarClass(f.getAbsoluteFile() + "/" + file,
 						rcWars);
 				if (!c.valid) {
-					rcWars.sendLog("Error loading class data for " + file);
+					Util.sendLog("Error loading class data for " + file);
 				} else
 					s2c.put(c.className, c);
 			}
 		if (defaultClass == null)
-			RCWars.sendLogs("Could not find default class");
+			Util.sendLog("Could not find default class");
 	}
 
 	public static WarClass getClass(String p) {
@@ -95,22 +97,22 @@ public class WarClass {
 
 	public boolean enterClass(final Player p) {
 		if (permission != null && !p.hasPermission(permission)) {
-			p.sendMessage(ChatColor.RED
+			Util.sendMessage(p, ChatColor.RED
 					+ "This class is for donators.  Donate @ www.REALMC.net");
-			if (!RCWars.spendWarPoints(p, bypassCost)){
-				p.sendMessage(ChatColor.RED + "You do not have enough warpoints to bypass this check");
+			if (!WarPoints.spendWarPoints(p, bypassCost)){
+				Util.sendMessage(p, ChatColor.RED + "You do not have enough warpoints to bypass this check");
 				defaultClass.enterClass(p);
 				return false;
 			}
-			p.sendMessage(ChatColor.RED + "You paid " + bypassCost + " to enter this class.  Donators get it for free");
+			Util.sendMessage(p, ChatColor.RED + "You paid " + bypassCost + " to enter this class.  Donators get it for free");
 		}
 		Race r = WarPlayers.getRace(p);
 		if (r == null){
-			p.sendMessage(ChatColor.RED + "Not in a race");
+			Util.sendMessage(p, ChatColor.RED + "Not in a race");
 			return false;
 		}
 		if (!r.inSpawn(p) && !r.isRef()){
-			p.sendMessage(ChatColor.RED + "Not allowed to switch classes unless you are in your spawn");
+			Util.sendMessage(p, ChatColor.RED + "Not allowed to switch classes unless you are in your spawn");
 			return false;
 		}
 		for (int i = ranks.size() - 1; i > 0; i--) {
@@ -154,7 +156,7 @@ public class WarClass {
 	public static void dealWithSign(Player p, Sign state, PlayerInteractEvent e) {
 		WarClass w = getClass(state.getLine(1));
 		if (w == null) {
-			p.sendMessage("Class not found");
+			Util.sendMessage(p, "Class not found");
 			return;
 		}
 		w.enterClass(p);
@@ -162,21 +164,21 @@ public class WarClass {
 
 	public static void listClasses(CommandSender sender) {
 		for (WarClass c : s2c.values()) {
-			sender.sendMessage("internal " + c.className);
-			sender.sendMessage("display " + c.displayName);
-			sender.sendMessage("required perm " + c.permission);
-			sender.sendMessage("valid " + c.valid);
-			sender.sendMessage("Ranks: ");
+			Util.sendMessage(sender, "internal " + c.className, false);
+			Util.sendMessage(sender, "display " + c.displayName, false);
+			Util.sendMessage(sender, "required perm " + c.permission, false);
+			Util.sendMessage(sender, "valid " + c.valid, false);
+			Util.sendMessage(sender, "Ranks: ", false);
 			for (WarRank wr : c.ranks) {
-				sender.sendMessage("rank num " + wr.curRank);
-				sender.sendMessage("rank internal " + wr.name);
-				sender.sendMessage("rank display " + wr.display);
-				sender.sendMessage("Start perm " + wr.defaultStart);
-				sender.sendMessage("Permission to join " + wr.reqPermission);
+				Util.sendMessage(sender, "rank num " + wr.curRank, false);
+				Util.sendMessage(sender, "rank internal " + wr.name, false);
+				Util.sendMessage(sender, "rank display " + wr.display, false);
+				Util.sendMessage(sender, "Start perm " + wr.defaultStart, false);
+				Util.sendMessage(sender, "Permission to join " + wr.reqPermission, false);
 				for (ItemStack i : wr.armor)
-					sender.sendMessage(i.toString());
-				sender.sendMessage(wr.commands.toString());
-				sender.sendMessage("is valid " + wr.valid);
+					Util.sendMessage(sender, i.toString(), false);
+				Util.sendMessage(sender, wr.commands.toString(), false);
+				Util.sendMessage(sender, "is valid " + wr.valid, false);
 			}
 		}
 	}

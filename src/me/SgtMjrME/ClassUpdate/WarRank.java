@@ -109,13 +109,12 @@ public class WarRank {
 	}
 
 	public void addOther(final Player p) {
-		for (int i = 0; i < otherItems.size(); i++)
-			p.getInventory().clear(i);
+		p.getInventory().remove(262);
 		Bukkit.getScheduler().runTaskLater(RCWars.returnPlugin(),
 				new Runnable() {
 					public void run() {
 						for (int i = 0; i < otherItems.size(); i++) {
-							p.getInventory().setItem(i,
+							p.getInventory().setItem(i+9,
 									(ItemStack) otherItems.get(i));
 						}
 						int slot = p.getInventory().first(119);
@@ -169,7 +168,7 @@ public class WarRank {
 		addOther(p);
 		addSkills(p);
 		p.setWalkSpeed(spdbst);
-		p.sendMessage(ChatColor.GREEN + "You are now a(n) " + display + " "
+		Util.sendMessage(p, ChatColor.GREEN + "You are now a(n) " + display + " "
 				+ c.displayName);
 	}
 
@@ -233,7 +232,7 @@ public class WarRank {
 //			BaseAbility curAb = (BaseAbility) pAbility.get(player.getName());
 //			if (curAb == null) {
 //				setAbility(player.getName(), new None());
-//				player.sendMessage("Ability: None");
+//				Util.sendMessage(player, "Ability: None");
 //				return;
 //			}
 //			BaseAbility curCommand = curAb;
@@ -250,13 +249,13 @@ public class WarRank {
 //							.get(commands.get(i));
 //					setAbility(player.getName(), b);
 //					if (b == null) {
-//						player.sendMessage(ChatColor.GREEN
+//						Util.sendMessage(player, ChatColor.GREEN
 //								+ "Ability: None (ERR)");
 //					} else {
 //						String disp = b.getDisplay() != null ? b.getDisplay()
 //								: "???";
 //						String desc = b.getDesc() != null ? b.getDesc() : "???";
-//						player.sendMessage(ChatColor.GREEN + "Ability: " + disp
+//						Util.sendMessage(player, ChatColor.GREEN + "Ability: " + disp
 //								+ ChatColor.GRAY + " (" + desc + ")");
 //					}
 //					return;
@@ -264,7 +263,7 @@ public class WarRank {
 //			}
 //		}
 //		setAbility(player.getName(), new None());
-//		player.sendMessage("Ability: None");
+//		Util.sendMessage(player, "Ability: None");
 //	}
 
 	public void removeOther(Player player) {

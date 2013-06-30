@@ -3,6 +3,7 @@ package me.SgtMjrME.ClassUpdate.Abilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.SgtMjrME.Util;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
@@ -77,7 +78,7 @@ public class HealPlayer extends BaseAbility {
 			return false;
 		target.addPotionEffect(pot);
 		p.giveExp(exp);
-		p.sendMessage("Effect added");
+		Util.sendMessage(p, "Effect added");
 		Vector diff = target.getLocation().toVector()
 				.subtract(p.getLocation().toVector());
 		diff.normalize();
