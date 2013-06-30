@@ -91,7 +91,7 @@ public class RCWars extends JavaPlugin {
 	 * UPDATE #3: DONE
 		Kits can run commands OR have items
 	 * UPDATE #5: TODO
-		-load warpoints stats in the lobby, but dont allow to buy (not in game)
+		-load warpoints stats in the lobby, but dont allow to buy (not in game)  DONE?
 		- Scoreboard for WarPoints (from player.yml, not from database)
 		- Scoreboard for kills, Scoreboard for deaths
 	 * UPDATE #6: TODO
@@ -101,11 +101,11 @@ public class RCWars extends JavaPlugin {
 		give warpoints for kills (1 wp or configurable)
 	 * UPDATE #8: TODO
 	 	Place tnt 1 block from wall (ground,etc)
-	 * UPDATE #9:  TODO
+	 * UPDATE #9:  DONE
 	     Set all chats to proper tag
-	 * UPDATE #10: TODO
+	 * UPDATE #10: DONE
 	     remove rain
-	     	 * UPDATE #4: TODO
+	 * UPDATE #4: TODO
 		spawn eggs (this is gonna be an epic one)
 		-spawneggs will spawn mobs to fight, but wont hurt teammates
 	 	
@@ -295,27 +295,23 @@ public class RCWars extends JavaPlugin {
 		}
 	}
 
-	protected void playerLeave(String player) {
-		Player p = getServer().getPlayer(player);
-		if (p == null) {
-			return;
-		}
-
-		if (WarPlayers.getRace(p) != null) {
-			WarPoints.saveWarPoints(p);
-
-			if (shouldDie(p)) {
-				p.setHealth(0);
-				if (mysql != null) mysql.updatePlayer(p, "death");
-			}
-
-			WarPlayers.remove(p, "Disconnect");
-		}
-	}
-
-	private boolean shouldDie(Player p) {
-		return WarPlayers.gotDamaged(p);
-	}
+//	protected void playerLeave(String player) {
+//		Player p = getServer().getPlayer(player);
+//		if (p == null) {
+//			return;
+//		}
+//
+//		if (WarPlayers.getRace(p) != null) {
+//			WarPoints.saveWarPoints(p);
+//
+//			if (shouldDie(p)) {
+//				p.setHealth(0);
+//				if (mysql != null) mysql.updatePlayer(p, "death");
+//			}
+//
+//			WarPlayers.remove(p, "Disconnect");
+//		}
+//	}
 
 	public static RCWars returnPlugin() {
 		return instance;

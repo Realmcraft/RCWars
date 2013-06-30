@@ -17,7 +17,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class WarPoints {
-	public static HashMap<Player, Integer> warPointSave = new HashMap<Player, Integer>();
+	private static HashMap<Player, Integer> warPointSave = new HashMap<Player, Integer>();
 	private static int warPointMax;
 	private static mysqlLink mysql;
 	private static RCWars rc;
@@ -120,5 +120,11 @@ public class WarPoints {
 		} else {
 			Util.sendMessage(p, "Your war data is not loaded");
 		}
+	}
+	
+	public static boolean isLoaded(Player p){ //Will return true if it loads, false otherwise (this will load the wp's)
+		if (warPointSave.containsKey(p)) return true;
+		loadWarPoints(p);
+		return warPointSave.containsKey(p);//False if not contained, we have an issue.
 	}
 }

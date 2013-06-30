@@ -1,10 +1,5 @@
 package me.SgtMjrME.Object;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,23 +35,6 @@ public class WarPlayers {
 	}
 
 	public static void setRace(Player p, Race r) {
-		int points = 0;
-		try {
-			BufferedReader b = new BufferedReader(new FileReader(new File(
-					RCWars.returnPlugin().getDataFolder() + "/WarPoints/"
-							+ p.getName() + ".txt")));
-			String temp = b.readLine();
-			points = Integer.parseInt(temp);
-			b.close();
-		} catch (FileNotFoundException e) {
-			Util.sendLog("File not found for player " + p.getName());
-		} catch (IOException e) {
-			Util.sendLog("Error reading player " + p.getName());
-		} catch (Exception e) {
-			Util.sendLog("Other Error with " + p.getName());
-		}
-		WarPoints.warPointSave.put(p, Integer.valueOf(points));
-
 		add(p, r);
 		p.teleport(r.getSpawn());
 		WarClass.defaultClass.enterClass(p);
@@ -96,7 +74,7 @@ public class WarPlayers {
 			return;
 		}
 
-		WarPoints.saveWarPoints(p);
+//		WarPoints.saveWarPoints(p);
 
 		if ((numPlayers() < 8)
 				&& (RCWars.returnPlugin().isRunning().equals(state.RUNNING)))

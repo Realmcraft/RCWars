@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 
 public class BlockListener
   implements Listener
@@ -154,5 +155,10 @@ public class BlockListener
   @EventHandler(priority = EventPriority.NORMAL)
   public void onPainting(HangingBreakEvent e){
 	  if (e.getEntity().getWorld().equals(RCWars.returnPlugin().getWarWorld())) e.setCancelled(true);
+  }
+  
+  @EventHandler(priority = EventPriority.NORMAL)
+  public void onRain(WeatherChangeEvent e){
+	  if (e.toWeatherState()) e.setCancelled(true);
   }
 }
