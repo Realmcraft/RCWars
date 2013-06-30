@@ -24,7 +24,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class Util {
 	
-	static String colStr = ChatColor.translateAlternateColorCodes('&', "&f&l[&6&lRC&4&lWars&f&l] ");
+	static String colStr = ChatColor.translateAlternateColorCodes('&', "&f&l[&6&lRC&4&lWars&f&l]&r ");
 	static Logger l = Bukkit.getLogger();
 	
 	public static int toInt(String s) {

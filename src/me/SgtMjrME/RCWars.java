@@ -439,6 +439,9 @@ public class RCWars extends JavaPlugin {
 				}
 
 				WarClass.listClasses(sender);
+			} else if (commandLabel.equalsIgnoreCase("wp")){
+				if (args.length != 2) Util.sendMessage(sender, "Incorrect args");
+				else WarPoints.giveWarPoints(Bukkit.getPlayer(args[0]), Integer.parseInt(args[1]));
 			}
 		}
 
@@ -526,7 +529,9 @@ public class RCWars extends JavaPlugin {
 			}
 			k.addKitCost(p);
 		} else if (commandLabel.equalsIgnoreCase("wp")) {
-			WarPoints.dispWP(p);
+			if (!p.hasPermission("rcwars.mod") || args.length == 0) WarPoints.dispWP(p);
+			if (args.length != 2) Util.sendMessage(p, "Incorrect args");
+			else WarPoints.giveWarPoints(Bukkit.getPlayer(args[0]), Integer.parseInt(args[1]));
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("listkits"))
 					&& (p.hasPermission("rcwars.mod"))) {

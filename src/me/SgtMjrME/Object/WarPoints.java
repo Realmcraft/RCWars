@@ -7,17 +7,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Util;
 import me.SgtMjrME.mysqlLink;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class WarPoints {
-	private static HashMap<Player, Integer> warPointSave = new HashMap<Player, Integer>();
+	private static ConcurrentHashMap<Player, Integer> warPointSave = new ConcurrentHashMap<Player, Integer>();
 	private static int warPointMax;
 	private static mysqlLink mysql;
 	private static RCWars rc;
@@ -88,22 +89,28 @@ public class WarPoints {
 		warPointSave.put(p, points);
 	}
 
-	public static void saveWPnoRemove(Player p) {
-		if (warPointSave.containsKey(p)) {
-			int points = warPointSave.get(p);
-			try {
-				File f = new File(rc.getDataFolder() + "/WarPoints");
-				if (!f.exists())
-					f.mkdir();
-				BufferedWriter b = new BufferedWriter(
-						new FileWriter(new File(rc.getDataFolder() + "/WarPoints/"
-								+ p.getName() + ".txt")));
-				b.write("" + points);
-				b.close();
-			} catch (IOException e) {
-				Util.sendLog("Could not save player");
+	public static void saveWPnoRemove(final Player p) {
+		Bukkit.getScheduler().runTaskAsynchronously(rc, new Runnable(){
+			@Override
+			public void run() {
+				if (warPointSave.containsKey(p)) {
+					int points = warPointSave.get(p);
+					try {
+						File f = new File(rc.getDataFolder() + "/WarPoints");
+						if (!f.exists())
+							f.mkdir();
+						BufferedWriter b = new BufferedWriter(
+								new FileWriter(new File(rc.getDataFolder() + "/WarPoints/"
+										+ p.getName() + ".txt")));
+						b.write("" + points);
+						b.close();
+					} catch (IOException e) {
+						Util.sendLog("Could not save player");
+					}
+				}
 			}
-		}
+		});
+		
 	}
 
 	public static void saveWarPoints(Player p) {
