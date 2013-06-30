@@ -27,6 +27,7 @@ import me.SgtMjrME.Object.state;
 import me.SgtMjrME.SiegeUpdate.Cannon;
 import me.SgtMjrME.SiegeUpdate.Siege;
 import me.SgtMjrME.Tasks.AnnounceBaseStatus;
+import me.SgtMjrME.Tasks.DisplayStats;
 import me.SgtMjrME.Tasks.gateCheck;
 import me.SgtMjrME.Tasks.runCheck;
 import me.SgtMjrME.Tasks.spawnCheck;
@@ -72,7 +73,7 @@ public class RCWars extends JavaPlugin {
 	private int closeDuration;
 	public Kit kitOnSpawn;
 	private int repairBaseVal;
-	private mysqlLink mysql;
+	public mysqlLink mysql;
 	public int hitexp;
 	public static int killexp;
 	public static int basecapexp;
@@ -556,21 +557,7 @@ public class RCWars extends JavaPlugin {
 				Util.sendMessage(p, "MySQL not loaded");
 				return false;
 			}
-			int[] out = mysql.getStats(p.getName());
-			if (out == null) {
-				Util.sendMessage(p, ChatColor.RED
-						+ "Data not found in database");
-				return true;
-			}
-			Util.sendMessage(p, ChatColor.GOLD
-					+ "War Stats for this month", false);
-			Util.sendMessage(p, ChatColor.GREEN + "Kills: " + out[0]
-					+ "  Deaths: " + out[1], false);
-			if (out[1] != 0) {
-				Util.sendMessage(p, ChatColor.GREEN + "K/D: " + out[0]
-						/ out[1], false);
-			}
-			Util.sendMessage(p, ChatColor.GREEN + "WarPoints: " + out[2], false);
+			Bukkit.getScheduler().runTaskAsynchronously(this, new DisplayStats(p));
 			return true;
 		} else if ((commandLabel.equalsIgnoreCase("wsetworld"))
 						&& (p.hasPermission("rcwars.admin"))) {

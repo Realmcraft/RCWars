@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class mysqlLink {
@@ -103,49 +105,48 @@ public class mysqlLink {
 		updatePlayer(p, type, 0);
 	}
 
-	public void updatePlayer(Player p, String type, int amt) {
+	public void updatePlayer(final Player p, final String type, final int amt) {
 		if ((con == null) || (p == null))
 			return;
-		try {
-			if (!con.isValid(0))
-				reestablishConnection();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			return;
-		}
-		try {
-			if (!con.isValid(0))
-				reestablishConnection();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			return;
-		}
-		try {
-			PreparedStatement s = con.prepareStatement("select * from "
-					+ database_name + ".data where name = \"" + p.getName()
-					+ "\";");
-			ResultSet result = s.executeQuery();
-			if (result.next()) {
-				if (type.equalsIgnoreCase("wp"))
-					addwp(p, amt);
-				else if (type.equalsIgnoreCase("kill"))
-					addKill(p);
-				else if (type.equalsIgnoreCase("death"))
-					addDeath(p);
-			} else {
-				System.out.println("[RCWars] Creating new table entry for "
-						+ p.getName());
-				PreparedStatement addPlayer = con
-						.prepareStatement("insert into " + database_name
-								+ ".data (name, kills, deaths, wp) values('"
-								+ p.getName() + "','0','0','0');");
-				addPlayer.executeUpdate();
-				updatePlayer(p, type);
+		Bukkit.getScheduler().runTaskAsynchronously(RCWars.returnPlugin(), new Runnable(){
+			@Override
+			public void run() {
+				try {
+					if (!con.isValid(0))
+						reestablishConnection();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					return;
+				}
+				try {
+					PreparedStatement s = con.prepareStatement("select * from "
+							+ database_name + ".data where name = \"" + p.getName()
+							+ "\";");
+					ResultSet result = s.executeQuery();
+					if (result.next()) {
+						if (type.equalsIgnoreCase("wp"))
+							addwp(p, amt);
+						else if (type.equalsIgnoreCase("kill"))
+							addKill(p);
+						else if (type.equalsIgnoreCase("death"))
+							addDeath(p);
+					} else {
+						System.out.println("[RCWars] Creating new table entry for "
+								+ p.getName());
+						PreparedStatement addPlayer = con
+								.prepareStatement("insert into " + database_name
+										+ ".data (name, kills, deaths, wp) values('"
+										+ p.getName() + "','0','0','0');");
+						addPlayer.executeUpdate();
+						updatePlayer(p, type);
+					}
+				} catch (SQLException e) {
+					System.out.println("[RCWars] MySQL ERROR: KILL");
+					e.printStackTrace();
+				}
 			}
-		} catch (SQLException e) {
-			System.out.println("[RCWars] MySQL ERROR: KILL");
-			e.printStackTrace();
-		}
+		});
+		
 	}
 
 	private void reestablishConnection() {
@@ -165,8 +166,8 @@ public class mysqlLink {
 		try {
 			PreparedStatement add = con.prepareStatement("update "
 					+ database_name
-					+ ".data set kills = (kills + 1) where name = \""
-					+ p.getName() + "\";");
+					+ ".data set kills = (kills + 1) where name = '"
+					+ p.getName() + "';");
 			add.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -177,8 +178,8 @@ public class mysqlLink {
 		try {
 			PreparedStatement add = con.prepareStatement("update "
 					+ database_name
-					+ ".data set deaths = (deaths + 1) where name = \""
-					+ p.getName() + "\";");
+					+ ".data set deaths = (deaths + 1) where name = '"
+					+ p.getName() + "';");
 			add.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -189,7 +190,7 @@ public class mysqlLink {
 		try {
 			PreparedStatement add = con.prepareStatement("update "
 					+ database_name + ".data set wp = wp + " + amt
-					+ " where name = \"" + p.getName() + "\";");
+					+ " where name = '" + p.getName() + "';");
 			add.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -207,7 +208,7 @@ public class mysqlLink {
 		}
 		try {
 			PreparedStatement stats = con.prepareStatement("select * from "
-					+ database_name + ".data where name = \"" + p + "\";");
+					+ database_name + ".data where name = '" + p + "';");
 			ResultSet result = stats.executeQuery();
 			if (result.next()) {
 				out[0] = result.getInt(2);

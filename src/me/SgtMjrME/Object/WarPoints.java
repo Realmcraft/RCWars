@@ -62,31 +62,34 @@ public class WarPoints {
 			warPointSave.put(player, warPointSave.get(player) + warPoints);
 			if (mysql != null) mysql.updatePlayer(player, "wp", warPoints);
 		}
-//		Util.sendMessage(player, ChatColor.GREEN + "You have been given " + warPoints
-//				+ " warpoints");
 	}
 
 	public static Integer getWarPoints(Player p) {
 		return (Integer) warPointSave.get(p);
 	}
 
-	public static void loadWarPoints(Player p) {
-		int points = 0;
-		try {
-			BufferedReader b = new BufferedReader(new FileReader(new File(
-					rc.getDataFolder() + "/WarPoints/"
-							+ p.getName() + ".txt")));
-			String temp = b.readLine();
-			points = Integer.parseInt(temp);
-			b.close();
-		} catch (FileNotFoundException e) {
-			Util.sendLog("File not found for player " + p.getName());
-		} catch (IOException e) {
-			Util.sendLog("Error reading player " + p.getName());
-		} catch (Exception e) {
-			Util.sendLog("Other Error with " + p.getName());
-		}
-		warPointSave.put(p, points);
+	public static void loadWarPoints(final Player p) {
+		Bukkit.getScheduler().runTaskAsynchronously(rc, new Runnable(){
+			@Override
+			public void run() {
+				int points = 0;
+				try {
+					BufferedReader b = new BufferedReader(new FileReader(new File(
+							rc.getDataFolder() + "/WarPoints/"
+									+ p.getName() + ".txt")));
+					String temp = b.readLine();
+					points = Integer.parseInt(temp);
+					b.close();
+				} catch (FileNotFoundException e) {
+					Util.sendLog("File not found for player " + p.getName());
+				} catch (IOException e) {
+					Util.sendLog("Error reading player " + p.getName());
+				} catch (Exception e) {
+					Util.sendLog("Other Error with " + p.getName());
+				}
+				warPointSave.put(p, points);
+			}
+		});
 	}
 
 	public static void saveWPnoRemove(final Player p) {
@@ -113,10 +116,15 @@ public class WarPoints {
 		
 	}
 
-	public static void saveWarPoints(Player p) {
+	public static void saveWarPoints(final Player p) {
 		if (warPointSave.containsKey(p)) {
 			saveWPnoRemove(p);
-			warPointSave.remove(p);
+			Bukkit.getScheduler().runTaskLater(rc, new Runnable(){
+				@Override
+				public void run(){
+					warPointSave.remove(p);
+				}
+			}, 400);//Give it 20 seconds, should be done saving by then.
 		}
 	}
 
@@ -125,7 +133,9 @@ public class WarPoints {
 			Util.sendMessage(p, "You have " + warPointSave.get(p)
 					+ " warpoints");
 		} else {
-			Util.sendMessage(p, "Your war data is not loaded");
+			Util.sendMessage(p, "Your war data is not loaded, attempting load");
+			if (!isLoaded(p)) Util.sendMessage(p, "Could not load)");
+			else dispWP(p);
 		}
 	}
 	
