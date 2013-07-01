@@ -65,6 +65,7 @@ public class RCWars extends JavaPlugin {
 	private EntityListener entityListener;
 	@SuppressWarnings("unused")
 	private WarPoints warPoints;
+	private static int killWp;
 	private World world;
 	private static Location lobby;
 	private YamlConfiguration config;
@@ -98,8 +99,9 @@ public class RCWars extends JavaPlugin {
 	 * UPDATE #6: TODO
 	    this:  http://puu.sh/3lbEr.jpg
 		for top 3 killers (database)
-	 * UPDATE #7: TODO
+	 * UPDATE #7: DONE
 		give warpoints for kills (1 wp or configurable)
+		            - Config "killwp"
 	 * UPDATE #8: TODO
 	 	Place tnt 1 block from wall (ground,etc)
 	 * UPDATE #9:  DONE
@@ -161,6 +163,7 @@ public class RCWars extends JavaPlugin {
 		String temp = config.getString("world", null);
 		hitexp = config.getInt("exp.hit", 1);
 		killexp = config.getInt("exp.kill", 10);
+		killWp = config.getInt("killwp",0);
 		basecapexp = config.getInt("exp.basecap", 20);
 		baserepexp = config.getInt("exp.baserepair", 10);
 		try{
@@ -1352,6 +1355,7 @@ public class RCWars extends JavaPlugin {
 					+ " killed " + WarPlayers.getRace(damageep).getDisplay()
 					+ " " + ChatColor.YELLOW + replaceNameDamagee;
 			damagerp.giveExp(killexp);
+			if (killWp != 0) WarPoints.giveWarPoints(damagerp, killWp);
 		} else {
 			String damageeName = "";
 			if (e != null) {

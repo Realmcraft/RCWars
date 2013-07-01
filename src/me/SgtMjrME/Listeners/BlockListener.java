@@ -54,7 +54,7 @@ public class BlockListener
   {
     if (!e.getBlock().getWorld().equals(this.p.getWarWorld())) return;
     if (e.getPlayer().getItemInHand().getTypeId() == 46) {
-      Siege s = Siege.isWall(e.getBlockAgainst().getLocation());
+      Siege s = Siege.isWall(e.getBlock().getLocation());
       if (s != null) {
         Base b = s.b;
         Iterator<String> i = WarPlayers.listPlayers();

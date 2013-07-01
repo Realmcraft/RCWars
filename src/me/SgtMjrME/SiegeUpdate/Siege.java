@@ -150,8 +150,20 @@ public class Siege {
 			b.l.getBlock().setTypeIdAndData(b.id, b.dat, true);
 		}
 	}
+	
+	public static Siege isWall(Location l){//Siege if yes, null if no.
+		Siege s;
+		if ((s = checkWall(l)) != null) return s;
+		if ((s = checkWall(l.add(-1,0,0))) != null) return s;
+		if ((s = checkWall(l.add(1,0,0))) != null) return s;
+		if ((s = checkWall(l.add(0,0,-1))) != null) return s;
+		if ((s = checkWall(l.add(0,0,1))) != null) return s;
+		if ((s = checkWall(l.add(0,-1,0))) != null) return s;
+		if ((s = checkWall(l.add(0,1,0))) != null) return s;
+		return null;
+	}
 
-	public static Siege isWall(Location location) {
+	public static Siege checkWall(Location location) {
 		for (Siege s : sieges) {
 			if (s.walls.containsKey(location))
 				return s;
