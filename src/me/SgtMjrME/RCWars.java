@@ -102,7 +102,7 @@ public class RCWars extends JavaPlugin {
 	 * UPDATE #7: DONE
 		give warpoints for kills (1 wp or configurable)
 		            - Config "killwp"
-	 * UPDATE #8: TODO
+	 * UPDATE #8: DONE
 	 	Place tnt 1 block from wall (ground,etc)
 	 * UPDATE #9:  DONE
 	     Set all chats to proper tag
@@ -111,8 +111,10 @@ public class RCWars extends JavaPlugin {
 	 * UPDATE #4: TODO
 		spawn eggs (this is gonna be an epic one)
 		-spawneggs will spawn mobs to fight, but wont hurt teammates
+	 * UPDATE #11: DONE
+	 	Color the ability names
 	 	
-	 	TODO EMERGENCY
+	 	??? EMERGENCY
 	 	Bug: Healmage teleports TESTING
 	 	        Healmage heatlh TESTING
 	 	        

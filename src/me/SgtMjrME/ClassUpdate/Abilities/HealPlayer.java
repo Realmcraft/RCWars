@@ -7,6 +7,7 @@ import me.SgtMjrME.Util;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -32,10 +33,10 @@ public class HealPlayer extends BaseAbility {
 	public HealPlayer(ConfigurationSection cs) {
 		exp = cs.getInt("exp");
 		
-		disp = cs.getString("display", "healplayer");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "healplayer"));
 		cost = cs.getInt("cost", 0);
 		delay = cs.getLong("delay", 5000);
-		desc = cs.getString("description", "Heals your targeted player");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Heals your targeted player"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

@@ -6,6 +6,7 @@ import java.util.List;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,10 +24,10 @@ public class Sap extends BaseAbility {
 	public final ItemStack item;
 
 	public Sap(ConfigurationSection cs) {
-		disp = cs.getString("display", "sap");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "sap"));
 		cost = cs.getInt("cost", 0);
 		delay = cs.getLong("delay", 15000);
-		desc = cs.getString("description", "Slows down your target");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Slows down your target"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -27,10 +28,10 @@ public class FireStorm extends BaseAbility {
 	public final ItemStack item;
 
 	public FireStorm(ConfigurationSection cs) {
-		disp = cs.getString("display", "firestorm");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "firestorm"));
 		cost = cs.getInt("cost", 3);
 		delay = cs.getLong("delay", 30000);
-		desc = cs.getString("description", "(3 WP) Launches a firestorm");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(3 WP) Launches a firestorm"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

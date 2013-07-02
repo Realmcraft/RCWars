@@ -30,10 +30,10 @@ public class Cloak extends BaseAbility {
 	public final ItemStack item;
 
 	public Cloak(ConfigurationSection cs) {
-		disp = cs.getString("display", "cloak");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "cloak"));
 		cost = cs.getInt("cost", 3);
 		delay = cs.getLong("delay", 60000);
-		desc = cs.getString("description", "(3 WP) Gain a temp invisibility. Lost when you attack");
+		ChatColor.translateAlternateColorCodes('&', desc = cs.getString("description", "(3 WP) Gain a temp invisibility. Lost when you attack"));
 		item = new ItemStack(cs.getInt("item"), 1,
 				(short) cs.getInt("data"));
 		String s = cs.getString("lore", "");

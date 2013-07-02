@@ -7,6 +7,7 @@ import java.util.List;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -30,10 +31,10 @@ public class HealGroup extends BaseAbility {
 				cs.getInt("pow", 3), 2);
 		exp = cs.getInt("exp", 2);
 		
-		disp = cs.getString("display", "healgroup");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "healgroup"));
 		cost = cs.getInt("cost", 3);
 		delay = cs.getLong("delay", 20000);
-		desc = cs.getString("description", "(3 wp) Heals your surrounding allies");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(3 wp) Heals your surrounding allies"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

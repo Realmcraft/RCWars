@@ -7,6 +7,7 @@ import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -21,10 +22,10 @@ public class Rally extends BaseAbility {
 	public final ItemStack item;
 
 	public Rally(ConfigurationSection cs) {
-		disp = cs.getString("display", "rally");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "rally"));
 		cost = cs.getInt("cost", 9);
 		delay = cs.getLong("delay", 180000);
-		desc = cs.getString("description", "(9 wp) Sends a rally teleport request to your team");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(9 wp) Sends a rally teleport request to your team"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

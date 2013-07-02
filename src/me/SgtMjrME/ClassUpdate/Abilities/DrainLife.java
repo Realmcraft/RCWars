@@ -9,6 +9,7 @@ import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.LivingEntity;
@@ -28,10 +29,10 @@ public class DrainLife extends BaseAbility {
 	public final ItemStack item;
 
 	public DrainLife(ConfigurationSection cs) {
-		disp = cs.getString("display", "drainlife");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "drainlife"));
 		cost = cs.getInt("cost", 2);
 		delay = cs.getLong("delay", 5000);
-		desc = cs.getString("description", "(2 WP) Drain life from your enemy");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(2 WP) Drain life from your enemy"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

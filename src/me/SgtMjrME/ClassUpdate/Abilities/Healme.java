@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.SgtMjrME.ClassUpdate.WarRank;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -21,10 +22,10 @@ public class Healme extends BaseAbility {
 	public final ItemStack item;
 
 	public Healme(ConfigurationSection cs) {
-		disp = cs.getString("display", "healme");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "healme"));
 		cost = cs.getInt("cost", 1);
 		delay = cs.getLong("delay", 10000);
-		desc = cs.getString("description", "(1 wp) Heals you");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(1 wp) Heals you"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

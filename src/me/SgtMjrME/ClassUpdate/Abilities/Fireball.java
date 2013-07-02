@@ -3,6 +3,7 @@ package me.SgtMjrME.ClassUpdate.Abilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -21,10 +22,10 @@ public class Fireball extends BaseAbility {
 	public final ItemStack item;
 
 	public Fireball(ConfigurationSection cs) {
-		disp = cs.getString("display", "fireball");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "fireball"));
 		cost = cs.getInt("cost", 0);
 		delay = cs.getLong("delay", 5000);
-		desc = cs.getString("description", "Launches a fireball");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Launches a fireball"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

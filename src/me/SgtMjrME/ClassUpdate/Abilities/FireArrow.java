@@ -3,6 +3,7 @@ package me.SgtMjrME.ClassUpdate.Abilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -19,10 +20,10 @@ public class FireArrow extends BaseAbility {
 	public final ItemStack item;
 
 	public FireArrow(ConfigurationSection cs) {
-		disp = cs.getString("display", "firearrow");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "firearrow"));
 		cost = cs.getInt("cost", 0);
 		delay = cs.getLong("delay", 15000);
-		desc = cs.getString("description", "Launches a fire arrow");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Launches a fire arrow"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.SgtMjrME.RCWars;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -22,10 +23,10 @@ public class Volley extends BaseAbility {
 	public final ItemStack item;
 
 	public Volley(ConfigurationSection cs) {
-		disp = cs.getString("display", "volley");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "volley"));
 		cost = cs.getInt("cost", 3);
 		delay = cs.getLong("delay", 10000);
-		desc = cs.getString("description", "(3 wp) Launches a volley of arrows");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(3 wp) Launches a volley of arrows"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();

@@ -7,6 +7,7 @@ import java.util.List;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,10 +25,10 @@ public class Firenova extends BaseAbility {
 	public final ItemStack item;
 
 	public Firenova(ConfigurationSection cs) {
-		disp = cs.getString("display", "firenova");
+		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "firenova"));
 		cost = cs.getInt("cost", 1);
 		delay = cs.getLong("delay", 20000);
-		desc = cs.getString("description", "(1 WP) Launches a ring of fire around you");
+		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(1 WP) Launches a ring of fire around you"));
 		item = new ItemStack(cs.getInt("item"), 1, (short) cs.getInt("data"));
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();
