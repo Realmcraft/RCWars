@@ -16,6 +16,7 @@ import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.ClassUpdate.Abilities.AbilityTimer;
 import me.SgtMjrME.Listeners.BlockListener;
 import me.SgtMjrME.Listeners.EntityListener;
+import me.SgtMjrME.Listeners.MobHandler;
 import me.SgtMjrME.Listeners.PlayerListenerNew;
 import me.SgtMjrME.Object.Base;
 import me.SgtMjrME.Object.Kit;
@@ -63,6 +64,7 @@ public class RCWars extends JavaPlugin {
 	private PlayerListenerNew playerListener;
 	private BlockListener blockListener;
 	private EntityListener entityListener;
+	private MobHandler mobHandler;
 	@SuppressWarnings("unused")
 	private WarPoints warPoints;
 	private static int killWp;
@@ -146,9 +148,11 @@ public class RCWars extends JavaPlugin {
 		playerListener = new PlayerListenerNew(this);
 		blockListener = new BlockListener(this);
 		entityListener = new EntityListener(this);
+		mobHandler = new MobHandler();
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(blockListener, this);
 		pm.registerEvents(entityListener, this);
+		pm.registerEvents(mobHandler, this);
 
 		config = new YamlConfiguration();
 		try {
@@ -206,7 +210,7 @@ public class RCWars extends JavaPlugin {
 		for (String bl : block) {
 			allowedItems.add(Integer.parseInt(bl));
 		}
-
+		MobHandler.resetMobs();
 		loadRaces();
 		Base.loadBases(this);
 		Cannon.loadCannons(this);
