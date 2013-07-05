@@ -88,32 +88,34 @@ public class RCWars extends JavaPlugin {
 	
 	
 	/*
-	 * UPDATE #1:  DONE
+	 * UPDATE #1:  DONE (reordered)
 		move "other items" to backpack
-	 * UPDATE #2: DONE
+	 * UPDATE #2: DONE (tested)
 		Allow them to move all items, that are not part of their class items (ones they spawn with)
-	 * UPDATE #3: DONE
+	 * UPDATE #3: DONE (tested)
 		Kits can run commands OR have items
+		commands:
+		    <anything>: cmd
 	 * UPDATE #5: TODO
-		-load warpoints stats in the lobby, but dont allow to buy (not in game)  DONE?
+		-load warpoints stats in the lobby, but dont allow to buy (not in game)  DONE? (tested)
 		- Scoreboard for WarPoints (from player.yml, not from database)
 		- Scoreboard for kills, Scoreboard for deaths
 	 * UPDATE #6: TODO
 	    this:  http://puu.sh/3lbEr.jpg
 		for top 3 killers (database)
-	 * UPDATE #7: DONE
+	 * UPDATE #7: DONE (not tested, assumed working)
 		give warpoints for kills (1 wp or configurable)
 		            - Config "killwp"
-	 * UPDATE #8: DONE
+	 * UPDATE #8: DONE (tested)
 	 	Place tnt 1 block from wall (ground,etc)
-	 * UPDATE #9:  DONE
+	 * UPDATE #9:  DONE (tested)
 	     Set all chats to proper tag
-	 * UPDATE #10: DONE
+	 * UPDATE #10: DONE (tested)
 	     remove rain
-	 * UPDATE #4: TODO
+	 * UPDATE #4: DONE
 		spawn eggs (this is gonna be an epic one)
-		-spawneggs will spawn mobs to fight, but wont hurt teammates
-	 * UPDATE #11: DONE
+		-spawneggs will spawn mobs to fight, but wont hurt teammates DONE (1/2) (tested)
+	 * UPDATE #11: DONE (tested)
 	 	Color the ability names
 	 	
 	 	??? EMERGENCY
@@ -366,6 +368,8 @@ public class RCWars extends JavaPlugin {
 			} else if (commandLabel.equalsIgnoreCase("repairwalls")) {
 				Siege.repairAll();
 				return true;
+			} else if (cmd.getLabel().equals("listkits")){
+				Kit.listKits(sender);
 			} else if (commandLabel.equalsIgnoreCase("testWarCommand")) {
 				if (mysql != null) mysql.updatePlayer(getServer().getPlayer(args[0]), "kill");
 				return true;

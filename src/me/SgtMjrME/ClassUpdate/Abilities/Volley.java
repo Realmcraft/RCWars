@@ -23,7 +23,8 @@ public class Volley extends BaseAbility {
 	public final ItemStack item;
 
 	public Volley(ConfigurationSection cs) {
-		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "volley"));
+//		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "volley"));
+		disp = cs.getString("display","&2volley").replace("&", "\u00a7");
 		cost = cs.getInt("cost", 3);
 		delay = cs.getLong("delay", 10000);
 		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "(3 wp) Launches a volley of arrows"));

@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -129,7 +130,10 @@ public class EntityListener
     damageep.getInventory().getChestplate().setDurability((short)0);
     damageep.getInventory().getLeggings().setDurability((short)0);
     damageep.getInventory().getBoots().setDurability((short)0);
-    damagerp.getItemInHand().setDurability((short)0);
+    ItemStack itInHnd = damagerp.getItemInHand();
+    if (itInHnd != null && itInHnd.getItemMeta() != null
+    		&& AbilityTimer.isBaseAbility(itInHnd.getItemMeta().getDisplayName()))
+    		damagerp.getItemInHand().setDurability((short)0);
     AbilityTimer.onAttack(damagerp, e);
     AbilityTimer.onDefend(damageep, e);
 

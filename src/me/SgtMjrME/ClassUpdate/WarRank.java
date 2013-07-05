@@ -93,7 +93,7 @@ public class WarRank {
 		try{
 		String[] in = cs.getString("commands").split(";");
 		for (String s : in) {
-			BaseAbility b = AbilityTimer.str2abil.get(s);
+			BaseAbility b = AbilityTimer.str2abil.get(ChatColor.stripColor(s));
 			if (b != null)
 				commands.add(b);
 		}
@@ -114,8 +114,9 @@ public class WarRank {
 				new Runnable() {
 					public void run() {
 						for (int i = 0; i < otherItems.size(); i++) {
-							p.getInventory().setItem(i+9,
-									(ItemStack) otherItems.get(i));
+							p.getInventory().addItem(otherItems.get(i));
+//							p.getInventory().setItem(i+9,
+//									(ItemStack) otherItems.get(i));
 						}
 						int slot = p.getInventory().first(119);
 						if (slot == -1)
@@ -180,10 +181,11 @@ public class WarRank {
 						int i = 0;
 						while (p.getInventory().getItem(i) != null)
 							i++;
-						for (int j = 0; j < commands.size(); j++)
+						for (int j = 0; j < commands.size(); j++){
 							if (commands.get(j).getItem() != null)
 								p.getInventory().setItem(i + j,
 									commands.get(j).getItem());
+						}
 					}
 				}, 2L);
 	}

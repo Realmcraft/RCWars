@@ -9,6 +9,7 @@ import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -35,6 +36,7 @@ public class Kit {
 					kits.put(s.substring(0, s.length() - 4).toLowerCase(),
 							new Kit(f));
 				} catch (Exception localException) {
+					System.out.println("Error loading kit " + s);
 				}
 			}
 		}
@@ -44,11 +46,16 @@ public class Kit {
 		YamlConfiguration cfg = new YamlConfiguration();
 		cfg.load(f);
 		name = cfg.getString("name");
+		System.out.println(name + " loading");
 		cost = cfg.getInt("cost");
 		ConfigurationSection comConfig = cfg.getConfigurationSection("commands");
 		if (comConfig != null){
-			for (String s : comConfig.getKeys(false)) commands.add(s);
+			for (String s : comConfig.getKeys(false)){
+				System.out.println(name + ":" + s);
+				commands.add(comConfig.getString(s));
+			}
 		}
+		if (!cfg.isConfigurationSection("items")) return;
 		for(String cs : cfg.getConfigurationSection("items").getKeys(false)){
 			ItemStack it = new ItemStack(cfg.getInt("items." + cs + ".itemid"),
 					cfg.getInt("items." + cs + ".itemqty"),
@@ -97,20 +104,20 @@ public class Kit {
 	public static Kit getKit(String name) {
 		if (name == null)
 			return null;
-		return (Kit) kits.get(name.toLowerCase());
+		return kits.get(name.toLowerCase());
 	}
 
-	public static void listKits(Player p) {
+	public static void listKits(CommandSender sender) {
 		for (Kit k : kits.values()) {
-			Util.sendMessage(p, k.getName(), false);
-			Util.sendMessage(p, "Items", false);
+			Util.sendMessage(sender, k.getName(), false);
+			Util.sendMessage(sender, "Items", false);
 			for (ItemStack item : k.items) {
-				Util.sendMessage(p, item.toString() + item.getEnchantments().toString(), false);
-				if (item.getItemMeta().hasLore()) Util.sendMessage(p, item.getItemMeta().getLore().toString(), false);
+				Util.sendMessage(sender, item.toString() + item.getEnchantments().toString(), false);
+				if (item.getItemMeta().hasLore()) Util.sendMessage(sender, item.getItemMeta().getLore().toString(), false);
 			}
-			Util.sendMessage(p, "Commands",false);
-			for (String s : k.commands) Util.sendMessage(p, "   "+s);
-			Util.sendMessage(p, "~~~~~~~~~~~~~~~~~~~~~~~~", false);
+			Util.sendMessage(sender, "Commands",false);
+			for (String s : k.commands) Util.sendMessage(sender, "   "+s);
+			Util.sendMessage(sender, "~~~~~~~~~~~~~~~~~~~~~~~~", false);
 		}
 	}
 }

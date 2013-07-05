@@ -65,6 +65,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -207,8 +208,12 @@ public class PlayerListenerNew implements Listener {
 		AbilityTimer.onTeleport(e);
 		if (e.isCancelled())
 			return;
-		if (e.getFrom().getWorld().equals(e.getTo().getWorld()))
+		if (e.getFrom().getWorld().equals(e.getTo().getWorld())){
+			if (e.getFrom().getWorld().equals(RCWars.returnPlugin().getWarWorld())){
+				if (e.getCause().equals(TeleportCause.ENDER_PEARL)) e.setCancelled(true);
+			}
 			return;
+		}
 		if ((WarPlayers.getRace(e.getPlayer()) != null)
 				&& (!e.getTo().getWorld()
 						.equals(RCWars.returnPlugin().getWarWorld()))) {
@@ -277,26 +282,28 @@ public class PlayerListenerNew implements Listener {
 			return;
 		}
 
-		if (!e.getInventory().getType().equals(InventoryType.CRAFTING))
-			return;
 		Player p = (Player) e.getWhoClicked();
 		Race r = WarPlayers.getRace(p);
-
 		if (r == null)
 			return;
+		
+		//First, check if armor slot
+		int sl = e.getRawSlot();
+		if ((sl >= 5) && (sl <= 8))
+			e.setCancelled(true);
+		
+		//Then check whether it's a used item.
 		ItemStack item = e.getCurrentItem();
 		if (item == null) return;
 		ItemMeta im = item.getItemMeta();
 		if (im == null) return;
 		String display = im.getDisplayName();
+		System.out.println(display);
 		if (AbilityTimer.isUsedBaseAbility(display)) e.setCancelled(true); //If it's a used ability, can't change.  Otherwise, I don't give a F***
-//		int sl = e.getRawSlot();
 //		int end = 37;
 //		WarRank wr = WarRank.getPlayer(p);
 //		if (wr != null)
 //			end = 36 + wr.otherItems.size();
-//		if (((sl >= 5) && (sl <= 8)) || ((sl >= 36) && (sl < end)))
-//			e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -445,9 +452,9 @@ public class PlayerListenerNew implements Listener {
 		if (c != null) {
 			c.fireTNT();
 		}
-
-		if ((e.getAction().equals(Action.LEFT_CLICK_AIR))
-				|| (e.getAction().equals(Action.LEFT_CLICK_BLOCK)))
+//		if ((e.getAction().equals(Action.LEFT_CLICK_AIR))
+//				|| (e.getAction().equals(Action.LEFT_CLICK_BLOCK)))
+		if (!e.getAction().equals(Action.PHYSICAL))
 			AbilityTimer.onInteract(e.getPlayer(), e);
 		if (e.getClickedBlock() == null)
 			return;
@@ -481,8 +488,8 @@ public class PlayerListenerNew implements Listener {
 			dealWithSign(e.getPlayer(), (Sign) e.getClickedBlock().getState(),
 					e);
 		Siege siege;
-		if (((siege = Siege.isWall(e.getClickedBlock().getLocation())) != null)
-				&& ((siege.b.getOwner().equals(r)) || (r.isRef()))) {
+		if (((siege = Siege.checkWall(e.getClickedBlock().getLocation())) != null)
+				&& siege.b.getOwner() != null && ((siege.b.getOwner().equals(r)) || (r.isRef()))) {
 			BlockFace b = e.getBlockFace();
 			int x = 0;
 			int z = 0;

@@ -3,6 +3,7 @@ package me.SgtMjrME.Tasks;
 import me.SgtMjrME.RCWars;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,7 +15,8 @@ public class AbilityCooldown extends BukkitRunnable {
 	final long time;
 	int stage;
 	final int slot;
-	ItemStack finalitem;
+	final ItemStack finalitem;
+	final String finalItemDisp;
 
 	public AbilityCooldown(Player p, int slot, long t) {
 		this.p = p;
@@ -22,6 +24,9 @@ public class AbilityCooldown extends BukkitRunnable {
 		time = t / 4 / 50;
 		stage = 0;
 		finalitem = p.getInventory().getItem(slot);
+		ItemMeta im = finalitem.getItemMeta();
+		if (im != null) finalItemDisp = ChatColor.stripColor(im.getDisplayName());
+		else finalItemDisp = null;
 	}
 //
 //	AbilityCooldown(Player p, int slot, long t, int s) {
@@ -39,17 +44,21 @@ public class AbilityCooldown extends BukkitRunnable {
 		ItemMeta im = i.getItemMeta();
 		if (im == null)
 			return;
-		if (im.getDisplayName() == null)
+		String itemName = ChatColor.stripColor(im.getDisplayName());
+		if (itemName == null)
 			return;
-		if (stage != 0 && !im.getDisplayName().substring(1, im.getDisplayName().length() - 1)
-				.equals(finalitem.getItemMeta().getDisplayName()))
+		if (itemName.length() < 2) return;
+		itemName = itemName.substring(1, itemName.length() - 1);
+		System.out.println(finalItemDisp);
+		System.out.println(itemName);
+		if (stage != 0 && !itemName.equals(finalItemDisp))
 			return;
 		//Hopefully this means we have the correct item
 		if (stage < 4) {
 			if (stage == 0) {
 				ItemStack newitem = new ItemStack(35,1,(short) 14);
 				ItemMeta imn = newitem.getItemMeta();
-				imn.setDisplayName('[' + finalitem.getItemMeta().getDisplayName() + ']');
+				imn.setDisplayName('[' + finalitem.getItemMeta().getDisplayName() + ChatColor.RESET + ChatColor.ITALIC + ']');
 				newitem.setItemMeta(imn);
 				p.getInventory().setItem(slot, newitem);
 			} else if (stage == 1) {

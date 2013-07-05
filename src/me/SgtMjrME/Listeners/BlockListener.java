@@ -115,7 +115,7 @@ public class BlockListener
                 createExplosion(temp);
               }
               else {
-                Siege s = Siege.isWall(temp);
+                Siege s = Siege.checkWall(temp);
                 if (s != null)
                   s.wallDestroyed(temp);
               }

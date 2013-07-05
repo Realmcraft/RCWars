@@ -1,6 +1,7 @@
 package me.SgtMjrME.Listeners;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Object.MobHolder;
@@ -23,45 +24,51 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.SpawnEgg;
+import org.bukkit.util.Vector;
 
 public class MobHandler implements Listener{
 	
-	HashMap<LivingEntity, MobHolder> mobs = new HashMap<LivingEntity, MobHolder>();
+	static HashMap<UUID, MobHolder> mobs = new HashMap<UUID, MobHolder>();
 
 	public static void resetMobs() {
 		for (World w : Bukkit.getServer().getWorlds()){
 			for (Entity e : w.getEntities()){
-				if (!(e instanceof Player)) e.remove();
+				if (!(e instanceof Player)){
+					if (e instanceof LivingEntity) mobs.remove(((LivingEntity) e).getUniqueId());
+					e.remove();
+				}
 			}
 		}
 	}
 	
 	/*
-	 * If the target was lost, return to the spawn location
+	 * If the target was lost, return to the spawn location (Not implemented yet)
 	 * if the target has the same race as entity, cancel it
 	 * otherwise, ATTACK
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onTarget(EntityTargetEvent e){
 		if (!(e.getEntity() instanceof LivingEntity)) return;
-		LivingEntity ent = (LivingEntity) e.getEntity();
+//		LivingEntity ent = (LivingEntity) e.getEntity();
 		if (e.getTarget() == null){ //No target, return to spawn (this will be fun...)
+			//Not doing this yet TODO
+			return;
 		}
-		MobHolder mh = mobs.get((LivingEntity) e.getEntity());
+		MobHolder mh = mobs.get(((LivingEntity) e.getEntity()).getUniqueId());
 		if (mh == null) return;
 		Race targetRace = WarPlayers.getRace(mh.p);
 		if (targetRace == null) return;
-		if (targetRace.equals(mh.r)) e.setCancelled(true);
+		if (targetRace.equals(mh.r) || targetRace.isRef()) e.setCancelled(true);
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	  public void onSpawn(CreatureSpawnEvent e){
 		  //No spawning allowed (I hope it doesn't mess up anything)
-		e.setCancelled(true);
+		if (!e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM)) e.setCancelled(true);
 	}
 	
 	public MobHolder getMH(LivingEntity e){
-		return mobs.get(e);
+		return mobs.get(e.getUniqueId());
 	}
 	
 	private MobHolder[] addArr(MobHolder[] arr, MobHolder m){
@@ -111,14 +118,15 @@ public class MobHandler implements Listener{
 		SpawnEgg egg = (SpawnEgg) im;
 		item.setAmount(item.getAmount() - 1);
 		//spawn entity (since i cancelled it before)
-		LivingEntity entity = (LivingEntity) RCWars.returnPlugin().getWarWorld().spawnEntity(e.getClickedBlock().getLocation(), egg.getSpawnedType());
-		mobs.put(entity, new MobHolder(entity, e.getPlayer(), WarPlayers.getRace(e.getPlayer()), entity.getLocation()));
+		LivingEntity entity = (LivingEntity) RCWars.returnPlugin().getWarWorld().spawnEntity(
+				e.getClickedBlock().getLocation().add(new Vector(0,1,0)), egg.getSpawnedType());
+		mobs.put(entity.getUniqueId(), new MobHolder(entity, e.getPlayer(), WarPlayers.getRace(e.getPlayer()), entity.getLocation()));
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntDie(EntityDeathEvent e){
 		//If the entity dies, I really don't care what, let mobs decide how to remove it.
-		if (e.getEntity() != null) mobs.remove(e.getEntity());
+		if (e.getEntity() != null) mobs.remove(e.getEntity().getUniqueId());
 	}
 
 }

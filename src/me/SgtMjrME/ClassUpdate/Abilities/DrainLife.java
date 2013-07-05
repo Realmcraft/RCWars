@@ -71,6 +71,7 @@ public class DrainLife extends BaseAbility {
 	public boolean onInteract(Player p, PlayerInteractEvent e) {
 		EnderPearl s = (EnderPearl) p.launchProjectile(EnderPearl.class);
 		s.setShooter(p);
+		e.setCancelled(true);
 
 		fired.add(p.getName());
 		return true;

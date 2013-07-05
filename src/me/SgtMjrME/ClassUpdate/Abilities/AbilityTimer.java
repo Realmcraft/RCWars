@@ -30,36 +30,36 @@ public class AbilityTimer {
 	public static final HashMap<String, BaseAbility> str2abil = new HashMap<String, BaseAbility>();
 
 	public AbilityTimer(Configuration cs) {
-		str2abil.put(cs.getString("boost.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("boost.display")),
 				new Boost(cs.getConfigurationSection("boost")));
-		str2abil.put(cs.getString("cloak.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("cloak.display")),
 				new Cloak(cs.getConfigurationSection("cloak")));
-		str2abil.put(cs.getString("drainlife.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("drainlife.display")),
 				new DrainLife(cs.getConfigurationSection("drainlife")));
-		str2abil.put(cs.getString("feedme.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("feedme.display")),
 				new Feedme(cs.getConfigurationSection("feedme")));
-		str2abil.put(cs.getString("firearrow.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("firearrow.display")),
 				new FireArrow(cs.getConfigurationSection("firearrow")));
-		str2abil.put(cs.getString("fireball.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("fireball.display")),
 				new Fireball(cs.getConfigurationSection("fireball")));
-		str2abil.put(cs.getString("firenova.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("firenova.display")),
 				new Firenova(cs.getConfigurationSection("firenova")));
-		str2abil.put(cs.getString("firestorm.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("firestorm.display")),
 				new FireStorm(cs.getConfigurationSection("firestorm")));
-		str2abil.put(cs.getString("healgroup.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("healgroup.display")),
 				new HealGroup(cs.getConfigurationSection("healgroup")));
-		str2abil.put(cs.getString("healme.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("healme.display")),
 				new Healme(cs.getConfigurationSection("healme")));
-		str2abil.put(cs.getString("healplayer.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("healplayer.display")),
 				new HealPlayer(cs.getConfigurationSection("healplayer")));
 //		str2abil.put("none", new None());
-		str2abil.put(cs.getString("rally.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("rally.display")),
 				new Rally(cs.getConfigurationSection("rally")));
-		str2abil.put(cs.getString("sap.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("sap.display")),
 				new Sap(cs.getConfigurationSection("sap")));
-		str2abil.put(cs.getString("strike.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("strike.display")),
 				new Strike(cs.getConfigurationSection("strike")));
-		str2abil.put(cs.getString("volley.display"),
+		str2abil.put(ChatColor.stripColor(cs.getString("volley.display")),
 				new Volley(cs.getConfigurationSection("volley")));
 	}
 
@@ -337,12 +337,14 @@ public class AbilityTimer {
 		ItemMeta im = item.getItemMeta();
 		if (im == null)
 			return null;
-		return str2abil.get(im.getDisplayName());
+		return str2abil.get(ChatColor.stripColor(im.getDisplayName()));
 	}
 	
 	public static boolean isBaseAbility(String s){
-		if (str2abil.containsKey(s)) return true;
-		else if (str2abil.containsKey(s.substring(1,s.length()))) return true;
+		if (s == null) return false;
+		String sub = ChatColor.stripColor(s);
+		if (str2abil.containsKey(sub)) return true;
+		else if (str2abil.containsKey(sub.substring(1,s.length()))) return true;
 		return false;
 	}
 	
@@ -353,7 +355,7 @@ public class AbilityTimer {
 		ItemMeta im = item.getItemMeta();
 		if (im == null)
 			return null;
-		String d = im.getDisplayName();
+		String d = ChatColor.stripColor(im.getDisplayName());
 		if (d == null) return null;
 		return str2abil.get(d.substring(1, d.length()));
 	}
@@ -361,6 +363,7 @@ public class AbilityTimer {
 	public static boolean isUsedBaseAbility(String s) {
 		if (s == null) return false;
 		if (s.length() < 2) return false;
-		return str2abil.containsKey(s.substring(1,s.length()));
+		String sub = ChatColor.stripColor(s);
+		return str2abil.containsKey(sub.substring(1,sub.length() - 1));
 	}
 }
