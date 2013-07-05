@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import me.SgtMjrME.Object.DatabaseObject;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -220,5 +222,44 @@ public class mysqlLink {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public DatabaseObject[] getMaxStats(){//Run this async!
+		//returns databseobject array length 3. 
+		//First is max kills, second is max deaths, third is max wp
+		DatabaseObject[] out = new DatabaseObject[3];
+		//F*** it, select all and do checks in java for speed
+		ResultSet result;
+		try {
+			PreparedStatement p = con.prepareStatement("SELECT * FROM " + database_name + "`data`");
+			result = p.executeQuery();
+			while (result.next()){
+				String name = result.getString("name");
+				int kills = result.getInt("kills");
+				int deaths = result.getInt("deaths");
+				int wp = result.getInt("wp");
+				if (out[0].kills < kills){
+					out[0].s = name;
+					out[0].kills = kills;
+					out[0].deaths = deaths;
+					out[0].wp = wp;
+				}
+				if (out[1].deaths < deaths){
+					out[1].s = name;
+					out[1].kills = kills;
+					out[1].deaths = deaths;
+					out[1].wp = wp;
+				}
+				if (out[2].wp < wp){
+					out[2].s = name;
+					out[2].kills = kills;
+					out[2].deaths = deaths;
+					out[2].wp = wp;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return out;
 	}
 }

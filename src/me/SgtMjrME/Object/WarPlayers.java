@@ -9,6 +9,7 @@ import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.WarClass;
 import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.Listeners.EntityListener;
+import me.SgtMjrME.Tasks.ScoreboardHandler;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -36,6 +37,7 @@ public class WarPlayers {
 
 	public static void setRace(Player p, Race r) {
 		add(p, r);
+		ScoreboardHandler.updateTeam(p,r);
 		p.teleport(r.getSpawn());
 		WarClass.defaultClass.enterClass(p);
 	}

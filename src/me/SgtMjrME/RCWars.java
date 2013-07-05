@@ -119,7 +119,7 @@ public class RCWars extends JavaPlugin {
 	 	Color the ability names
 	 	
 	 	??? EMERGENCY
-	 	Bug: Healmage teleports TESTING
+	 	Bug: Healmage teleports (tested)
 	 	        Healmage heatlh TESTING
 	 	        
 	 */

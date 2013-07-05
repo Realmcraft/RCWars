@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Util;
 import me.SgtMjrME.ClassUpdate.WarClass;
+import me.SgtMjrME.Tasks.ScoreboardHandler;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
+import org.bukkit.scoreboard.Team;
 
 public class Race {
 	private final String name;
@@ -35,6 +37,7 @@ public class Race {
 	private final YamlConfiguration rcs;
 	public final int swordtype;
 	boolean ref = false;
+	Team t;
 
 	private static ConcurrentHashMap<Player, Race> setItemRace = new ConcurrentHashMap<Player, Race>();
 
@@ -67,6 +70,7 @@ public class Race {
 				spawnZur = null;
 			}
 		n2r.put(name, this);
+		t = ScoreboardHandler.registerTeam(name, ccolor);
 	}
 
 	private void openReferee(YamlConfiguration cs) {
@@ -299,6 +303,7 @@ public class Race {
 	}
 
 	public void addPlayer(Player p, WarClass class1) {
+		
 		p2c.put(p.getName(), class1);
 	}
 
@@ -337,5 +342,9 @@ public class Race {
 				return r;
 		}
 		return null;
+	}
+	
+	public Team getTeam(){
+		return t;
 	}
 }
