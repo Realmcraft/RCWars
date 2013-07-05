@@ -29,6 +29,7 @@ import me.SgtMjrME.SiegeUpdate.Cannon;
 import me.SgtMjrME.SiegeUpdate.Siege;
 import me.SgtMjrME.Tasks.AnnounceBaseStatus;
 import me.SgtMjrME.Tasks.DisplayStats;
+import me.SgtMjrME.Tasks.ScoreboardHandler;
 import me.SgtMjrME.Tasks.gateCheck;
 import me.SgtMjrME.Tasks.runCheck;
 import me.SgtMjrME.Tasks.spawnCheck;
@@ -167,6 +168,17 @@ public class RCWars extends JavaPlugin {
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
+		try{
+			mysql = new mysqlLink(config.getString("address", "localhost"),
+					config.getString("port", "3306"), config.getString("username",
+							"root"), config.getString("password", ""),
+					config.getString("dbname", "rcwars"));
+			}
+			catch(Exception e){
+				log.warning("Could not load mysql, continuing");
+				mysql = null;
+			}
+		Bukkit.getScheduler().runTaskTimer(this, new ScoreboardHandler(), 600, 600);
 		new AbilityTimer(config);
 		String temp = config.getString("world", null);
 		hitexp = config.getInt("exp.hit", 1);
@@ -174,16 +186,7 @@ public class RCWars extends JavaPlugin {
 		killWp = config.getInt("killwp",0);
 		basecapexp = config.getInt("exp.basecap", 20);
 		baserepexp = config.getInt("exp.baserepair", 10);
-		try{
-		mysql = new mysqlLink(config.getString("address", "localhost"),
-				config.getString("port", "3306"), config.getString("username",
-						"root"), config.getString("password", ""),
-				config.getString("dbname", "rcwars"));
-		}
-		catch(Exception e){
-			log.warning("Could not load mysql, continuing");
-			mysql = null;
-		}
+		
 		if (temp == null)
 			world = null;
 		else

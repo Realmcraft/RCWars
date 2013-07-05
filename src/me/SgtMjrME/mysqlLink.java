@@ -224,42 +224,62 @@ public class mysqlLink {
 		return null;
 	}
 	
-	public DatabaseObject[] getMaxStats(){//Run this async!
+	public DatabaseObject[][] getMaxStats(){//Run this async!
 		//returns databseobject array length 3. 
 		//First is max kills, second is max deaths, third is max wp
-		DatabaseObject[] out = new DatabaseObject[3];
+		DatabaseObject[][] out = new DatabaseObject[3][];
+		for(int i = 0; i < 3; i++){
+			out[i] = new DatabaseObject[3];
+			for(int j = 0; j < 3; j++) out[i][j] = new DatabaseObject();
+		}
 		//F*** it, select all and do checks in java for speed
 		ResultSet result;
 		try {
-			PreparedStatement p = con.prepareStatement("SELECT * FROM " + database_name + "`data`");
+			PreparedStatement p = con.prepareStatement("SELECT * FROM " + database_name + ".`data`");
 			result = p.executeQuery();
 			while (result.next()){
 				String name = result.getString("name");
 				int kills = result.getInt("kills");
 				int deaths = result.getInt("deaths");
 				int wp = result.getInt("wp");
-				if (out[0].kills < kills){
-					out[0].s = name;
-					out[0].kills = kills;
-					out[0].deaths = deaths;
-					out[0].wp = wp;
-				}
-				if (out[1].deaths < deaths){
-					out[1].s = name;
-					out[1].kills = kills;
-					out[1].deaths = deaths;
-					out[1].wp = wp;
-				}
-				if (out[2].wp < wp){
-					out[2].s = name;
-					out[2].kills = kills;
-					out[2].deaths = deaths;
-					out[2].wp = wp;
-				}
+				compare(0, kills, out, name);
+				compare(1, deaths, out, name);
+				compare(2, wp, out, name);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		for(int i = 0; i < 3; i++){
+			System.out.println("Max " + i);
+			for(int j = 0; j < 3; j++){
+				System.out.println(out[i][j].toString());
+			}
+		}
 		return out;
+	}
+
+	/*This will be confusing
+	 * i is which item we are comparing.  0=kills, 1=deaths, 2=wp
+	 * value is the value checking
+	 * out is the matrix of: 
+	 * 		rows: which we're looking at (i)
+	 * 		columns: decreasing array of max's for that column.  
+	 */
+	private void compare(int i, int value, DatabaseObject[][] out, String name) {
+		if (out[i][0].get(i) < value){
+			out[i][2] = out[i][1];
+			out[i][1] = out[i][0];
+			out[i][0] = new DatabaseObject(name);
+			out[i][0].set(i, value);
+		}
+		else if (out[i][1].get(i) < value){
+			out[i][2] = out[i][1];
+			out[i][1] = new DatabaseObject(name);
+			out[i][1].set(i, value);
+		}
+		else if (out[i][2].get(i) < value){
+			out[i][2] = new DatabaseObject(name);
+			out[i][2].set(i, value);
+		}
 	}
 }
