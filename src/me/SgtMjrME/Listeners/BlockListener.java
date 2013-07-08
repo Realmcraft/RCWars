@@ -1,5 +1,9 @@
 package me.SgtMjrME.Listeners;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import me.SgtMjrME.RCWars;
@@ -8,11 +12,18 @@ import me.SgtMjrME.ClassUpdate.Abilities.AbilityTimer;
 import me.SgtMjrME.Object.Base;
 import me.SgtMjrME.Object.WarPlayers;
 import me.SgtMjrME.SiegeUpdate.Siege;
+import me.SgtMjrME.Tasks.ScoreboardHandler;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.SkullType;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Skull;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,18 +41,19 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 public class BlockListener
   implements Listener
 {
-  private RCWars p;
+  private RCWars pl;
   final int size = 2;
+  static public ArrayList<Player> setLeaderboard = new ArrayList<Player>();
 
   public BlockListener(RCWars plugin)
   {
-    p = plugin;
+    pl = plugin;
   }
 
   @EventHandler(priority=EventPriority.LOWEST)
   public void onBlockBreak(BlockBreakEvent e)
   {
-    if (!e.getBlock().getWorld().equals(p.getWarWorld()))
+    if (!e.getBlock().getWorld().equals(pl.getWarWorld()))
       return;
     if (e.getBlock().getTypeId() == 46)
       return;
@@ -50,9 +62,78 @@ public class BlockListener
   }
 
   @EventHandler(priority=EventPriority.LOWEST)
-  public void onBlockPlace(BlockPlaceEvent e)
+  public void onBlockPlace(BlockPlaceEvent e) throws FileNotFoundException, IOException, InvalidConfigurationException
   {
-    if (!e.getBlock().getWorld().equals(this.p.getWarWorld())) return;
+	  if (setLeaderboard.contains(e.getPlayer())){
+		YamlConfiguration cfg = new YamlConfiguration();
+		File f = new File(pl.getDataFolder().getAbsolutePath() + "/leaderboardSkull.yml");
+		f.delete(); f.createNewFile();
+		cfg.load(new File(pl.getDataFolder().getAbsolutePath() + "/leaderboardSkull.yml"));
+  		Block block = e.getBlock();
+  		Location playerLoc = e.getPlayer().getLocation();
+  		int xdif = block.getX() - playerLoc.getBlockX();
+  		int xdifabs = Math.abs(block.getX() - playerLoc.getBlockX());
+  		int zdif = block.getZ() - playerLoc.getBlockZ();
+  		int zdifabs = Math.abs(block.getZ() - playerLoc.getBlockZ());
+  		Location blockLoc = block.getLocation();
+  		Skull temp;
+  		if (xdifabs > zdifabs){
+  			//Ok, so we'll do the blocks in the X direction
+  			BlockFace rot;
+  			if (xdif > 0) rot = BlockFace.EAST;
+  			else rot = BlockFace.WEST;
+  			blockLoc.add(0,0,1);
+  			temp = setBlock(Material.GOLD_BLOCK, blockLoc, e, rot);
+  			if (temp != null){
+  				ScoreboardHandler.goldPlayer = temp;
+  				cfg.set("gold", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  			}
+  			blockLoc.add(0,0,-2);
+  			temp = setBlock(Material.IRON_BLOCK, blockLoc, e, rot);
+  			if (temp != null){
+  				ScoreboardHandler.ironPlayer = temp;
+  				cfg.set("iron", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  			}
+  			blockLoc.add(0,1,1);
+  			temp = setBlock(Material.DIAMOND_BLOCK, blockLoc, e, rot);
+  			if (temp != null){
+  				ScoreboardHandler.diamondPlayer = temp;
+  				cfg.set("diamond", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  			}
+  			setLeaderboard.remove(e.getPlayer());
+  		}
+  		else if (zdifabs > xdifabs){
+  			//Ok, so we'll do the blocks in the Z direction
+  			BlockFace rot;
+  			if (zdif > 0) rot = BlockFace.NORTH;
+  			else rot = BlockFace.SOUTH;
+  			blockLoc.add(1,0,0);
+  			temp = setBlock(Material.GOLD_BLOCK, blockLoc, e, rot);
+  			if (temp != null){
+  				ScoreboardHandler.goldPlayer = temp;
+  				cfg.set("gold", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  			}
+  			blockLoc.add(-2,0,0);
+  			temp = setBlock(Material.IRON_BLOCK, blockLoc, e, rot);
+  			if (temp != null){
+  				ScoreboardHandler.ironPlayer = temp;
+  				cfg.set("iron", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  			}
+  			blockLoc.add(1,1,0);
+  			temp = setBlock(Material.DIAMOND_BLOCK, blockLoc, e, rot);
+  			if (temp != null){
+  				ScoreboardHandler.diamondPlayer = temp;
+  				cfg.set("diamond", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  			}
+  			setLeaderboard.remove(e.getPlayer());
+  		}
+  		else if (zdifabs == xdifabs){
+  			Util.sendMessage(e.getPlayer(), 
+  					"Please make the direction more noticeable (move farther away in one direction)");
+  		}
+  		cfg.save(new File(pl.getDataFolder().getAbsolutePath() + "/leaderboardSkull.yml"));
+  	}
+    if (!e.getBlock().getWorld().equals(this.pl.getWarWorld())) return;
     if (e.getPlayer().getItemInHand().getTypeId() == 46) {
       Siege s = Siege.isWall(e.getBlock().getLocation());
       if (s != null) {
@@ -65,14 +146,14 @@ public class BlockListener
         }
         final Location place = e.getBlock().getLocation();
 
-        Bukkit.getScheduler().runTask(this.p, new Runnable()
+        Bukkit.getScheduler().runTask(this.pl, new Runnable()
         {
           public void run()
           {
             place.getBlock().setType(Material.TNT);
           }
         });
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this.p, new Runnable()
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this.pl, new Runnable()
         {
           public void run() {
             if ((place.getBlock() != null) && (place.getBlock().getTypeId() == 46))
@@ -86,11 +167,29 @@ public class BlockListener
     if (!e.getPlayer().hasPermission("rcwars.admin"))
       e.setCancelled(true);
   }
+  
+  private Skull setBlock(Material mat, Location blockLoc, BlockPlaceEvent e, BlockFace rotation){
+		if (!blockLoc.getBlock().getType().equals(Material.AIR)){
+			Util.sendMessage(e.getPlayer(), "Non-air block detected, please retry");
+			return null;
+		}
+		blockLoc.getBlock().setType(mat);
+		Block b = blockLoc.clone().add(0,1,0).getBlock();
+		b.setType(Material.SKULL);
+		Skull skull = (Skull) b.getState();
+		skull.setSkullType(SkullType.PLAYER);
+		skull.setRotation(rotation);
+		org.bukkit.material.Skull md = (org.bukkit.material.Skull) skull.getData();
+		md.setFacingDirection(rotation);
+		skull.setData(md);
+		skull.update(true);
+		return skull;
+  }
 
   protected void createExplosion(Location place)
   {
     place.getBlock().setTypeId(0);
-    p.getWarWorld().createExplosion(place, 4.0F, false);
+    pl.getWarWorld().createExplosion(place, 4.0F, false);
   }
 
   @EventHandler(priority=EventPriority.LOWEST)
@@ -126,14 +225,14 @@ public class BlockListener
   @EventHandler(priority=EventPriority.LOWEST)
   public void onBucket(PlayerBucketEmptyEvent e)
   {
-    if ((!e.getPlayer().hasPermission("rcwars.admin")) && (e.getBlockClicked().getWorld().equals(p.getWarWorld())))
+    if ((!e.getPlayer().hasPermission("rcwars.admin")) && (e.getBlockClicked().getWorld().equals(pl.getWarWorld())))
       e.setCancelled(true);
   }
 
   @EventHandler(priority=EventPriority.LOWEST)
   public void onBucketFill(PlayerBucketFillEvent e)
   {
-    if ((!e.getPlayer().hasPermission("rcwars.admin")) && (e.getBlockClicked().getWorld().equals(p.getWarWorld())))
+    if ((!e.getPlayer().hasPermission("rcwars.admin")) && (e.getBlockClicked().getWorld().equals(pl.getWarWorld())))
       e.setCancelled(true);
   }
 

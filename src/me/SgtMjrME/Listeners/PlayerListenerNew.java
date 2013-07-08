@@ -176,7 +176,7 @@ public class PlayerListenerNew implements Listener {
 			AbilityTimer.onJoin(e.getPlayer(), e);
 		}
 		e.getPlayer().setWalkSpeed(0.2F);
-		WarPoints.loadWarPoints(e.getPlayer());//Needs its own server!
+		WarPoints.loadWarPoints(e.getPlayer().getName());//Needs its own server!
 	}
 
 	private void applyTag(PlayerReceiveNameTagEvent e, ChatColor color) {

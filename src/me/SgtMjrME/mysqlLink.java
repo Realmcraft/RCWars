@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import me.SgtMjrME.Object.DatabaseObject;
+import me.SgtMjrME.Object.WarPoints;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -213,9 +214,9 @@ public class mysqlLink {
 					+ database_name + ".data where name = '" + p + "';");
 			ResultSet result = stats.executeQuery();
 			if (result.next()) {
-				out[0] = result.getInt(2);
-				out[1] = result.getInt(3);
-				out[2] = result.getInt(4);
+				out[0] = result.getInt("kills");
+				out[1] = result.getInt("deaths");
+				out[2] = WarPoints.getWarPoints(p);
 				return out;
 			}
 		} catch (SQLException e) {
@@ -249,12 +250,12 @@ public class mysqlLink {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		for(int i = 0; i < 3; i++){
-			System.out.println("Max " + i);
-			for(int j = 0; j < 3; j++){
-				System.out.println(out[i][j].toString());
-			}
-		}
+//		for(int i = 0; i < 3; i++){
+//			System.out.println("Max " + i);
+//			for(int j = 0; j < 3; j++){
+//				System.out.println(out[i][j].s + " " + out[i][j].kills + " " + out[i][j].deaths + " " + out[i][j].wp);
+//			}
+//		}
 		return out;
 	}
 

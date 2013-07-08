@@ -1,5 +1,7 @@
 package me.SgtMjrME.Tasks;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import me.SgtMjrME.RCWars;
@@ -9,9 +11,16 @@ import me.SgtMjrME.Object.ScoreboardType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -29,28 +38,33 @@ public class ScoreboardHandler implements Runnable{
 	static ScoreboardType current;
 	static DatabaseObject[][] dbo;
 	static boolean isPlayer;
+	static public Skull goldPlayer;
+	static public Skull ironPlayer;
+	static public Skull diamondPlayer;
 	
 	static HashMap<String, Scoreboard> pscoreboard = new HashMap<String, Scoreboard>();
-	
-	//TODO Need to set up in such a way that kills/deaths/wp can all be dispalyed < 16 characters.
 	
 	public ScoreboardHandler(){
 		sbm = RCWars.returnPlugin().getServer().getScoreboardManager();
 		maxKills = sbm.getNewScoreboard();
 		maxDeaths = sbm.getNewScoreboard();
 		maxWp = sbm.getNewScoreboard();
-		maxKillsObj = maxKills.registerNewObjective("leaderboard", "dummy");
-		maxKillsObj.setDisplayName("Top Killers");
-		maxKillsObj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		maxDeathsObj = maxKills.registerNewObjective("leaderboard", "dummy");
-		maxDeathsObj.setDisplayName("Top Deaths");
-		maxDeathsObj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		maxWpObj = maxKills.registerNewObjective("leaderboard", "dummy");
-		maxWpObj.setDisplayName("Top WarPoints");
-		maxWpObj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		resetObjectives();
 		setupMaxSkills();
 		isPlayer = false;
 		nextSb = ScoreboardType.KILLS;
+	}
+	
+	private void resetObjectives(){
+		maxKillsObj = maxKills.registerNewObjective("leaderboard", "dummy");
+		maxKillsObj.setDisplayName("Top Killers");
+		maxKillsObj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		maxDeathsObj = maxDeaths.registerNewObjective("leaderboard", "dummy");
+		maxDeathsObj.setDisplayName("Top Deaths");
+		maxDeathsObj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		maxWpObj = maxWp.registerNewObjective("leaderboard", "dummy");
+		maxWpObj.setDisplayName("Top WarPoints");
+		maxWpObj.setDisplaySlot(DisplaySlot.SIDEBAR);
 	}
 
 	private void setupMaxSkills() {
@@ -61,13 +75,28 @@ public class ScoreboardHandler implements Runnable{
 				Bukkit.getScheduler().runTask(RCWars.returnPlugin(), new Runnable(){
 					@Override
 					public void run(){
-						maxSkills.unregister();
-						maxSkills = sb.registerNewObjective("leaderboard", "dummy");
-						maxSkills.setDisplayName("Leaderboard");
-						maxSkills.setDisplaySlot(DisplaySlot.SIDEBAR);
-						maxSkills.getScore(Bukkit.getOfflinePlayer(db[0].s)).setScore(db[0].kills);
-						maxSkills.getScore(Bukkit.getOfflinePlayer(db[1].s)).setScore(db[1].deaths);
-						maxSkills.getScore(Bukkit.getOfflinePlayer(db[2].s)).setScore(db[2].wp);
+						maxKillsObj.unregister();
+						maxDeathsObj.unregister();
+						maxWpObj.unregister();
+						resetObjectives();						
+						setObjective(0, maxKillsObj, db);
+						setObjective(1, maxDeathsObj, db);
+						setObjective(2, maxWpObj, db);
+						diamondPlayer.setOwner(db[0][0].s);
+						goldPlayer.setOwner(db[0][1].s);
+						ironPlayer.setOwner(db[0][2].s);
+						diamondPlayer.update();
+						goldPlayer.update();
+						ironPlayer.update();
+					}
+
+					private void setObjective(int place, Objective obj,
+							DatabaseObject[][] db) {
+						Score s;
+						for(int i = 0; i < 3; i++){
+							s = obj.getScore(Bukkit.getOfflinePlayer(db[place][i].s));
+							s.setScore(db[place][i].get(place));
+						}
 					}
 				});
 			}
@@ -86,10 +115,14 @@ public class ScoreboardHandler implements Runnable{
 						Scoreboard psb = sbm.getNewScoreboard();
 						Objective o = psb.registerNewObjective("Stats", "dummy");
 						o.setDisplaySlot(DisplaySlot.SIDEBAR);
-						o.getScore(Bukkit.getOfflinePlayer("Kills")).setScore(stats[0]);
-						o.getScore(Bukkit.getOfflinePlayer("Deaths")).setScore(stats[1]);
-						o.getScore(Bukkit.getOfflinePlayer("WarPoints")).setScore(stats[2]);
-						pscoreboard.put(p.getName(), sbm.getNewScoreboard());
+						Score s;
+						s = o.getScore(Bukkit.getOfflinePlayer("Kills"));
+						s.setScore(stats[0]);
+						s = o.getScore(Bukkit.getOfflinePlayer("Deaths"));
+						s.setScore(stats[1]);
+						s = o.getScore(Bukkit.getOfflinePlayer("WarPoints"));
+						s.setScore(stats[2]);
+						pscoreboard.put(p.getName(), psb);
 					}
 				});
 			}
@@ -139,16 +172,53 @@ public class ScoreboardHandler implements Runnable{
 	public static void updateTeam(Player p, Race r) {
 		Team old = sbm.getMainScoreboard().getPlayerTeam(p);
 		if (old != null) old.removePlayer(p);
-		r.getTeam().addPlayer(p);
+		if (r.getTeam() != null) r.getTeam().addPlayer(p);
 	}
 
-	public static Team registerTeam(String name, ChatColor ccolor) {
+	public static void registerTeam(String name, ChatColor ccolor) {
+		setupScoreboardTeam(name, maxKills, ccolor);
+		setupScoreboardTeam(name, maxDeaths, ccolor);
+		setupScoreboardTeam(name, maxWp, ccolor);
+	}
+	
+	private static void setupScoreboardTeam(String name, Scoreboard sb, ChatColor ccolor){
 		Team t = sb.getTeam(name);
 		if (t == null) t = sb.registerNewTeam(name);
 		t.setAllowFriendlyFire(false);
 		t.setCanSeeFriendlyInvisibles(true);
 		t.setPrefix("" + ccolor);
-		return sb.getTeam(name);
+	}
+
+	public static void setupSkulls() {
+		YamlConfiguration cfg = new YamlConfiguration();
+		try {
+			cfg.load(new File(RCWars.returnPlugin().getDataFolder().getAbsolutePath() + "/leaderboardSkull.yml"));
+			goldPlayer = handleSkullCheck(cfg, "gold");
+			ironPlayer = handleSkullCheck(cfg, "iron");
+			diamondPlayer = handleSkullCheck(cfg, "diamond");
+		} catch (IOException
+				| InvalidConfigurationException e) {
+			Bukkit.getLogger().severe("RCWars could not read leaderboard skulls.  Are they set up?");
+		}
+	}
+	
+	private static Skull handleSkullCheck(YamlConfiguration cfg, String s){
+		try{
+		String str = cfg.getString(s);
+		if (str == null) return null;
+		Location l = RCWars.returnPlugin().str2Loc(str);
+		if (l == null) return null;
+		Block b = l.getBlock();
+		if (b != null && b.getType() == Material.SKULL){
+			Skull skull = (Skull) b.getState();
+			return skull;
+		}
+		return null;
+		}
+		catch(Exception e){
+			//Well, something went wrong, but there is no skull here
+			return null;
+		}
 	}
 
 }

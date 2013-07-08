@@ -97,12 +97,13 @@ public class RCWars extends JavaPlugin {
 		Kits can run commands OR have items
 		commands:
 		    <anything>: cmd
-	 * UPDATE #5: TODO
+	 * UPDATE #5: DONE
 		-load warpoints stats in the lobby, but dont allow to buy (not in game)  DONE? (tested)
-		- Scoreboard for WarPoints (from player.yml, not from database)
-		- Scoreboard for kills, Scoreboard for deaths
-	 * UPDATE #6: TODO
+		- Scoreboard for WarPoints (from player.yml, not from database) (DONE)
+		- Scoreboard for kills, Scoreboard for deaths DONE
+	 * UPDATE #6: DONE
 	    this:  http://puu.sh/3lbEr.jpg
+	    command /setleaderboard, place the base block, skulls auto-populate
 		for top 3 killers (database)
 	 * UPDATE #7: DONE (not tested, assumed working)
 		give warpoints for kills (1 wp or configurable)
@@ -178,7 +179,8 @@ public class RCWars extends JavaPlugin {
 				log.warning("Could not load mysql, continuing");
 				mysql = null;
 			}
-		Bukkit.getScheduler().runTaskTimer(this, new ScoreboardHandler(), 600, 600);
+		Bukkit.getScheduler().runTaskTimer(this, new ScoreboardHandler(), 20, 200);
+		ScoreboardHandler.setupSkulls();
 		new AbilityTimer(config);
 		String temp = config.getString("world", null);
 		hitexp = config.getInt("exp.hit", 1);
@@ -477,6 +479,18 @@ public class RCWars extends JavaPlugin {
 				&& (p.hasPermission("rcwars.mod"))) {
 			Siege.repairAll();
 			return true;
+		} else if ((cmd.getLabel().equalsIgnoreCase("setleaderboard"))
+				&& (p.hasPermission("rcwars.admin"))){
+			if (BlockListener.setLeaderboard.contains(p)){
+				BlockListener.setLeaderboard.remove(p);
+				Util.sendMessage(p, "No longer setting leaderboard");
+			}
+			else{
+				BlockListener.setLeaderboard.add(p);
+				Util.sendMessage(p, "Please place the base block, ex", false);
+				Util.sendMessage(p, "__D__", false);
+				Util.sendMessage(p, "S_" + ChatColor.RED + "X" + ChatColor.RESET + "_G", false);
+			}
 		} else if (commandLabel.equalsIgnoreCase("reloadwar")) {
 			Race.clear();
 			cancelMyTasks();
@@ -546,7 +560,10 @@ public class RCWars extends JavaPlugin {
 			}
 			k.addKitCost(p);
 		} else if (commandLabel.equalsIgnoreCase("wp")) {
-			if (!p.hasPermission("rcwars.mod") || args.length == 0) WarPoints.dispWP(p);
+			if (!p.hasPermission("rcwars.mod") || args.length == 0){
+				WarPoints.dispWP(p);
+				return true;
+			}
 			if (args.length != 2) Util.sendMessage(p, "Incorrect args");
 			else WarPoints.giveWarPoints(Bukkit.getPlayer(args[0]), Integer.parseInt(args[1]));
 			return true;

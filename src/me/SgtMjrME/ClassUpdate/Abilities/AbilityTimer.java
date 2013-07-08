@@ -122,7 +122,7 @@ public class AbilityTimer {
 
 		if (b == null)
 			return;
-		if (!WarPoints.isLoaded(p)) {
+		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
 		if ((!b.OverrideAtt(p)) && (!checkTime(p, b)))
@@ -150,7 +150,7 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!WarPoints.isLoaded(p)) {
+		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
 		if ((!b.OverrideDef(p)) && (!checkTime(p, b)))
@@ -184,7 +184,7 @@ public class AbilityTimer {
 			Cloak.removeCloak(p);
 			return;
 		}
-		if (!WarPoints.isLoaded(p)) {
+		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
 		if ((!b.OverrideInt(p)) && (!checkTime(p, b)))
@@ -212,7 +212,7 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!WarPoints.isLoaded(p)) {
+		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
 		if (!checkTime(p, b))
@@ -245,7 +245,7 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!WarPoints.isLoaded(p)) {
+		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
 		if (!checkTime(p, b))
@@ -272,7 +272,7 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!WarPoints.isLoaded(p)) {
+		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
 		if ((!b.OverrideTpt(p)) && (!checkTime(p, b)))
@@ -308,7 +308,7 @@ public class AbilityTimer {
 		BaseAbility b = getAbility(p);
 		if (b == null)
 			return;
-		if (!WarPoints.isLoaded(p)) {
+		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
 		if ((!b.OverrideTnt(p)) && (!checkTime(p, b)))

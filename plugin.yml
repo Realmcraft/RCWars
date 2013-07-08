@@ -10,6 +10,8 @@ commands:
         description: start the war (ignores player check)
     endwar:
         description: ends the war immediately
+    setleaderboard:
+        description: Set the leaderboard location
     testWarCommand:
         description: console only, please don't use
     resetWarStats:

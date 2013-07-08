@@ -70,7 +70,7 @@ public class Race {
 				spawnZur = null;
 			}
 		n2r.put(name, this);
-		t = ScoreboardHandler.registerTeam(name, ccolor);
+		ScoreboardHandler.registerTeam(name, ccolor);
 	}
 
 	private void openReferee(YamlConfiguration cs) {
