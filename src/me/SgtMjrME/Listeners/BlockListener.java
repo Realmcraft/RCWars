@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -68,7 +69,7 @@ public class BlockListener
 		YamlConfiguration cfg = new YamlConfiguration();
 		File f = new File(pl.getDataFolder().getAbsolutePath() + "/leaderboardSkull.yml");
 		f.delete(); f.createNewFile();
-		cfg.load(new File(pl.getDataFolder().getAbsolutePath() + "/leaderboardSkull.yml"));
+		cfg.load(f);
   		Block block = e.getBlock();
   		Location playerLoc = e.getPlayer().getLocation();
   		int xdif = block.getX() - playerLoc.getBlockX();
@@ -87,18 +88,21 @@ public class BlockListener
   			if (temp != null){
   				ScoreboardHandler.goldPlayer = temp;
   				cfg.set("gold", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  				cfg.set("goldsign", RCWars.loc2str(blockLoc.clone().add(-(xdif/xdifabs),0,0)));
   			}
   			blockLoc.add(0,0,-2);
   			temp = setBlock(Material.IRON_BLOCK, blockLoc, e, rot);
   			if (temp != null){
   				ScoreboardHandler.ironPlayer = temp;
   				cfg.set("iron", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  				cfg.set("ironsign", RCWars.loc2str(blockLoc.clone().add(-(xdif/xdifabs),0,0)));
   			}
   			blockLoc.add(0,1,1);
   			temp = setBlock(Material.DIAMOND_BLOCK, blockLoc, e, rot);
   			if (temp != null){
   				ScoreboardHandler.diamondPlayer = temp;
   				cfg.set("diamond", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  				cfg.set("diamondsign", RCWars.loc2str(blockLoc.clone().add(-(xdif/xdifabs),0,0)));
   			}
   			setLeaderboard.remove(e.getPlayer());
   		}
@@ -112,18 +116,21 @@ public class BlockListener
   			if (temp != null){
   				ScoreboardHandler.goldPlayer = temp;
   				cfg.set("gold", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  				cfg.set("goldsign", RCWars.loc2str(blockLoc.clone().add(0,0,-(zdif/zdifabs))));
   			}
   			blockLoc.add(-2,0,0);
   			temp = setBlock(Material.IRON_BLOCK, blockLoc, e, rot);
   			if (temp != null){
   				ScoreboardHandler.ironPlayer = temp;
   				cfg.set("iron", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  				cfg.set("ironsign", RCWars.loc2str(blockLoc.clone().add(0,0,-(zdif/zdifabs))));
   			}
   			blockLoc.add(1,1,0);
   			temp = setBlock(Material.DIAMOND_BLOCK, blockLoc, e, rot);
   			if (temp != null){
   				ScoreboardHandler.diamondPlayer = temp;
   				cfg.set("diamond", RCWars.loc2str(blockLoc.clone().add(0,1,0)));
+  				cfg.set("diamondsign", RCWars.loc2str(blockLoc.clone().add(0,0,-(zdif/zdifabs))));
   			}
   			setLeaderboard.remove(e.getPlayer());
   		}
@@ -183,6 +190,16 @@ public class BlockListener
 		md.setFacingDirection(rotation);
 		skull.setData(md);
 		skull.update(true);
+		Location sign = b.getRelative(rotation).getLocation().add(0,-1,0);
+		sign.getBlock().setType(Material.WALL_SIGN);
+		Sign s = (Sign) sign.getBlock().getState();
+		s.setLine(1, "Hi");
+		// start ferrybig code
+		org.bukkit.material.Sign matSign = new org.bukkit.material.Sign(Material.WALL_SIGN);
+		matSign.setFacingDirection(rotation);
+		s.setData(matSign);
+		// end ferrybig code
+		s.update();
 		return skull;
   }
 

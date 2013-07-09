@@ -60,6 +60,7 @@ import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
+//import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -72,8 +73,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.kitteh.tag.PlayerReceiveNameTagEvent;
 
 public class PlayerListenerNew implements Listener {
 	private HashMap<String, Long> times = new HashMap<String, Long>();
@@ -151,6 +152,11 @@ public class PlayerListenerNew implements Listener {
 			e.setCancelled(true);
 		}
 	}
+	
+//	@EventHandler(priority = EventPriority.LOWEST)
+//	public void onLogin(PlayerLoginEvent e){
+//		System.out.println(e.getPlayer().getName());
+//	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBow(ProjectileLaunchEvent e) {
@@ -177,29 +183,6 @@ public class PlayerListenerNew implements Listener {
 		}
 		e.getPlayer().setWalkSpeed(0.2F);
 		WarPoints.loadWarPoints(e.getPlayer().getName());//Needs its own server!
-	}
-
-	private void applyTag(PlayerReceiveNameTagEvent e, ChatColor color) {
-		if (e.getNamedPlayer().getName().length() < 15)
-			e.setTag(color + e.getNamedPlayer().getName());
-		else
-			e.setTag(color + e.getNamedPlayer().getName().substring(0, 14));
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onGetTag(PlayerReceiveNameTagEvent e) {
-		Race r = WarPlayers.getRace(e.getNamedPlayer());
-		if (r != null) {
-			if ((e.getNamedPlayer().hasPermission("rcchat.m")) && (!r.isRef())) {
-				ChatColor c = r.getCcolor();
-				try {
-					applyTag(e, ChatColor.valueOf("DARK_" + c.name()));
-					return;
-				} catch (Exception localException) {
-				}
-			}
-			applyTag(e, r.getCcolor());
-		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -311,6 +294,8 @@ public class PlayerListenerNew implements Listener {
 		if ((r = WarPlayers.getRace(e.getPlayer())) == null) {
 			return;
 		}
+		e.getPlayer().removePotionEffect(PotionEffectType.SLOW);
+		e.getPlayer().setWalkSpeed(0.2F);
 		if (r.getSpawn() != null)
 			e.setRespawnLocation(r.getSpawn());
 //		removeItems(e.getPlayer());

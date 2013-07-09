@@ -138,7 +138,7 @@ public class WarPoints {
 
 	public static void dispWP(Player p) {
 		if (warPointSave.containsKey(p.getName())) {
-			Util.sendMessage(p, "You have " + warPointSave.get(p)
+			Util.sendMessage(p, "You have " + warPointSave.get(p.getName())
 					+ " warpoints");
 		} else {
 			Util.sendMessage(p, "Your war data is not loaded, attempting load");

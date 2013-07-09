@@ -344,7 +344,7 @@ public class AbilityTimer {
 		if (s == null) return false;
 		String sub = ChatColor.stripColor(s);
 		if (str2abil.containsKey(sub)) return true;
-		else if (str2abil.containsKey(sub.substring(1,s.length()))) return true;
+		else if (str2abil.containsKey(sub.substring(1,sub.length() - 1))) return true;
 		return false;
 	}
 	

@@ -202,12 +202,13 @@ public class mysqlLink {
 
 	public int[] getStats(String p) {
 		int[] out = new int[3];
+		for(int i = 0; i < 3; i++) out[i] = 0; //Really do this to make sure there is no nulls
 		try {
 			if (!con.isValid(0))
 				reestablishConnection();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
-			return null;
+			return out;
 		}
 		try {
 			PreparedStatement stats = con.prepareStatement("select * from "
@@ -222,7 +223,7 @@ public class mysqlLink {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return out;
 	}
 	
 	public DatabaseObject[][] getMaxStats(){//Run this async!

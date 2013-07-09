@@ -14,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,8 +40,11 @@ public class ScoreboardHandler implements Runnable{
 	static DatabaseObject[][] dbo;
 	static boolean isPlayer;
 	static public Skull goldPlayer;
+	static public Sign goldSign;
 	static public Skull ironPlayer;
+	static public Sign ironSign;
 	static public Skull diamondPlayer;
+	static public Sign diamondSign;
 	
 	static HashMap<String, Scoreboard> pscoreboard = new HashMap<String, Scoreboard>();
 	
@@ -82,12 +86,25 @@ public class ScoreboardHandler implements Runnable{
 						setObjective(0, maxKillsObj, db);
 						setObjective(1, maxDeathsObj, db);
 						setObjective(2, maxWpObj, db);
-						diamondPlayer.setOwner(db[0][0].s);
-						goldPlayer.setOwner(db[0][1].s);
-						ironPlayer.setOwner(db[0][2].s);
-						diamondPlayer.update();
-						goldPlayer.update();
-						ironPlayer.update();
+						if (diamondPlayer != null) diamondPlayer.setOwner(Bukkit.getPlayer(db[0][0].s).getName());
+						if (diamondSign != null){
+							diamondSign.setLine(2, db[0][0].s);
+							diamondSign.update();
+						}
+						else System.out.println("Diamond sign null");
+						if (goldPlayer != null) goldPlayer.setOwner(Bukkit.getPlayer(db[0][1].s).getName());
+						if (goldSign != null){
+							goldSign.setLine(2, db[0][1].s);
+							goldSign.update();
+						}
+						if (ironPlayer != null) ironPlayer.setOwner(Bukkit.getPlayer(db[0][2].s).getName());
+						if (ironSign != null){
+							ironSign.setLine(2, db[0][2].s);
+							ironSign.update();
+						}
+						if (diamondPlayer != null)diamondPlayer.update();
+						if (goldPlayer != null) goldPlayer.update();
+						if (ironPlayer != null) ironPlayer.update();
 					}
 
 					private void setObjective(int place, Objective obj,
@@ -194,14 +211,38 @@ public class ScoreboardHandler implements Runnable{
 		try {
 			cfg.load(new File(RCWars.returnPlugin().getDataFolder().getAbsolutePath() + "/leaderboardSkull.yml"));
 			goldPlayer = handleSkullCheck(cfg, "gold");
+			goldSign = handleSign(cfg, "goldsign");
 			ironPlayer = handleSkullCheck(cfg, "iron");
+			ironSign = handleSign(cfg, "ironsign");
 			diamondPlayer = handleSkullCheck(cfg, "diamond");
+			diamondSign = handleSign(cfg, "diamondsign");
 		} catch (IOException
 				| InvalidConfigurationException e) {
 			Bukkit.getLogger().severe("RCWars could not read leaderboard skulls.  Are they set up?");
 		}
 	}
-	
+
+	private static Sign handleSign(YamlConfiguration cfg, String s) {
+		try{
+			String str = cfg.getString(s);
+			if (str == null) return null;
+			Location l = RCWars.returnPlugin().str2Loc(str);
+			if (l == null) return null;
+			Block b = l.getBlock();
+			if (b != null && b.getType().equals(Material.WALL_SIGN)){
+				return (Sign) b.getState();
+			}
+			System.out.println(l.toString());
+			return null;
+			}
+			catch(Exception e){
+				//Well, something went wrong, but there is no skull here
+				e.printStackTrace();
+				System.err.println("Error handling " + s);
+				return null;
+			}
+	}
+
 	private static Skull handleSkullCheck(YamlConfiguration cfg, String s){
 		try{
 		String str = cfg.getString(s);

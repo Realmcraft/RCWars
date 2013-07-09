@@ -18,6 +18,7 @@ import me.SgtMjrME.Listeners.BlockListener;
 import me.SgtMjrME.Listeners.EntityListener;
 import me.SgtMjrME.Listeners.MobHandler;
 import me.SgtMjrME.Listeners.PlayerListenerNew;
+import me.SgtMjrME.Listeners.TagAPIListener;
 import me.SgtMjrME.Object.Base;
 import me.SgtMjrME.Object.Kit;
 import me.SgtMjrME.Object.Race;
@@ -65,6 +66,7 @@ public class RCWars extends JavaPlugin {
 	private PlayerListenerNew playerListener;
 	private BlockListener blockListener;
 	private EntityListener entityListener;
+	private TagAPIListener tagAPIListener;
 	private MobHandler mobHandler;
 	@SuppressWarnings("unused")
 	private WarPoints warPoints;
@@ -153,10 +155,12 @@ public class RCWars extends JavaPlugin {
 		blockListener = new BlockListener(this);
 		entityListener = new EntityListener(this);
 		mobHandler = new MobHandler();
+		tagAPIListener = new TagAPIListener();
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(blockListener, this);
 		pm.registerEvents(entityListener, this);
 		pm.registerEvents(mobHandler, this);
+		pm.registerEvents(tagAPIListener, this);
 
 		config = new YamlConfiguration();
 		try {
