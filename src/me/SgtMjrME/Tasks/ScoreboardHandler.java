@@ -86,19 +86,22 @@ public class ScoreboardHandler implements Runnable{
 						setObjective(0, maxKillsObj, db);
 						setObjective(1, maxDeathsObj, db);
 						setObjective(2, maxWpObj, db);
-						if (diamondPlayer != null) diamondPlayer.setOwner(Bukkit.getPlayer(db[0][0].s).getName());
+						if (diamondPlayer != null) diamondPlayer.setOwner(db[0][0].s);
 						if (diamondSign != null){
 							diamondSign.setLine(2, db[0][0].s);
+							diamondSign.setLine(3, "" + db[0][0].kills);
 							diamondSign.update();
 						}
-						if (goldPlayer != null) goldPlayer.setOwner(Bukkit.getPlayer(db[0][1].s).getName());
+						if (goldPlayer != null) goldPlayer.setOwner(db[0][1].s);
 						if (goldSign != null){
 							goldSign.setLine(2, db[0][1].s);
+							goldSign.setLine(3, "" + db[0][1].kills);
 							goldSign.update();
 						}
-						if (ironPlayer != null) ironPlayer.setOwner(Bukkit.getPlayer(db[0][2].s).getName());
+						if (ironPlayer != null) ironPlayer.setOwner(db[0][2].s);
 						if (ironSign != null){
 							ironSign.setLine(2, db[0][2].s);
+							ironSign.setLine(3, "" + db[0][2].kills);
 							ironSign.update();
 						}
 						if (diamondPlayer != null)diamondPlayer.update();
