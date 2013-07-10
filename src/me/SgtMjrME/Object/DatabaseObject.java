@@ -1,5 +1,7 @@
 package me.SgtMjrME.Object;
 
+import me.SgtMjrME.Util;
+
 public class DatabaseObject {
 	
 	public DatabaseObject(){
@@ -27,7 +29,7 @@ public class DatabaseObject {
 		if (i == 0) kills = val;
 		else if (i == 1) deaths = val;
 		else if (i == 2) wp = val;
-		else System.out.println("You went out of bounds on DBO, uhhh");
+		else Util.sendLog("You went out of bounds on DBO, uhhh");
 	}
 
 	public String s;

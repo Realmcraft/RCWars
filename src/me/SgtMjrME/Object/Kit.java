@@ -36,7 +36,7 @@ public class Kit {
 					kits.put(s.substring(0, s.length() - 4).toLowerCase(),
 							new Kit(f));
 				} catch (Exception localException) {
-					System.out.println("Error loading kit " + s);
+					Util.sendLog("Error loading kit " + s);
 				}
 			}
 		}
@@ -46,12 +46,12 @@ public class Kit {
 		YamlConfiguration cfg = new YamlConfiguration();
 		cfg.load(f);
 		name = cfg.getString("name");
-		System.out.println(name + " loading");
+		Util.sendLog(name + " loading");
 		cost = cfg.getInt("cost");
 		ConfigurationSection comConfig = cfg.getConfigurationSection("commands");
 		if (comConfig != null){
 			for (String s : comConfig.getKeys(false)){
-				System.out.println(name + ":" + s);
+				Util.sendLog(name + ":" + s);
 				commands.add(comConfig.getString(s));
 			}
 		}

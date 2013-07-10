@@ -91,7 +91,6 @@ public class ScoreboardHandler implements Runnable{
 							diamondSign.setLine(2, db[0][0].s);
 							diamondSign.update();
 						}
-						else System.out.println("Diamond sign null");
 						if (goldPlayer != null) goldPlayer.setOwner(Bukkit.getPlayer(db[0][1].s).getName());
 						if (goldSign != null){
 							goldSign.setLine(2, db[0][1].s);
@@ -148,6 +147,7 @@ public class ScoreboardHandler implements Runnable{
 
 	@Override
 	public void run() {
+		try{
 		if (isPlayer){
 			for(Player p : Bukkit.getOnlinePlayers()){
 				setupPlayerScoreboard(p);
@@ -162,6 +162,9 @@ public class ScoreboardHandler implements Runnable{
 				nextSb = ScoreboardType.KILLS;
 				setupMaxSkills();
 			}
+		}
+		} catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 
@@ -232,7 +235,6 @@ public class ScoreboardHandler implements Runnable{
 			if (b != null && b.getType().equals(Material.WALL_SIGN)){
 				return (Sign) b.getState();
 			}
-			System.out.println(l.toString());
 			return null;
 			}
 			catch(Exception e){

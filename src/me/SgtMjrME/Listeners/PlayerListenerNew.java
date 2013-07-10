@@ -280,7 +280,6 @@ public class PlayerListenerNew implements Listener {
 		ItemMeta im = item.getItemMeta();
 		if (im == null) return;
 		String display = im.getDisplayName();
-		System.out.println(display);
 		if (AbilityTimer.isUsedBaseAbility(display)) e.setCancelled(true); //If it's a used ability, can't change.  Otherwise, I don't give a F***
 //		int end = 37;
 //		WarRank wr = WarRank.getPlayer(p);
@@ -339,7 +338,7 @@ public class PlayerListenerNew implements Listener {
 			}, 10L);
 		}
 		}
-		catch(Exception e1){System.out.println("damn");}
+		catch(Exception e1){Util.sendLog("damn");}
 	}
 	
 	@SuppressWarnings("unused")

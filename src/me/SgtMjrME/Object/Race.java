@@ -241,7 +241,7 @@ public class Race {
 	private boolean checkSpawnLocation(Location p) {
 		if (ref) return false;
 		if ((spawnZll == null) || (spawnZur == null)){
-			System.out.println("Check failed for spawn location on race " + getDisplay());
+			Util.sendLog("Check failed for spawn location on race " + getDisplay());
 			return false;
 		}
 		if ((spawnZll.getX() > p.getX() || spawnZll.getZ() > p.getZ()

@@ -154,19 +154,12 @@ public class Siege {
 	public static Siege isWall(Location l){//Siege if yes, null if no.
 		Siege s;
 		if ((s = checkWall(l)) != null) return s;
-		System.out.println(l.toString());
 		if ((s = checkWall(l.add(-1,0,0))) != null) return s;
-		System.out.println(l.toString());
 		if ((s = checkWall(l.add(2,0,0))) != null) return s;
-		System.out.println(l.toString());
 		if ((s = checkWall(l.add(-1,0,-1))) != null) return s;
-		System.out.println(l.toString());
 		if ((s = checkWall(l.add(0,0,2))) != null) return s;
-		System.out.println(l.toString());
 		if ((s = checkWall(l.add(0,-1,-1))) != null) return s;
-		System.out.println(l.toString());
 		if ((s = checkWall(l.add(0, 2, 0))) != null) return s;
-		System.out.println(l.toString());
 		return null;
 	}
 

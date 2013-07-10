@@ -41,11 +41,11 @@ public class mysqlLink {
 			int hasTable = result.getInt(1);
 			if (hasTable != 1) {
 				createTable();
-				System.out.println("[RCWars] New table created");
+				Util.sendLog("[RCWars] New table created");
 			}
 		} catch (SQLException e) {
 			con = null;
-			System.out.println("[RCWars] MySQL ERROR SQLEX");
+			Util.sendLog("[RCWars] MySQL ERROR SQLEX");
 			e.printStackTrace();
 		}
 	}
@@ -53,7 +53,7 @@ public class mysqlLink {
 	public void createTable() {
 		try {
 			if ((con == null) || (!con.isValid(0))) {
-				System.out.println("[RCWars] Connection is invalid");
+				Util.sendLog("[RCWars] Connection is invalid");
 				return;
 			}
 		} catch (SQLException e1) {
@@ -69,7 +69,7 @@ public class mysqlLink {
 							"`wp` INT NOT NULL DEFAULT 0 ,"+
 							"PRIMARY KEY (`name`) );");
 			if (!createTable.execute())
-				System.out.println("problem creating table");
+				Util.sendLog("problem creating table");
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -79,7 +79,7 @@ public class mysqlLink {
 	public void dropTable() {
 		try {
 			if ((con == null) || (!con.isValid(0))) {
-				System.out.println("[RCWars] Connection is invalid");
+				Util.sendLog("[RCWars] Connection is invalid");
 				return;
 			}
 		} catch (SQLException e1) {
@@ -134,7 +134,7 @@ public class mysqlLink {
 						else if (type.equalsIgnoreCase("death"))
 							addDeath(p);
 					} else {
-						System.out.println("[RCWars] Creating new table entry for "
+						Util.sendLog("[RCWars] Creating new table entry for "
 								+ p.getName());
 						PreparedStatement addPlayer = con
 								.prepareStatement("insert into " + database_name
@@ -144,7 +144,7 @@ public class mysqlLink {
 						updatePlayer(p, type);
 					}
 				} catch (SQLException e) {
-					System.out.println("[RCWars] MySQL ERROR: KILL");
+					Util.sendLog("[RCWars] MySQL ERROR: KILL");
 					e.printStackTrace();
 				}
 			}

@@ -49,8 +49,6 @@ public class AbilityCooldown extends BukkitRunnable {
 			return;
 		if (itemName.length() < 2) return;
 		itemName = itemName.substring(1, itemName.length() - 1);
-		System.out.println(finalItemDisp);
-		System.out.println(itemName);
 		if (stage != 0 && !itemName.equals(finalItemDisp))
 			return;
 		//Hopefully this means we have the correct item
