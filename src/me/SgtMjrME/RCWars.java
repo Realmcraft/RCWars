@@ -68,8 +68,7 @@ public class RCWars extends JavaPlugin {
 	private EntityListener entityListener;
 	private TagAPIListener tagAPIListener;
 	private MobHandler mobHandler;
-	@SuppressWarnings("unused")
-	private WarPoints warPoints;
+	public WarPoints warPoints;
 	private static int killWp;
 	private World world;
 	private static Location lobby;
@@ -139,6 +138,7 @@ public class RCWars extends JavaPlugin {
 	private int timedWarPoints;
 
 	public void onEnable() {
+		new Util();
 		pm = getServer().getPluginManager();
 		log = getServer().getLogger();
 		e = null;

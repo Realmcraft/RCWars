@@ -152,4 +152,12 @@ public class WarPoints {
 		loadWarPoints(s);
 		return warPointSave.containsKey(s);//False if not contained, we have an issue.
 	}
+	
+	public static boolean has(String name, double amt){
+		if (isLoaded(name)){
+			if (warPointSave.get(name) > amt) return true;
+			return false;
+		}
+		return false;
+	}
 }

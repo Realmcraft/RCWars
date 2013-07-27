@@ -292,5 +292,7 @@ public class Util {
 		l.info(s);
 	}
 	
-	public static void sendLog(String s){sendLog(s,true);}
+	public static void sendLog(String s){
+		sendLog(s,true);
+	}
 }
