@@ -1,5 +1,6 @@
 package me.SgtMjrME.Listeners;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -7,12 +8,18 @@ import me.SgtMjrME.RCWars;
 import me.SgtMjrME.Object.MobHolder;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
+import me.SgtMjrME.Tasks.SpiderAgressor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,9 +31,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.SpawnEgg;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 public class MobHandler implements Listener{
+	
+	static BukkitTask spiderTask = null;
 	
 	static HashMap<UUID, MobHolder> mobs = new HashMap<UUID, MobHolder>();
 
@@ -39,6 +49,8 @@ public class MobHandler implements Listener{
 				}
 			}
 		}
+		if (spiderTask != null) spiderTask.cancel();
+		spiderTask = Bukkit.getScheduler().runTaskTimer(RCWars.returnPlugin(), new SpiderAgressor(), 20, 80);
 	}
 	
 	/*
@@ -48,17 +60,32 @@ public class MobHandler implements Listener{
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onTarget(EntityTargetEvent e){
-		if (!(e.getEntity() instanceof LivingEntity)) return;
+		if (!targetEntity(e.getEntity(), e.getTarget())) e.setCancelled(true);
+	}
+	
+	//returns true if the target should happen, false otherwise.
+	public static boolean targetEntity(Entity ent, Entity target){
+		if (!(ent instanceof LivingEntity)) return true;
 //		LivingEntity ent = (LivingEntity) e.getEntity();
-		if (e.getTarget() == null){ //No target, return to spawn (this will be fun...)
+		if (target == null){ //No target, return to spawn (this will be fun...)
 			//Not doing this yet TODO
-			return;
+			return true;
 		}
-		MobHolder mh = mobs.get(((LivingEntity) e.getEntity()).getUniqueId());
-		if (mh == null) return;
-		Race targetRace = WarPlayers.getRace(mh.p);
-		if (targetRace == null) return;
-		if (targetRace.equals(mh.r) || targetRace.isRef()) e.setCancelled(true);
+		MobHolder mh = mobs.get(((LivingEntity) ent).getUniqueId());
+		if (mh == null) return true;
+		Race targetRace = null;
+		if (target instanceof Player){
+			targetRace = WarPlayers.getRace((Player) target);
+		}
+		else{
+			MobHolder targetMH = mobs.get(((LivingEntity) ent).getUniqueId());
+			if (targetMH != null){
+				targetRace = targetMH.r;
+			}
+		}
+		if (targetRace == null) return true;
+		if (targetRace.equals(mh.r) || targetRace.isRef()) return false;
+		return true;
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -117,9 +144,26 @@ public class MobHandler implements Listener{
 		if (!(im instanceof SpawnEgg)) return;//No idea when this will be triggered... hope never
 		SpawnEgg egg = (SpawnEgg) im;
 		item.setAmount(item.getAmount() - 1);
+		e.getPlayer().setItemInHand(item);
 		//spawn entity (since i cancelled it before)
 		LivingEntity entity = (LivingEntity) RCWars.returnPlugin().getWarWorld().spawnEntity(
 				e.getClickedBlock().getLocation().add(new Vector(0,1,0)), egg.getSpawnedType());
+		if (egg.getSpawnedType().equals(EntityType.HORSE)){
+			Horse horse = (Horse) entity;
+			horse.setTamed(true);
+			horse.getInventory().setSaddle(new ItemStack(329,1));
+			horse.getInventory().setArmor(new ItemStack(418,1));
+		} else if (egg.getSpawnedType().equals(EntityType.SKELETON)){
+			Skeleton skele = (Skeleton) entity;
+			skele.getEquipment().setHelmet(new ItemStack(298,1));
+			skele.getEquipment().setItemInHand(new ItemStack(261,1));
+		} else if (egg.getSpawnedType().equals(EntityType.ZOMBIE)){
+			Zombie zomb = (Zombie) entity;
+			zomb.getEquipment().setHelmet(new ItemStack(298,1));
+		} else if (egg.getSpawnedType().equals(EntityType.PIG_ZOMBIE)){
+			PigZombie pig = (PigZombie) entity;
+			pig.setAngry(true);
+		}
 		mobs.put(entity.getUniqueId(), new MobHolder(entity, e.getPlayer(), WarPlayers.getRace(e.getPlayer()), entity.getLocation()));
 	}
 	
@@ -127,6 +171,10 @@ public class MobHandler implements Listener{
 	public void onEntDie(EntityDeathEvent e){
 		//If the entity dies, I really don't care what, let mobs decide how to remove it.
 		if (e.getEntity() != null) mobs.remove(e.getEntity().getUniqueId());
+	}
+	
+	public static Collection<MobHolder> getMobs(){
+		return mobs.values();
 	}
 
 }

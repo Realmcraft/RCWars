@@ -139,8 +139,9 @@ public class EntityListener
 
     WarRank ofDead = WarRank.getPlayer(damageep);
     WarRank ofKiller = WarRank.getPlayer(damagerp);
-    if ((e.getDamager() instanceof Projectile)) e.setDamage((int)(e.getDamage() * ofKiller.attbowpwr / ofDead.defpwr)); else
-      e.setDamage((int)(e.getDamage() * ofKiller.attswdpwr / ofDead.defpwr));
+    if ((e.getDamager() instanceof Projectile)) e.setDamage((e.getDamage() * ofKiller.attbowpwr / ofDead.defpwr));
+    else
+      e.setDamage((e.getDamage() * ofKiller.attswdpwr / ofDead.defpwr));
     if (!damager.equals(damagee)) {
       if (e.getDamage() > 0) damagerp.giveExp(pl.hitexp);
       if (setFire) damageep.setFireTicks(100); 
