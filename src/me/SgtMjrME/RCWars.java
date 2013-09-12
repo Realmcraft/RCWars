@@ -86,6 +86,12 @@ public class RCWars extends JavaPlugin {
 	private long timedTime;
 	public static Player headmodifier;
 	public static HashSet<String> leaving = new HashSet<String>();
+	public double rank1 = 1;
+	public double rank2 = 1;
+	public double rank3 = 1;
+	public double rank4 = 1;
+	public double rank5 = 1; 
+	public double rank6 = 1;
 	
 	
 	
@@ -192,6 +198,12 @@ public class RCWars extends JavaPlugin {
 		killWp = config.getInt("killwp",0);
 		basecapexp = config.getInt("exp.basecap", 20);
 		baserepexp = config.getInt("exp.baserepair", 10);
+		rank1 = config.getDouble("rank1",1);
+		rank2 = config.getDouble("rank2",1);
+		rank3 = config.getDouble("rank3",1);
+		rank4 = config.getDouble("rank4",1);
+		rank5 = config.getDouble("rank5",1);
+		rank6 = config.getDouble("rank6",1);
 		
 		if (temp == null)
 			world = null;

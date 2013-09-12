@@ -47,6 +47,12 @@ public class WarPoints {
 	}
 
 	public static void giveWarPoints(Player player, int warPoints) {
+		if (player.hasPermission("rcwars.rank6")) warPoints *= rc.rank6;
+		else if (player.hasPermission("rcwars.rank5")) warPoints *= rc.rank5;
+		else if (player.hasPermission("rcwars.rank4")) warPoints *= rc.rank4;
+		else if (player.hasPermission("rcwars.rank3")) warPoints *= rc.rank3;
+		else if (player.hasPermission("rcwars.rank2")) warPoints *= rc.rank2;
+		else if (player.hasPermission("rcwars.rank1")) warPoints *= rc.rank1;
 		if ((warPointSave.containsKey(player.getName()))
 				&& (((Integer) warPointSave.get(player.getName())) + warPoints > warPointMax)) {
 			Util.sendMessage(player, "You have hit the max of " + warPointMax);
