@@ -125,6 +125,9 @@ public class AbilityTimer {
 		if (!WarPoints.isLoaded(p.getName())) {
 			return;
 		}
+		if (b instanceof Cloak){
+			b.clearAffects(p);
+		}
 		if ((!b.OverrideAtt(p)) && (!checkTime(p, b)))
 			return;
 

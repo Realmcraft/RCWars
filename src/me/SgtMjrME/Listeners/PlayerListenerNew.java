@@ -243,13 +243,13 @@ public class PlayerListenerNew implements Listener {
 		AbilityTimer.onLeave(e.getPlayer(), e);
 
 		if (WarPlayers.getRace(p) != null) {
-			WarPoints.saveWarPoints(p);
 			if (WarPlayers.gotDamaged(p)) {
 				p.damage(1000);
 				RCWars.returnPlugin().sendToMySQL(p, "death", 0);
 			}
 			WarPlayers.remove(p, "Disconnect");
 		}
+		WarPoints.saveWarPoints(p);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -332,7 +332,9 @@ public class PlayerListenerNew implements Listener {
 							e.getPlayer().getInventory().setItem(8 - i, returning[i]);
 						}
 					}
-					wr.c.resetRank(e.getPlayer());
+					if (wr.c.permission != null && !e.getPlayer().hasPermission(wr.c.permission))
+						WarClass.defaultClass.enterClass(e.getPlayer());
+					else wr.c.resetRank(e.getPlayer());
 				}
 				
 			}, 10L);

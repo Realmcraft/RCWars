@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 public class WarClass {
 	String className;
 	String displayName;
-	String permission;
+	public String permission;
 	ChatColor color;
 	int bypassCost;
 	Vector<WarRank> ranks = new Vector<WarRank>();

@@ -79,6 +79,7 @@ public class RCWars extends JavaPlugin {
 	public Kit kitOnSpawn;
 	private int repairBaseVal;
 	public mysqlLink mysql;
+	public mysqlLink wpLink;
 	public int hitexp;
 	public static int killexp;
 	public static int basecapexp;
@@ -184,6 +185,10 @@ public class RCWars extends JavaPlugin {
 					config.getString("port", "3306"), config.getString("username",
 							"root"), config.getString("password", ""),
 					config.getString("dbname", "rcwars"));
+			wpLink = new mysqlLink(config.getString("address", "localhost"),
+					config.getString("port", "3306"), config.getString("username",
+							"root"), config.getString("password", ""),
+					config.getString("dbnamecoin", "coins"));
 			}
 			catch(Exception e){
 				log.warning("Could not load mysql, continuing");
@@ -1623,5 +1628,11 @@ public class RCWars extends JavaPlugin {
 		if (mysql == null) return;
 		if (place == 0)
 			mysql.updatePlayer(p, d);
+	}
+	
+	public void sendToCoin(Player p, int d, int place) {
+		if (wpLink == null) return;
+		if (place == 0)
+			wpLink.updatePlayerCoin(p,d);
 	}
 }

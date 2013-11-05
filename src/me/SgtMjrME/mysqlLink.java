@@ -284,4 +284,44 @@ public class mysqlLink {
 			out[i][2].set(i, value);
 		}
 	}
+
+	public void updatePlayerCoin(final Player p, int difference) {
+		int db = getCoin(p.getName());
+		int setValue = db + difference;
+		try {
+			PreparedStatement s = con.prepareStatement("UPDATE SET `money` = " + setValue + " WHERE `name` = \"" + p.getName() + "\";");
+			s.execute(); //I have no f***ing idea if this will work
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public int getCoin(String p) {
+		//THIS MUST BE RUN ASYNC!!!
+		if ((con == null) || (p == null))
+			return 0;
+		try {
+			if (!con.isValid(0))
+				reestablishConnection();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return 0;
+		}
+		try {
+			PreparedStatement s = con.prepareStatement("select `money` from `"
+					+ database_name + "` where name = \"" + p
+					+ "\";");
+			ResultSet result = s.executeQuery();
+			if (result.next()) {
+				return result.getInt(1);
+			} else {
+				//You know what? If it doesn't exist, not my problem atm
+				return 0;
+			}
+		} catch (SQLException e) {
+			Util.sendLog("[RCWars] MySQL ERROR WP: KILL");
+			e.printStackTrace();
+		}
+		return 0;
+	}
 }
