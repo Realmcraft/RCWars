@@ -61,6 +61,18 @@ public class AbilityTimer {
 				new Strike(cs.getConfigurationSection("strike")));
 		str2abil.put(ChatColor.stripColor(cs.getString("volley.display")),
 				new Volley(cs.getConfigurationSection("volley")));
+		str2abil.put(ChatColor.stripColor(cs.getString("blind.display")),
+				new Volley(cs.getConfigurationSection("blind")));
+		str2abil.put(ChatColor.stripColor(cs.getString("poison.display")),
+				new Volley(cs.getConfigurationSection("poison")));
+		str2abil.put(ChatColor.stripColor(cs.getString("push.display")),
+				new Volley(cs.getConfigurationSection("push")));
+		str2abil.put(ChatColor.stripColor(cs.getString("lightning.display")),
+				new Volley(cs.getConfigurationSection("lightning")));
+		str2abil.put(ChatColor.stripColor(cs.getString("grenade.display")),
+				new Volley(cs.getConfigurationSection("grenade")));
+		str2abil.put(ChatColor.stripColor(cs.getString("cobweb.display")),
+				new Volley(cs.getConfigurationSection("cobweb")));
 	}
 
 	public static void addCooldown(Player p, BaseAbility b) {

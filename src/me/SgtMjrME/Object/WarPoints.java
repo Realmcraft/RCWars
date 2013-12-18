@@ -34,7 +34,7 @@ public class WarPoints {
 			return false;
 		}
 		Util.sendMessage(p, ChatColor.GREEN + "You have been charged " + cost + " coins");
-		 RCWars.returnPlugin().wpLink.updatePlayerCoin(p, cost);
+		 RCWars.returnPlugin().wpLink.updatePlayerCoin(p, -cost);
 		 return true;
 //		if (warPointSave.containsKey(p.getName())) {
 //			int points = warPointSave.get(p.getName()).cur;
@@ -162,7 +162,7 @@ public class WarPoints {
 
 	public static void dispWP(Player p) {
 		Util.sendMessage(p, "You have " + RCWars.returnPlugin().wpLink.getCoin(p.getName())
-					+ " warpoints");
+					+ " coins");
 //		if (warPointSave.containsKey(p.getName())) {
 //			Util.sendMessage(p, "You have " + warPointSave.get(p.getName()).cur
 //					+ " warpoints");

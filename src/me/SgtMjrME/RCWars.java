@@ -20,6 +20,7 @@ import me.SgtMjrME.Listeners.MobHandler;
 import me.SgtMjrME.Listeners.PlayerListenerNew;
 import me.SgtMjrME.Listeners.TagAPIListener;
 import me.SgtMjrME.Object.Base;
+import me.SgtMjrME.Object.CitizensHandler;
 import me.SgtMjrME.Object.Kit;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.Rally;
@@ -143,6 +144,8 @@ public class RCWars extends JavaPlugin {
 	public static HashMap<String, Integer> repairing = new HashMap<String, Integer>();
 	boolean open;
 	private int timedWarPoints;
+	@SuppressWarnings("unused")
+	private CitizensHandler citizensHandler;
 
 	public void onEnable() {
 		new Util();
@@ -162,6 +165,9 @@ public class RCWars extends JavaPlugin {
 		blockListener = new BlockListener(this);
 		entityListener = new EntityListener(this);
 		mobHandler = new MobHandler();
+		if (getServer().getPluginManager().isPluginEnabled("Citizens")){
+			citizensHandler = new CitizensHandler(this);
+		}
 		tagAPIListener = new TagAPIListener();
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(blockListener, this);
@@ -238,7 +244,7 @@ public class RCWars extends JavaPlugin {
 		for (String bl : block) {
 			allowedItems.add(Integer.parseInt(bl));
 		}
-		MobHandler.resetMobs();
+//		MobHandler.resetMobs();
 		loadRaces();
 		Base.loadBases(this);
 		Cannon.loadCannons(this);
@@ -271,7 +277,6 @@ public class RCWars extends JavaPlugin {
 
 	private void makeStdKits() {
 		String temp = getDataFolder().getAbsolutePath() + "/Kits/";
-
 		for (int i = 0; i < 5; i++) {
 			String name = null;
 			int swordid = 0;

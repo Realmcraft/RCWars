@@ -29,7 +29,7 @@ public class DisplayStats implements Runnable{
 			Util.sendMessage(p, ChatColor.GREEN + "K/D: " + out[0]
 					/ out[1], false);
 		}
-		Util.sendMessage(p, ChatColor.GREEN + "WarPoints: " + out[2], false);
+		Util.sendMessage(p, ChatColor.GREEN + "Coins: " + out[2], false);
 	}
 	
 	@Override

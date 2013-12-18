@@ -1,4 +1,4 @@
-package me.SgtMjrME;
+package me.SgtMjrME; 
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -289,7 +289,7 @@ public class mysqlLink {
 		int db = getCoin(p.getName());
 		int setValue = db + difference;
 		try {
-			PreparedStatement s = con.prepareStatement("UPDATE SET `money` = " + setValue + " WHERE `name` = \"" + p.getName() + "\";");
+			PreparedStatement s = con.prepareStatement("UPDATE `" + database_name + "` SET `money` = " + setValue + " WHERE `name` = \"" + p.getName() + "\";");
 			s.execute(); //I have no f***ing idea if this will work
 		} catch (SQLException e) {
 			e.printStackTrace();

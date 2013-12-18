@@ -108,7 +108,7 @@ public class Cloak extends BaseAbility {
 		Util.sendMessage(p, ChatColor.WHITE + "You have been uncloaked");
 	}
 
-	protected static void removeCloak(Player p) {
+	public static void removeCloak(Player p) {
 		uncloakPlayer(p);
 	}
 

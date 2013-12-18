@@ -20,6 +20,7 @@ import me.SgtMjrME.ClassUpdate.WarClass;
 import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.ClassUpdate.Abilities.AbilityTimer;
 import me.SgtMjrME.ClassUpdate.Abilities.BaseAbility;
+import me.SgtMjrME.ClassUpdate.Abilities.Cloak;
 import me.SgtMjrME.Object.Base;
 import me.SgtMjrME.Object.Kit;
 import me.SgtMjrME.Object.Race;
@@ -439,6 +440,7 @@ public class PlayerListenerNew implements Listener {
 		}
 //		if ((e.getAction().equals(Action.LEFT_CLICK_AIR))
 //				|| (e.getAction().equals(Action.LEFT_CLICK_BLOCK)))
+		Cloak.removeCloak(e.getPlayer());
 		if (!e.getAction().equals(Action.PHYSICAL))
 			AbilityTimer.onInteract(e.getPlayer(), e);
 		if (e.getClickedBlock() == null)
@@ -991,8 +993,8 @@ public class PlayerListenerNew implements Listener {
 		WarRank wr = WarRank.getPlayer(e.getPlayer());
 		if (wr == null)
 			return;
-		int typeid = e.getItemDrop().getItemStack().getTypeId();
-		if (typeid == 366 || typeid == 262) return;
+//		int typeid = e.getItemDrop().getItemStack().getTypeId();
+//		if (typeid == 366 || typeid == 262) return;Don't need this anymore!
 		e.setCancelled(true);
 	}
 

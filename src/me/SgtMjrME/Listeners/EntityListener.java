@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.SgtMjrME.ClassUpdate.Abilities.AbilityTimer;
 import me.SgtMjrME.ClassUpdate.Abilities.BaseAbility;
+import me.SgtMjrME.ClassUpdate.Abilities.Cobweb;
 import me.SgtMjrME.ClassUpdate.WarRank;
 import me.SgtMjrME.Object.Race;
 import me.SgtMjrME.Object.WarPlayers;
@@ -20,6 +21,7 @@ import org.bukkit.entity.Explosive;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,6 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
@@ -317,5 +320,12 @@ public class EntityListener
   public static void removeDmg(String p)
   {
     explDmg.remove(p);
+  }
+  
+  @EventHandler
+  public void onHit(ProjectileHitEvent e) {
+	 if (e.getEntity() instanceof Snowball){
+		 Cobweb.createWeb(e.getEntity().getLocation());
+	 }
   }
 }

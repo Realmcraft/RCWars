@@ -67,7 +67,7 @@ public class ScoreboardHandler implements Runnable{
 		maxDeathsObj.setDisplayName("Top Deaths");
 		maxDeathsObj.setDisplaySlot(DisplaySlot.SIDEBAR);
 		maxWpObj = maxWp.registerNewObjective("leaderboard", "dummy");
-		maxWpObj.setDisplayName("Top WarPoints");
+		maxWpObj.setDisplayName("Top Coins");
 		maxWpObj.setDisplaySlot(DisplaySlot.SIDEBAR);
 	}
 
@@ -139,7 +139,7 @@ public class ScoreboardHandler implements Runnable{
 						s.setScore(stats[0]);
 						s = o.getScore(Bukkit.getOfflinePlayer("Deaths"));
 						s.setScore(stats[1]);
-						s = o.getScore(Bukkit.getOfflinePlayer("WarPoints"));
+						s = o.getScore(Bukkit.getOfflinePlayer("Coins"));
 						s.setScore(stats[2]);
 						pscoreboard.put(p.getName(), psb);
 					}
