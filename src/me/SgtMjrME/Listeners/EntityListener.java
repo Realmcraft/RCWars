@@ -168,17 +168,6 @@ public class EntityListener
     if (!e.getEntity().getWorld().equals(pl.getWarWorld()))
       return;
     Iterator<PotionEffect> types = e.getPotion().getEffects().iterator();
-    boolean harm = false;
-    while (types.hasNext()) {
-      PotionEffectType hold = ((PotionEffect)types.next()).getType();
-      if ((hold.equals(PotionEffectType.HARM)) || (hold.equals(PotionEffectType.POISON)) || 
-        (hold.equals(PotionEffectType.SLOW)) || (hold.equals(PotionEffectType.WEAKNESS))) {
-        harm = true;
-        break;
-      }
-    }
-    if (!harm)
-      return;
     if (!(e.getEntity().getShooter() instanceof Player))
       return;
     Race damager = WarPlayers.getRace((Player)e.getEntity().getShooter());
@@ -194,7 +183,13 @@ public class EntityListener
         {
           if (damagee.isRef()) e.setIntensity(temp, 0.0D);
           if (damagee.getName().equals(damager.getName()))
-            e.setIntensity(temp, 0.0D);  } 
+            e.setIntensity(temp, 0.0D);
+          else{
+        	  for(PotionEffect pe : e.getPotion().getEffects()){
+        		  pe.apply(temp);
+        	  }
+          }
+        }
       }
     }
   }

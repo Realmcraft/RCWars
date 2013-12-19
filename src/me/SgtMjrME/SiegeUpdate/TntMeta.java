@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
 public class TntMeta implements MetadataValue {
 	Player r;
 
-	TntMeta(Player race) {
+	public TntMeta(Player race) {
 		r = race;
 	}
 

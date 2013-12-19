@@ -3,6 +3,9 @@ package me.SgtMjrME.ClassUpdate.Abilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.SgtMjrME.Util;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,6 +23,7 @@ public class Lightning extends BaseAbility {
 	public final String desc;
 	public final ItemStack item;
 	public final int distance;
+	public boolean debug;
 	
 	public Lightning(ConfigurationSection cs) {
 		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "Lightning"));
@@ -28,7 +32,8 @@ public class Lightning extends BaseAbility {
 		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Strikes lightning where you shoot"));
 		item = new ItemStack(cs.getInt("item"), 1,
 				(short) cs.getInt("data"));
-		distance = cs.getInt("distance", 50);
+		distance = cs.getInt("distance", 100);
+		debug = cs.getBoolean("debug");
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();
 		im.setDisplayName(disp);
@@ -43,7 +48,9 @@ public class Lightning extends BaseAbility {
 	public boolean onInteract(Player p, PlayerInteractEvent e) {
 		Location start = p.getEyeLocation();
 		Vector dir = p.getLocation().getDirection().normalize();
+		if (debug) Util.sendMessage(Bukkit.getConsoleSender(), dir.toString());
 		for(int i = 0; i < distance; i++){
+			if (debug) Util.sendMessage(Bukkit.getConsoleSender(), start.toString());
 			if (!start.getBlock().isEmpty()){
 				//We hit a block
 				p.getWorld().strikeLightning(start);

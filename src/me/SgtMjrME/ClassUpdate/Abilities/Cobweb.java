@@ -26,6 +26,7 @@ public class Cobweb extends BaseAbility {
 	public final String desc;
 	public final ItemStack item;
 	static BlockFace[] bf;
+	static int time;
 
 	public Cobweb(ConfigurationSection cs) {
 		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "Cobweb"));
@@ -34,6 +35,7 @@ public class Cobweb extends BaseAbility {
 		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Throws a cobweb"));
 		item = new ItemStack(cs.getInt("item"), 1,
 				(short) cs.getInt("data"));
+		time = cs.getInt("time", 5)*20;
 		bf = new BlockFace[4];
 		bf[0] = BlockFace.NORTH;
 		bf[1] = BlockFace.EAST;
@@ -57,7 +59,7 @@ public class Cobweb extends BaseAbility {
 	}
 	
 	public static void createWeb(Location l){
-		Location[] toRemove = new Location[bf.length + 1];
+		final Location[] toRemove = new Location[bf.length + 1];
 		for(int i = 0; i < toRemove.length; i++) toRemove[i] = null;
 		if (l.getBlock().isEmpty()){
 			l.getBlock().setType(Material.WEB);
@@ -70,15 +72,14 @@ public class Cobweb extends BaseAbility {
 				toRemove[i] = rel.getLocation();
 			}
 		}
-		final Location[] out = toRemove;
 		Bukkit.getScheduler().runTaskLater(RCWars.returnPlugin(), new Runnable(){
 			@Override
 			public void run() {
-				for(int i = 0; i < out.length; i++){
-					if (out[i] != null) out[i].getBlock().setType(null);
+				for(int i = 0; i < toRemove.length; i++){
+					if (toRemove[i] != null) toRemove[i].getBlock().setType(Material.AIR);
 				}
 			}
-		}, 100);
+		}, time);
 	}
 
 	public String getDisplay() {

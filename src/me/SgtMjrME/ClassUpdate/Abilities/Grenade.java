@@ -3,6 +3,8 @@ package me.SgtMjrME.ClassUpdate.Abilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.SgtMjrME.SiegeUpdate.TntMeta;
+
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -30,7 +32,7 @@ public class Grenade extends BaseAbility {
 		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Throws a grenade"));
 		item = new ItemStack(cs.getInt("item"), 1,
 				(short) cs.getInt("data"));
-		power = cs.getInt("power", 1);
+		power = cs.getInt("power", 3);
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();
 		im.setDisplayName(disp);
@@ -52,6 +54,7 @@ public class Grenade extends BaseAbility {
 		tnt.setFuseTicks(60);
 		tnt.setIsIncendiary(false);
 		tnt.setYield(power);
+		tnt.setMetadata("shooter", new TntMeta(p));
 		return true;
 	}
 

@@ -29,12 +29,14 @@ import org.bukkit.scoreboard.Team;
 public class ScoreboardHandler implements Runnable{
 
 	static ScoreboardManager sbm;
-	static Scoreboard maxKills;
+	static Scoreboard allSB;
+//	static Scoreboard maxKills;
 	static Objective maxKillsObj;
-	static Scoreboard maxDeaths;
+//	static Scoreboard maxDeaths;
 	static Objective maxDeathsObj;
-	static Scoreboard maxWp;
+//	static Scoreboard maxWp;
 	static Objective maxWpObj;
+	static Objective baseObj;
 	static ScoreboardType nextSb;
 	static ScoreboardType current;
 	static DatabaseObject[][] dbo;
@@ -50,9 +52,10 @@ public class ScoreboardHandler implements Runnable{
 	
 	public ScoreboardHandler(){
 		sbm = RCWars.returnPlugin().getServer().getScoreboardManager();
-		maxKills = sbm.getNewScoreboard();
-		maxDeaths = sbm.getNewScoreboard();
-		maxWp = sbm.getNewScoreboard();
+		allSB = sbm.getNewScoreboard();
+//		maxKills = sbm.getNewScoreboard();
+//		maxDeaths = sbm.getNewScoreboard();
+//		maxWp = sbm.getNewScoreboard();
 		resetObjectives();
 		setupMaxSkills();
 		isPlayer = false;
@@ -60,15 +63,22 @@ public class ScoreboardHandler implements Runnable{
 	}
 	
 	private void resetObjectives(){
-		maxKillsObj = maxKills.registerNewObjective("leaderboard", "dummy");
+		if (maxKillsObj != null) maxKillsObj.unregister();
+		if (maxDeathsObj != null) maxDeathsObj.unregister();
+		if (maxWpObj != null) maxWpObj.unregister();
+		if (baseObj != null) baseObj.unregister();
+		maxKillsObj = allSB.registerNewObjective("kills", "dummy");
 		maxKillsObj.setDisplayName("Top Killers");
 		maxKillsObj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		maxDeathsObj = maxDeaths.registerNewObjective("leaderboard", "dummy");
+		maxDeathsObj = allSB.registerNewObjective("deaths", "dummy");
 		maxDeathsObj.setDisplayName("Top Deaths");
 		maxDeathsObj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		maxWpObj = maxWp.registerNewObjective("leaderboard", "dummy");
+		maxWpObj = allSB.registerNewObjective("wp", "dummy");
 		maxWpObj.setDisplayName("Top Coins");
 		maxWpObj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		baseObj = allSB.registerNewObjective("base", "dummy");
+		baseObj.setDisplayName("Base Health");
+		baseObj.setDisplaySlot(DisplaySlot.SIDEBAR);
 	}
 
 	private void setupMaxSkills() {
@@ -79,10 +89,7 @@ public class ScoreboardHandler implements Runnable{
 				Bukkit.getScheduler().runTask(RCWars.returnPlugin(), new Runnable(){
 					@Override
 					public void run(){
-						maxKillsObj.unregister();
-						maxDeathsObj.unregister();
-						maxWpObj.unregister();
-						resetObjectives();						
+						resetObjectives();	
 						setObjective(0, maxKillsObj, db);
 						setObjective(1, maxDeathsObj, db);
 						setObjective(2, maxWpObj, db);
@@ -122,74 +129,91 @@ public class ScoreboardHandler implements Runnable{
 		});
 	}
 	
-	public static void setupPlayerScoreboard(final Player p){
-		Bukkit.getScheduler().runTaskAsynchronously(RCWars.returnPlugin(), new Runnable(){
-			@Override
-			public void run(){
-				final int[] stats = RCWars.returnPlugin().mysql.getStats(p.getName());
-				Bukkit.getScheduler().runTask(RCWars.returnPlugin(), new Runnable(){
-					@Override
-					public void run(){
-						pscoreboard.remove(p.getName());
-						Scoreboard psb = sbm.getNewScoreboard();
-						Objective o = psb.registerNewObjective("Stats", "dummy");
-						o.setDisplaySlot(DisplaySlot.SIDEBAR);
-						Score s;
-						s = o.getScore(Bukkit.getOfflinePlayer("Kills"));
-						s.setScore(stats[0]);
-						s = o.getScore(Bukkit.getOfflinePlayer("Deaths"));
-						s.setScore(stats[1]);
-						s = o.getScore(Bukkit.getOfflinePlayer("Coins"));
-						s.setScore(stats[2]);
-						pscoreboard.put(p.getName(), psb);
-					}
-				});
-			}
-		});
-	}
+//	public static void setupPlayerScoreboard(final Player p){
+//		Bukkit.getScheduler().runTaskAsynchronously(RCWars.returnPlugin(), new Runnable(){
+//			@Override
+//			public void run(){
+//				final int[] stats = RCWars.returnPlugin().mysql.getStats(p.getName());
+//				Bukkit.getScheduler().runTask(RCWars.returnPlugin(), new Runnable(){
+//					@Override
+//					public void run(){
+//						pscoreboard.remove(p.getName());
+//						Scoreboard psb = sbm.getNewScoreboard();
+//						Objective o = psb.registerNewObjective("Stats", "dummy");
+//						o.setDisplaySlot(DisplaySlot.SIDEBAR);
+//						Score s;
+//						s = o.getScore(Bukkit.getOfflinePlayer("Kills"));
+//						s.setScore(stats[0]);
+//						s = o.getScore(Bukkit.getOfflinePlayer("Deaths"));
+//						s.setScore(stats[1]);
+//						s = o.getScore(Bukkit.getOfflinePlayer("Coins"));
+//						s.setScore(stats[2]);
+//						pscoreboard.put(p.getName(), psb);
+//					}
+//				});
+//			}
+//		});
+//	}
 
 	@Override
 	public void run() {
 		try{
-		if (isPlayer){
-			for(Player p : Bukkit.getOnlinePlayers()){
-				setupPlayerScoreboard(p);
-			}
-		}
-		updatePlayers();
-		isPlayer = !isPlayer;
-		if (isPlayer){
-			if (nextSb.equals(ScoreboardType.KILLS)) nextSb = ScoreboardType.DEATHS;
-			else if (nextSb.equals(ScoreboardType.DEATHS)) nextSb = ScoreboardType.WARPOINTS;
-			else if (nextSb.equals(ScoreboardType.WARPOINTS)){
-				nextSb = ScoreboardType.KILLS;
-				setupMaxSkills();
-			}
-		}
-		} catch(Exception e){
+			setupMaxSkills();
+			updatePlayers();
+		} catch (Exception e){
 			e.printStackTrace();
 		}
+//		try{
+//		if (isPlayer){
+//			for(Player p : Bukkit.getOnlinePlayers()){
+//				setupPlayerScoreboard(p);
+//			}
+//		}
+//		updatePlayers();
+//		isPlayer = !isPlayer;
+//		if (isPlayer){
+//			if (nextSb.equals(ScoreboardType.KILLS)) nextSb = ScoreboardType.DEATHS;
+//			else if (nextSb.equals(ScoreboardType.DEATHS)) nextSb = ScoreboardType.WARPOINTS;
+//			else if (nextSb.equals(ScoreboardType.WARPOINTS)){
+//				nextSb = ScoreboardType.KILLS;
+//				setupMaxSkills();
+//			}
+//		}
+//		} catch(Exception e){
+//			e.printStackTrace();
+//		}
+	}
+	
+	public void updatePlayerSb(Player p, String type, String val){
+		if (!pscoreboard.containsKey(p.getName())) setupPlayer(p);
+		
+	}
+
+	private void setupPlayer(Player p) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void updatePlayers() {
-		if (!isPlayer){
-			if (nextSb.equals(ScoreboardType.KILLS))
-				for (Player p : Bukkit.getOnlinePlayers())
-					p.setScoreboard(maxKills);
-			else if (nextSb.equals(ScoreboardType.DEATHS))
-				for (Player p : Bukkit.getOnlinePlayers())
-					p.setScoreboard(maxDeaths);
-			else if (nextSb.equals(ScoreboardType.WARPOINTS))
-				for (Player p : Bukkit.getOnlinePlayers())
-					p.setScoreboard(maxWp);
-		}
-		else{
-			for(Player p : Bukkit.getOnlinePlayers()){
-				Scoreboard temp = pscoreboard.get(p.getName());
-				if (temp != null) 
-					p.setScoreboard(temp);
-			}
-		}
+		
+//		if (!isPlayer){
+//			if (nextSb.equals(ScoreboardType.KILLS))
+//				for (Player p : Bukkit.getOnlinePlayers())
+//					p.setScoreboard(maxKills);
+//			else if (nextSb.equals(ScoreboardType.DEATHS))
+//				for (Player p : Bukkit.getOnlinePlayers())
+//					p.setScoreboard(maxDeaths);
+//			else if (nextSb.equals(ScoreboardType.WARPOINTS))
+//				for (Player p : Bukkit.getOnlinePlayers())
+//					p.setScoreboard(maxWp);
+//		}
+//		else{
+//			for(Player p : Bukkit.getOnlinePlayers()){
+//				Scoreboard temp = pscoreboard.get(p.getName());
+//				if (temp != null) 
+//					p.setScoreboard(temp);
+//			}
+//		}
 	}
 
 	public static void updateTeam(Player p, Race r) {
@@ -199,6 +223,7 @@ public class ScoreboardHandler implements Runnable{
 	}
 
 	public static void registerTeam(String name, ChatColor ccolor) {
+		setupScoreboardTeam(name, allSB, ccolor);
 		setupScoreboardTeam(name, maxKills, ccolor);
 		setupScoreboardTeam(name, maxDeaths, ccolor);
 		setupScoreboardTeam(name, maxWp, ccolor);

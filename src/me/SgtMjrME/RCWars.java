@@ -40,6 +40,7 @@ import me.SgtMjrME.Tasks.timedExp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -200,7 +201,7 @@ public class RCWars extends JavaPlugin {
 				log.warning("Could not load mysql, continuing");
 				mysql = null;
 			}
-		Bukkit.getScheduler().runTaskTimer(this, new ScoreboardHandler(), 20, 200);
+		Bukkit.getScheduler().runTaskTimer(this, new ScoreboardHandler(), 20, 600);
 		ScoreboardHandler.setupSkulls();
 		new AbilityTimer(config);
 		String temp = config.getString("world", null);
@@ -524,7 +525,7 @@ public class RCWars extends JavaPlugin {
 			HandlerList.unregisterAll(this);
 			for (Player players : world.getPlayers()) {
 				players.teleport(lobby);
-				if (players.getInventory().getHelmet().getTypeId() == 35)
+				if (players.getInventory().getHelmet().getType().equals(Material.WOOL))
 					players.getInventory().setHelmet(null);
 			}
 			onEnable();

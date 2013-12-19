@@ -10,7 +10,9 @@ import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 public class Blind extends BaseAbility {
 
@@ -19,6 +21,8 @@ public class Blind extends BaseAbility {
 	public final int cost;
 	public final String desc;
 	public final ItemStack item;
+	public int duration;
+	public int amplifier;
 
 	public Blind(ConfigurationSection cs) {
 		disp = ChatColor.translateAlternateColorCodes('&', cs.getString("display", "blind"));
@@ -27,6 +31,8 @@ public class Blind extends BaseAbility {
 		desc = ChatColor.translateAlternateColorCodes('&', cs.getString("description", "Blind your opponent"));
 		item = new ItemStack(cs.getInt("item"), 1,
 				(short) cs.getInt("data"));
+		duration = cs.getInt("duration", 2)*20;
+		amplifier = cs.getInt("power", 1);
 		String s = cs.getString("lore", "");
 		ItemMeta im = item.getItemMeta();
 		im.setDisplayName(disp);
@@ -40,8 +46,11 @@ public class Blind extends BaseAbility {
 
 	public boolean onInteract(Player p, PlayerInteractEvent e) {
 		ThrownPotion pot = e.getPlayer().launchProjectile(ThrownPotion.class);
-		pot.getEffects().clear();
-		pot.getEffects().add(PotionEffectType.BLINDNESS.createEffect(200, 2));
+		pot.getEffects().add(PotionEffectType.BLINDNESS.createEffect(duration, amplifier));
+		Potion potion = new Potion(PotionType.SLOWNESS);
+		potion.getEffects().clear();
+		potion.getEffects().add(PotionEffectType.BLINDNESS.createEffect(duration, amplifier));
+		pot.setItem(potion.toItemStack(1));
 		return true;
 	}
 

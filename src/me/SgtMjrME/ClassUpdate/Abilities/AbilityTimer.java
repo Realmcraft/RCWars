@@ -62,17 +62,17 @@ public class AbilityTimer {
 		str2abil.put(ChatColor.stripColor(cs.getString("volley.display")),
 				new Volley(cs.getConfigurationSection("volley")));
 		str2abil.put(ChatColor.stripColor(cs.getString("blind.display")),
-				new Volley(cs.getConfigurationSection("blind")));
+				new Blind(cs.getConfigurationSection("blind")));
 		str2abil.put(ChatColor.stripColor(cs.getString("poison.display")),
-				new Volley(cs.getConfigurationSection("poison")));
+				new Poison(cs.getConfigurationSection("poison")));
 		str2abil.put(ChatColor.stripColor(cs.getString("push.display")),
-				new Volley(cs.getConfigurationSection("push")));
+				new Push(cs.getConfigurationSection("push")));
 		str2abil.put(ChatColor.stripColor(cs.getString("lightning.display")),
-				new Volley(cs.getConfigurationSection("lightning")));
+				new Lightning(cs.getConfigurationSection("lightning")));
 		str2abil.put(ChatColor.stripColor(cs.getString("grenade.display")),
-				new Volley(cs.getConfigurationSection("grenade")));
+				new Grenade(cs.getConfigurationSection("grenade")));
 		str2abil.put(ChatColor.stripColor(cs.getString("cobweb.display")),
-				new Volley(cs.getConfigurationSection("cobweb")));
+				new Cobweb(cs.getConfigurationSection("cobweb")));
 	}
 
 	public static void addCooldown(Player p, BaseAbility b) {
